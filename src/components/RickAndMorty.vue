@@ -11,31 +11,21 @@ export default {
     };
   },
   mounted() {
-    this.fetchCharacters('http://127.0.0.1:8000/')
-
-    .then(() => {
-      this.filteredCharacters = this.characters;
-    });
+    this.fetchCharacters('http://127.0.0.1:8000/api/all/')
   },
   methods: {
     fetchCharacters(url) {
-  return new Promise((resolve, reject) => {
     axios.get(url)
       .then(response => {
-        this.characters = this.characters.concat(response.data.results);
-
-        
-        if (response.data.info.next) {
-          this.fetchCharacters(response.data.info.next).then(resolve);
-        } else {
-          resolve();
-        }
+        this.characters = response.data;
+        this.filteredCharacters = response.data;
+        console.log(this.characters);
+        console.log(this.filteredCharacters);
       })
       .catch(error => {
         console.error('Error al obtener la lista de personajes:', error);
         reject(error);
       });
-  });
 },
 
   filterByStatus(status) {
@@ -70,18 +60,13 @@ export default {
 
       
       <input type="text" placeholder="Search by name" v-model="searchTerm" @input="filterByName">
-      
       <div v-if="filteredCharacters.length > 0" class="container-cards">
         <ul class="card-list">
           <li v-for="character in filteredCharacters" :key="character.id" class="card">
             <div class="image">
-                <img src=C:\Users\anstj\Desktop\sanCherry\API-Rick-and-Morty\src\assets\seorak.png :alt="character.name">
+                <img :src="`http://127.0.0.1:8000/` + character.image" :alt="character">
             </div>
-            
-            
             <h2>{{ character.name }}</h2>
-            
-            
             <div class="status">
               <span 
               :class="
@@ -89,17 +74,8 @@ export default {
                 character.status == 'Dead' ? 'dead' :
                 'unknown'">
               </span>
-              <span>{{ character.status }} - {{ character.species }}</span>
-            </div>
-
-            
-            <div class="information">
-              <span>Gender: {{ character.gender }}</span>
-              <span>Origin: {{ character.origin.name }}</span>
-              <span>Location: {{ character.location.name }}</span>
-            </div>
-            
-            
+              <span> {{ character.status }}</span>
+            </div>            
           </li>
         </ul>
       </div>
