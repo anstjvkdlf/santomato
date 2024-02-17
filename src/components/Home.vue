@@ -14,7 +14,7 @@
         <ul class="card-list">
           <li v-for="mountain in filteredMountains" :key="mountain.id" class="card" @click="viewMountainDetail(mountain)">
             <div class="image">
-                <img :src="`http://127.0.0.1:8000/` + mountain.image" :alt="mountain">
+                <img :src="`http://13.210.210.221:8080/` + mountain.image" :alt="mountain">
             </div>
             <h2>{{ mountain.name }}</h2>
             <div class="status">
