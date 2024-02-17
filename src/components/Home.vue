@@ -1,53 +1,3 @@
-<script>
-import axios from 'axios';
-
-export default {
-  data() {
-    return {
-      characters: [],
-      filteredCharacters: [],
-      searchTerm: '',
-      activeFilter: 'All',
-    };
-  },
-  mounted() {
-    this.fetchCharacters('http://127.0.0.1:8000/api/all/')
-  },
-  methods: {
-    fetchCharacters(url) {
-    axios.get(url)
-      .then(response => {
-        this.characters = response.data;
-        this.filteredCharacters = response.data;
-        console.log(this.characters);
-        console.log(this.filteredCharacters);
-      })
-      .catch(error => {
-        console.error('Error al obtener la lista de personajes:', error);
-        reject(error);
-      });
-},
-
-  filterByStatus(status) {
-  const lowerCaseStatus = status.toLowerCase();
-  this.activeFilter = status;
-  if (lowerCaseStatus === 'all') {
-    this.filteredCharacters = this.characters;
-  } else {
-    this.filteredCharacters = this.characters.filter(character => character.status.toLowerCase() === lowerCaseStatus);
-  }
-},
-
-    filterByName() {
-      const searchTerm = this.searchTerm.toLowerCase();
-      this.filteredCharacters = this.characters.filter(
-        character => character.name.toLowerCase().includes(searchTerm)
-      );
-    },
-  },
-};
-</script>
-
 <template>
     <section>
       <h1>국 립 공 원 <br> SanTomato</h1>
@@ -60,27 +10,80 @@ export default {
 
       
       <input type="text" placeholder="Search by name" v-model="searchTerm" @input="filterByName">
-      <div v-if="filteredCharacters.length > 0" class="container-cards">
+      <div v-if="filteredMountains.length > 0" class="container-cards">
         <ul class="card-list">
-          <li v-for="character in filteredCharacters" :key="character.id" class="card">
+          <li v-for="mountain in filteredMountains" :key="mountain.id" class="card" @click="viewMountainDetail(mountain)">
             <div class="image">
-                <img :src="`http://127.0.0.1:8000/` + character.image" :alt="character">
+                <img :src="`http://127.0.0.1:8000/` + mountain.image" :alt="mountain">
             </div>
-            <h2>{{ character.name }}</h2>
+            <h2>{{ mountain.name }}</h2>
             <div class="status">
               <span 
               :class="
-                character.status == 'Alive' ? 'alive' :
-                character.status == 'Dead' ? 'dead' :
+                mountain.status == 'Alive' ? 'alive' :
+                mountain.status == 'Dead' ? 'dead' :
                 'unknown'">
               </span>
-              <span> {{ character.status }}</span>
+              <span> {{ mountain.status }}</span>
             </div>            
           </li>
         </ul>
       </div>
     </section>
   </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      mountains: [],
+      filteredMountains: [],
+      searchTerm: '',
+      activeFilter: 'All',
+    };
+  },
+  mounted() {
+    this.fetchmountains('http://127.0.0.1:8000/api/all/')
+  },
+  methods: {
+    viewMountainDetail(mountain) {
+      this.$router.push({name: 'MountainDetail', params: { id: mountain.id }});
+    },
+    fetchmountains(url) {
+    axios.get(url)
+      .then(response => {
+        this.mountains = response.data;
+        this.filteredMountains = response.data;
+        console.log(this.mountains);
+        console.log(this.filteredMountains);
+      })
+      .catch(error => {
+        console.error('Error al obtener la lista de personajes:', error);
+        reject(error);
+      });
+},
+
+  filterByStatus(status) {
+  const lowerCaseStatus = status.toLowerCase();
+  this.activeFilter = status;
+  if (lowerCaseStatus === 'all') {
+    this.filteredMountains = this.mountains;
+  } else {
+    this.filteredMountains = this.mountains.filter(mountain => mountain.status.toLowerCase() === lowerCaseStatus);
+  }
+},
+
+    filterByName() {
+      const searchTerm = this.searchTerm.toLowerCase();
+      this.filteredMountains = this.mountains.filter(
+        mountain => mountain.name.toLowerCase().includes(searchTerm)
+      );
+    },
+  },
+};
+</script>
   
   <style scoped>
     section {

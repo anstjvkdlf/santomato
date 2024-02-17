@@ -1,13 +1,11 @@
 <script setup>
-import RickAndMorty from './components/RickAndMorty.vue'
-
 </script>
 
 <template>
   
 
   <main>
-    <RickAndMorty />
+    <router-view></router-view>
   </main>
 </template>
 
