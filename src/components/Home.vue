@@ -17,7 +17,9 @@
       <input class = "searchTab" type="text" placeholder="산 이름으로 검색하기" v-model="searchTerm" @input="filterByName">
       <div class="filter">
         <div class="item" :class="{ active: activeFilter === 'All' }" @click="filterByStatus('All')">전체</div>
+        <span class="separator"></span>
         <div class="item" :class="{ active: activeFilter === 'Alive' }" @click="filterByStatus('Alive')">정상</div>
+        <span class="separator"></span>
         <div class="item" :class="{ active: activeFilter === 'Dead' }" @click="filterByStatus('Dead')">통제</div>
       </div>
 
@@ -156,13 +158,11 @@ export default {
         align-items: center;
         margin-right: 20px; /* 각 아이템 사이의 간격 조절 */
     }
-
-    .searchTab {
-      margin: 20px
-    }
-
+    
     section .filter{
         width: 25%;
+        margin-right: auto;
+        margin-left: 3%;
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -179,11 +179,13 @@ export default {
     }
 
     section > input{
-      width: 20%;
+      width: 15%;
       padding: 1rem;
       border-radius: 0.5rem;
       border: none;
+      text-align: center;
       margin-bottom: 1rem;
+      margin: 2%;
     }
   
     section .container-cards {
