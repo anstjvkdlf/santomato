@@ -1,32 +1,48 @@
 <template>
     <section>
-      <h1>국 립 공 원 <br> SanTomato</h1>
+      <div class="title-container">
+        <h1>산토</h1>
+        <img src="@/assets/logo.png" class="logo">
+      </div>      
+      <div class="sns">
+        <a href="https://www.youtube.com/channel/UCF1YRWbTrf5T9CdwB8ZHAAA" class="sns-item">
+          <img src="@/assets/youtube.png" class = "youtube-logo">
+        </a>
+        <div class = "space"></div>
+        <a href="https://www.instagram.com/san_cherrytomato?igsh=MXBqNWRqYzRqM3YyMA%3D%3D&utm_source=qr" class="sns-item">
+          <img src="@/assets/insta.png" class = "insta-logo">
+        </a>
+      </div>
       
+      <input class = "searchTab" type="text" placeholder="산 이름으로 검색하기" v-model="searchTerm" @input="filterByName">
       <div class="filter">
         <div class="item" :class="{ active: activeFilter === 'All' }" @click="filterByStatus('All')">전체</div>
         <div class="item" :class="{ active: activeFilter === 'Alive' }" @click="filterByStatus('Alive')">정상</div>
         <div class="item" :class="{ active: activeFilter === 'Dead' }" @click="filterByStatus('Dead')">통제</div>
       </div>
 
-      
-      <input type="text" placeholder="Search by name" v-model="searchTerm" @input="filterByName">
       <div v-if="filteredMountains.length > 0" class="container-cards">
         <ul class="card-list">
           <li v-for="mountain in filteredMountains" :key="mountain.id" class="card" @click="viewMountainDetail(mountain)">
+          <div class="card-content">
             <div class="image">
-                <img :src="`http://13.210.210.221:8080/` + mountain.image" :alt="mountain">
+              <div class="status">
+                <span 
+                  :class="
+                  mountain.status == '정상' ? 'alive' :
+                  mountain.status == '통제' ? 'dead' :
+                  'unknown'">
+                </span>
+                <span> {{ mountain.status }} - 대설특보</span>
+              </div>
+              <div class="information">
+                <span>{{ "-17°C" }} ~ {{ "-3°C" }} </span>
+              </div>
+              <img :src="`http://127.0.0.1:8000/` + mountain.image" :alt="mountain">
             </div>
-            <h2>{{ mountain.name }}</h2>
-            <div class="status">
-              <span 
-              :class="
-                mountain.status == 'Alive' ? 'alive' :
-                mountain.status == 'Dead' ? 'dead' :
-                'unknown'">
-              </span>
-              <span> {{ mountain.status }}</span>
-            </div>            
-          </li>
+          </div>
+          <h2>{{ mountain.name }}</h2>
+        </li>
         </ul>
       </div>
     </section>
@@ -45,6 +61,7 @@ export default {
     };
   },
   mounted() {
+    // this.fetchmountains('http://13.210.210.221:8000/api/all/')
     this.fetchmountains('http://127.0.0.1:8000/api/all/')
   },
   methods: {
@@ -99,25 +116,71 @@ export default {
       font-size: 45px;
       margin-top: 4rem;
     }
+
+    .title-container {
+      position: relative;
+      left:-30px;
+    }
+
+    .title-container > h1 {
+      font-size: 100px;
+      margin: 20px;
+
+    }
+
+    .logo {
+      position: absolute;
+      top:25px;
+      right: -70px;
+      width: 50%;
+      z-index: -1;
+      margin: 10px;
+    }
+  
+    .youtube-logo {
+      width:50px;
+    }
+
+    .insta-logo {
+      width:40px;
+    }
+
+    .sns {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sns-item {
+        display: flex;
+        align-items: center;
+        margin-right: 20px; /* 각 아이템 사이의 간격 조절 */
+    }
+
+    .searchTab {
+      margin: 20px
+    }
+
     section .filter{
         width: 25%;
         display: flex;
         justify-content: space-around;
         align-items: center;
-        background-color: var(--background-card);
+        background-color: white;
         padding: 0.9rem;
         font-size: 15   px;
         border-radius: 0.5rem;
         cursor: pointer;
         margin-bottom: 1rem;
+        border: 2px solid #ccc; /* Thin gray border */
     }
     section .filter :hover{
-        color: var(--text-orange);
+        color: var(--text-blue);
     }
 
     section > input{
-      width: 25%;
-      padding: 0.9rem;
+      width: 20%;
+      padding: 1rem;
       border-radius: 0.5rem;
       border: none;
       margin-bottom: 1rem;
@@ -149,15 +212,22 @@ export default {
       overflow: hidden;
       transition: transform 200ms ease-in-out;
       cursor: pointer;
+      box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.1); /* Box shadow for depth */
+      border: 1px solid #ccc; /* Thin gray border */
     }
     .card:hover{
       transform: scale(1.05);
       h2{
-        color: var(--text-orange);
+        color: var(--text-blue);
       }
     }
+    .card-content {
+      position: relative;
+    }
+    
     .card .image {
       width: 100%;
+      position: relative;
     }
     .card .image > img {
       width: 100%;
@@ -166,13 +236,22 @@ export default {
       margin: 5px;
     }
 
-    .status {
-      margin: 5px;
+    .card .status {
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 7px;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: row;
+      z-index: 1;
+      background-color: white;
+      border-radius: 20px;
+      padding: 5px;
+      box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
     }
+
     .status span{
       color: var(--text-gray);
       
@@ -193,21 +272,26 @@ export default {
         background-color: white;
       }
     
-    .card .information{
+    .card .information {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: white;
+      border-radius: 20px;
+      margin: 7px;
+      padding: 5px;
+      box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
       display: flex;
-      justify-content: center;
       align-items: center;
       flex-direction: column;
     }
+
     .card .information > span{
       color: var(--text-gray);
-      margin: 2px;
     }
-    .card .information > span:last-child{
-      margin-bottom: 20px;
-    }
+
     .item.active {
-      color: orange;
+      color: var(--text-blue);
     }
 
     
@@ -277,7 +361,6 @@ export default {
         margin-bottom: 1rem;
       }
     }
-
 
     /* LARGE SCREEN */
     @media only screen and (min-width: 1025px) and (max-width: 1201px) {

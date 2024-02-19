@@ -1,6 +1,7 @@
 <template>
     <div>
-      <div class="imgae-container" v-if="mountain.status === 'dead'">
+      <div class="imgae-container"> 
+        <!-- v-if="mountain.status === 'dead'"> -->
         <img :src="mountain.images_urls" alt="산통제정보">
       </div>
     </div>
@@ -17,7 +18,8 @@
     },
     methods: {
         fetchMountainData() {
-            const apiUrl = `http://13.210.210.221:8080/api/${this.id}`
+            // const apiUrl = `http://13.210.210.221:8000/api/${this.id}`
+            const apiUrl = `http://127.0.0.1:8000/api/${this.id}`
             axios.get(apiUrl)
                 .then(response => {
                 this.mountain = response.data.data; // Assuming the API returns the store data as an objectcon
