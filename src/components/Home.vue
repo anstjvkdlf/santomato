@@ -160,7 +160,7 @@ export default {
     }
     
     section .filter{
-        width: 25%;
+        width: 20%;
         margin-right: auto;
         margin-left: 3%;
         display: flex;
