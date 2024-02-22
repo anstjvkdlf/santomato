@@ -1,19 +1,5 @@
 <template>
-    <section>
-      <div class="title-container">
-        <h1>산토</h1>
-        <img src="@/assets/logo.png" class="logo">
-      </div>      
-      <div class="sns">
-        <a href="https://www.youtube.com/channel/UCF1YRWbTrf5T9CdwB8ZHAAA" class="sns-item">
-          <img src="@/assets/youtube.png" class = "youtube-logo">
-        </a>
-        <div class = "space"></div>
-        <a href="https://www.instagram.com/san_cherrytomato?igsh=MXBqNWRqYzRqM3YyMA%3D%3D&utm_source=qr" class="sns-item">
-          <img src="@/assets/insta.png" class = "insta-logo">
-        </a>
-      </div>
-      
+    <section>      
       <input class = "searchTab" type="text" placeholder="산 이름으로 검색하기" v-model="searchTerm" @input="filterByName">
       <div class="filter">
         <div class="item" :class="{ active: activeFilter === 'All' }" @click="filterByStatus('All')">전체</div>
@@ -119,50 +105,15 @@ export default {
       margin-top: 4rem;
     }
 
-    .title-container {
-      position: relative;
-      left:-30px;
-    }
-
-    .title-container > h1 {
-      font-size: 100px;
-      margin: 20px;
-
-    }
-
-    .logo {
-      position: absolute;
-      top:25px;
-      right: -70px;
-      width: 50%;
-      z-index: -1;
-      margin: 10px;
-    }
-  
-    .youtube-logo {
-      width:50px;
-    }
-
-    .insta-logo {
-      width:40px;
-    }
-
-    .sns {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .sns-item {
-        display: flex;
-        align-items: center;
-        margin-right: 20px; /* 각 아이템 사이의 간격 조절 */
+    section .searchTab {
+      min-width: 200px;
     }
     
     section .filter{
+        min-width: 200px;
         width: 20%;
         margin-right: auto;
-        margin-left: 3%;
+        margin-left: auto;
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -174,6 +125,7 @@ export default {
         margin-bottom: 1rem;
         border: 2px solid #ccc; /* Thin gray border */
     }
+
     section .filter :hover{
         color: var(--text-blue);
     }
@@ -205,7 +157,6 @@ export default {
     }
     
     .card {
-      width: 20%;
       margin: 1%;
       border-radius: 1rem;
       background-color: var(--background-card);
@@ -276,8 +227,8 @@ export default {
     
     .card .information {
       position: absolute;
-      top: 0;
-      right: 0;
+      bottom: 0;
+      left: 0;
       background-color: white;
       border-radius: 20px;
       margin: 7px;
@@ -296,96 +247,94 @@ export default {
       color: var(--text-blue);
     }
 
-    
     /* MOBILE */
-    @media only screen and (min-width: 370px) and (max-width: 600px) {
-      section{
-        width: 100%;
-        margin: 0;
-      }
-      section > h1{
-        font-size: 35px;
-        margin-top: 1rem;
-      }
-      section .filter{
-        width: 80%;
-      }
-      section > input{
-        width: 80%;
-      }
-      .card{
-        width: 80%;
-        margin-bottom: 1rem;
-      }
-    }
+@media only screen and (min-width: 280px) and (max-width: 600px) {
+  section{
+    width: 100%;
+    margin: 0;
+  }
+  section > h1{
+    font-size: 35px;
+    margin-top: 1rem;
+  }
+  section .filter{
+    width: 80%;
+  }
+  section > input{
+    width: 80%;
+  }
+  .card{
+    width: 80%;
+    margin-bottom: 1rem;
+  }
+}
 
-    /* TABLET*/
-    @media only screen and (min-width: 601px) and (max-width: 768px) {
-      section{
-        width: 100%;
-        margin: 0;
-      }
-      section > h1{
-        font-size: 35px;
-        margin-top: 1rem;
-      }
-      section .filter{
-        width: 86%;
-      }
-      section > input{
-        width: 86%;
-      }
-      .card{
-        width: 40%;
-        margin-bottom: 1rem;
-      }
-    }
+/* TABLET*/
+@media only screen and (min-width: 601px) and (max-width: 768px) {
+  section{
+    width: 100%;
+    margin: 0;
+  }
+  section > h1{
+    font-size: 35px;
+    margin-top: 1rem;
+  }
+  section .filter{
+    width: 86%;
+  }
+  section > input{
+    width: 86%;
+  }
+  .card{
+    width: 40%;
+    margin-bottom: 1rem;
+  }
+}
 
 
-    /* LAPTOP */
-    @media only screen and (min-width: 769px) and (max-width: 1024px) {
-      section{
-        width: 100%;
-        margin: 0;
-      }
-      section > h1{
-        font-size: 45px;
-        margin-top: 4rem;
-      }
-      section .filter{
-        width: 40%;
-      }
-      section > input{
-        width: 40%;
-      }
-      .card{
-        width: 30%;
-        margin-bottom: 1rem;
-      }
-    }
+/* LAPTOP */
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+  section{
+    width: 100%;
+    margin: 0;
+  }
+  section > h1{
+    font-size: 45px;
+    margin-top: 4rem;
+  }
+  section .filter{
+    width: 40%;
+  }
+  section > input{
+    width: 40%;
+  }
+  .card{
+    width: 30%;
+    margin-bottom: 1rem;
+  }
+}
 
-    /* LARGE SCREEN */
-    @media only screen and (min-width: 1025px) and (max-width: 1201px) {
-      section{
-        width: 100%;
-        margin: 0;
-      }
-      section > h1{
-        font-size: 45px;
-        margin-top: 4rem;
-      }
-      section .filter{
-        width: 45%;
-      }
-      section > input{
-        width: 45%;
-      }
-      .card{
-        width: 20%;
-        margin-bottom: 1rem;
-      }
-    }
-    
+/* LARGE SCREEN */
+@media only screen and (min-width: 1025px) and (max-width: 1201px) {
+  section{
+    width: 100%;
+    margin: 0;
+  }
+  section > h1{
+    font-size: 45px;
+    margin-top: 4rem;
+  }
+  section .filter{
+    width: 45%;
+  }
+  section > input{
+    width: 45%;
+  }
+  .card{
+    width: 20%;
+    margin-bottom: 1rem;
+  }
+}
   </style>
   
 
