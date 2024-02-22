@@ -1,7 +1,7 @@
 <template>
     <div>
       <div class="image-container"> 
-        <img class = "mountainRoute" v-if="mountain.status === '통제'" :src="mountain.images_urls" alt="산통제정보">
+        <img class = "mountainRoute" v-if="mountain.status === '통제'" :src="mountain.dead_image_url" alt="산통제정보">
         <img class = "mountainRoute" v-if="mountain.status === '정상'" :src="`http://127.0.0.1:8000/` + mountain.alive_image" alt="정상탐방로">
       </div>
     </div>
