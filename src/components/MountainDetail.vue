@@ -1,8 +1,11 @@
 <template>
     <div>
       <div class="image-container"> 
-        <img class = "mountainRoute" v-if="mountain.status === '통제'" :src="mountain.dead_image_url" alt="산통제정보">
-        <img class = "mountainRoute" v-if="mountain.status === '정상'" :src="`http://127.0.0.1:8000/` + mountain.alive_image" alt="정상탐방로">
+        <img class = "mountainRoute" v-if="mountain.status === '통제' && mountain.dead_image_url" :src="mountain.dead_image_url" alt="산통제정보">
+        <img class = "mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://127.0.0.1:8000/` + mountain.alive_image" alt="정상탐방로">
+        <div>
+          <div v-html="mountain.description"></div>
+        </div>
       </div>
     </div>
   </template>
@@ -38,7 +41,13 @@
   
   <style scoped>
   /* 여기에 컴포넌트의 스타일을 작성할 수 있습니다 */
+  .image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
   .mountainRoute {
-    width: 50%;
+    width: 800px;
   }
   </style>
