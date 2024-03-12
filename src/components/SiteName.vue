@@ -1,7 +1,9 @@
 <template>
   <div class="site-name">
     <div class="title-container">
+      <router-link to="/">
       <img src="@/assets/logo.png" class="logo">
+    </router-link>
     </div>
     <div class="sns">
       <a href="https://www.youtube.com/channel/UCF1YRWbTrf5T9CdwB8ZHAAA" class="sns-item">

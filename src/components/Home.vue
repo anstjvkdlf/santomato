@@ -4,9 +4,9 @@
       <div class="filter">
         <div class="item" :class="{ active: activeFilter === 'All' }" @click="filterByStatus('All')">전체</div>
         <span class="separator"></span>
-        <div class="item" :class="{ active: activeFilter === 'Alive' }" @click="filterByStatus('Alive')">정상</div>
+        <div class="item" :class="{ active: activeFilter === 'Alive' }" @click="filterByStatus('정상')">정상</div>
         <span class="separator"></span>
-        <div class="item" :class="{ active: activeFilter === 'Dead' }" @click="filterByStatus('Dead')">통제</div>
+        <div class="item" :class="{ active: activeFilter === 'Dead' }" @click="filterByStatus('통제')">통제</div>
       </div>
 
       <div v-if="filteredMountains.length > 0" class="container-cards">
