@@ -4,7 +4,7 @@
         <img class="mountainRoute" v-if="mountain.status === '통제' && mountain.dead_image_url" :src="mountain.dead_image_url" alt="산통제정보" @click="openImageInNewTab(mountain.dead_image_url)" style="cursor: pointer;">
         <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://127.0.0.1:8000/` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`http://127.0.0.1:8000/` + mountain.alive_image)" style="cursor: pointer;">
         <div class="description" v-html="mountain.description"></div>
-        <button class="cctv" @click = "openCCTVNewTab(mountain.cctvUrl)"> 실시간 cctv</button>
+        <button class="cctv" @click = "openCCTVNewTab(mountain.cctv_url)"> 실시간 cctv</button>
       </div>
     </div>
   </template>
