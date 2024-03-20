@@ -21,7 +21,7 @@
                   mountain.status == '통제' ? 'dead' :
                   'unknown'">
                 </span>
-                <span> {{ mountain.status }} - 대설특보</span>
+                <span> {{ mountain.status }} - 산방통제</span>
               </div>
               <div class="information">
                 <span>{{ "-17°C" }} ~ {{ "-3°C" }} </span>
