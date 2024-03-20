@@ -21,7 +21,8 @@
                   mountain.status == '통제' ? 'dead' :
                   'unknown'">
                 </span>
-                <span> {{ mountain.status }} - 산방통제</span>
+                <span v-if="mountain.status === '정상'"> {{ mountain.status }}</span>
+                <span v-if="mountain.status === '통제'"> {{ mountain.status }} - 산방통제</span>
               </div>
               <div class="information">
                 <span>{{ "-17°C" }} ~ {{ "-3°C" }} </span>
