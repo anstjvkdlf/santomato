@@ -15,8 +15,10 @@
           <span>{{ selectedDate }}</span>
           <button @click="changeDate('next')">➡️</button>
         </div>
-        <h2 class="weather-heading">날씨 요약</h2>
-        <div v-if="weatherInfo" class="weather-info">
+
+        <div v-if="filteredForecastData.length" >
+          <h2 class="weather-heading">날씨 요약</h2>
+          <div class="weather-info">
           <div class="weather-detail">
             <div>🌡️ 기온</div>
             <div v-if="selectedDateTemperatures.minTemp !== null && selectedDateTemperatures.maxTemp !== null">
@@ -40,8 +42,43 @@
             <div v-else>없음</div>
           </div>
         </div>
+        </div>
 
-        <div v-if="weatherInfoForecast  && selectedDate">
+        <div v-else >
+          <h2 class="weather-heading">현재 날씨</h2>
+          <div class="weather-info">
+          <div class="weather-detail">
+            <div>🌡️ 기온</div>
+            <div>{{ Math.round(weatherInfo?.main?.temp) }} °C</div>
+          </div>
+          <div class="weather-detail">
+            <div>
+              {{ weatherInfo?.snow ? '❄️ 적설량' : '💧 강수량' }}
+            </div>
+            <div>
+              <template v-if="weatherInfo?.snow">
+                {{ weatherInfo.snow['1h'] }} mm
+              </template>
+              <template v-else-if="weatherInfo?.rain">
+                {{ weatherInfo.rain['1h'] }} mm
+              </template>
+              <template v-else>
+                0.00 mm
+              </template>
+            </div>
+          </div>
+          <div class="weather-detail">
+            <div>💨 풍속</div>
+            <div>{{ weatherInfo?.wind?.speed? Math.round(weatherInfo?.wind?.speed) + ' m/s' : '없음' }}</div>
+          </div>
+          <div class="weather-detail">
+            <div>🌪️ 돌풍</div>
+            <div>{{ weatherInfo?.wind?.gust ? Math.round(weatherInfo?.wind?.gust) + ' m/s' : '없음' }}</div>
+          </div>
+        </div>
+        </div>
+
+        <div v-if="filteredForecastData.length && selectedDate">
           <div class="forecast-day-graph">
             <v-chart :option="chartOption" style="width: 800px; height: 300px;" v-if="chartOption"/>
           </div>
@@ -68,7 +105,6 @@
             </div>
           </div>
         </div>
-        <div v-else class="loading">데이터 로딩 중...</div>
       </main>
     </div>
 
@@ -176,7 +212,6 @@ const overallMaxTemp = ref(Number.NEGATIVE_INFINITY);
 
 const convertToKST = (utcDateTime) => {
   const date = new Date(utcDateTime);
-  console.log(utcDateTime);
   date.setHours(date.getHours() + 9); // UTC에서 KST로 변환하기 위해 9시간 더함
 
   // YYYY-MM-DD HH:MM 형식으로 포맷팅
@@ -185,8 +220,6 @@ const convertToKST = (utcDateTime) => {
   const day = String(date.getDate()).padStart(2, '0');
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
-  console.log(day);
-  console.log(hours);
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
