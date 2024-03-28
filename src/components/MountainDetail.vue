@@ -169,33 +169,98 @@ echarts.use([
 
 
 const props = defineProps(['id']);
-let cityName = '';
 let cityNameKor = '';
 let latitude = 0;
 let longtitude = 0;
 
 switch (parseInt(props.id)) {
   case 1:
-    cityName = 'Jecheon';
     cityNameKor = '소백산';
     latitude = 36.9574906;
     longtitude = 128.4848843;
     break;
   case 2:
-    cityName = 'Sokcho';
     cityNameKor = '설악산';
     latitude = 38.1191376;
     longtitude = 128.4654324;
     break;
   case 3:
-    cityName = 'Kurye';
     cityNameKor = '지리산';
     latitude = 35.3371088;
     longtitude = 127.7306952;
     break;
+  case 4:
+    cityNameKor = '덕유산';
+    latitude = 35.859908;
+    longtitude = 127.746348;
+    break;
+  case 5:
+    cityNameKor = '가야산';
+    latitude = 35.824953;
+    longtitude = 128.119456;
+    break;
+  case 6:
+    cityNameKor = '북한산';
+    latitude = 37.658931;
+    longtitude = 126.977863;
+    break;
+  case 8:
+    cityNameKor = '월악산';
+    latitude = 36.885850;
+    longtitude = 127.105983;
+    break;
+  case 9:
+    cityNameKor = '계룡산';
+    latitude = 36.351988;
+    longtitude = 127.200391;
+    break;
+  case 10:
+    cityNameKor = '내장산';
+    latitude = 35.478381;
+    longtitude = 126.889014;
+    break;
+  case 12:
+    cityNameKor = '무등산';
+    latitude = 35.121231;
+    longtitude = 127.002920;
+    break;
+  case 14:
+    cityNameKor = '속리산';
+    latitude = 36.543179;
+    longtitude = 127.870750;
+    break;
+  case 15:
+    cityNameKor = '오대산';
+    latitude = 37.794443;
+    longtitude = 128.543581;
+    break;
+  case 16:
+    cityNameKor = '월출산';
+    latitude = 34.766716;
+    longtitude = 126.704170;
+    break;
+  case 17:
+    cityNameKor = '주왕산';
+    latitude = 36.401330;
+    longtitude = 129.203877;
+    break;
+  case 18:
+    cityNameKor = '치악산';
+    latitude = 37.365124;
+    longtitude = 128.055562;
+    break;
+  case 19:
+    cityNameKor = '태백산';
+    latitude = 37.161537;
+    longtitude = 128.917626;
+    break;
+case 21:
+    cityNameKor = '팔공산';
+    latitude = 36.016555;
+    longtitude = 128.695349;
+    break;
   default:
     // 기본값 설정
-    cityName = 'Seoul';
     cityNameKor = '서울';
 }
 
