@@ -47,8 +47,8 @@ export default {
     };
   },
   mounted() {
-    //this.fetchmountains('http://13.210.210.221:8000/api/all/')
-    this.fetchmountains('http://127.0.0.1:8000/api/all/')
+    this.fetchmountains('http://13.210.210.221:8000/api/all/')
+    //this.fetchmountains('http://127.0.0.1:8000/api/all/')
   },
   methods: {
     viewMountainDetail(mountain) {

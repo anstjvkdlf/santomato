@@ -2,7 +2,7 @@
     <div>
       <div class="image-container">
         <img class="mountainRoute" v-if="mountain.status === '통제' && mountain.dead_image_url" :src="mountain.dead_image_url" alt="산통제정보" @click="openImageInNewTab(mountain.dead_image_url)" style="cursor: pointer;">
-        <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://127.0.0.1:8000/` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`http://127.0.0.1:8000/` + mountain.alive_image)" style="cursor: pointer;">
+        <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://13.210.210.221:8000/` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`http://13.210.210.221:8000/` + mountain.alive_image)" style="cursor: pointer;">
         <div class="description" v-html="mountain.description"></div>
         <button class="cctv" v-if="mountain.cctv_url !=='blank'" @click = "openCCTVNewTab(mountain.cctv_url)"> 실시간 cctv</button>
       </div>
@@ -241,8 +241,8 @@ switch (parseInt(props.id)) {
     break;
   case 17:
     cityNameKor = '주왕산';
-    latitude = 36.401330;
-    longtitude = 129.203877;
+    latitude = 36.39955;
+    longtitude = 129.1973;
     break;
   case 18:
     cityNameKor = '치악산';
@@ -251,8 +251,8 @@ switch (parseInt(props.id)) {
     break;
   case 19:
     cityNameKor = '태백산';
-    latitude = 37.161537;
-    longtitude = 128.917626;
+    latitude = 37.096381;
+    longtitude = 128.9163991;
     break;
 case 21:
     cityNameKor = '팔공산';
