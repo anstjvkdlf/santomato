@@ -70,7 +70,7 @@
       <button @click="openPopup">팝업 열기</button>
       <!-- <WeatherTimeline v-if="showPopup" @close="closePopup" :filteredForecastData= "filteredForecastData" :/> -->
     <!-- WeatherTimeline -->
-    <div v-if="filteredForecastData.length && selectedDate">
+    <!-- <div v-if="filteredForecastData.length && selectedDate">
         <div class="forecast-day-graph">
           <v-chart :option="chartOption" style="width: 350px; height: 200px;" v-if="chartOption"/>
         </div>
@@ -96,7 +96,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </main>
   </div>
 </template>

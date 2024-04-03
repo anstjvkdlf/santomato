@@ -9,7 +9,7 @@ import SiteName from "@/components/SiteName.vue";
         <SiteName/>
       </div>
       <router-view></router-view>
-  </div>
+    </div>
   </main>
 </template>
 

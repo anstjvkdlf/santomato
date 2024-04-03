@@ -1,10 +1,13 @@
 <template>
     <div>
+      <div class="mountain-weather">
+        <MountainWeather :id="id"/>
+      </div>
       <div class="image-container">
+        <button class="cctv-button" v-if="mountain.cctv_url !== 'blank'" @click="openCCTVNewTab(mountain.cctv_url)">실시간 CCTV</button>
         <img class="mountainRoute" v-if="mountain.status === '통제' && mountain.dead_image_url" :src="mountain.dead_image_url" alt="산통제정보" @click="openImageInNewTab(mountain.dead_image_url)" style="cursor: pointer;">
         <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://13.210.210.221:8000/` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`http://13.210.210.221:8000/` + mountain.alive_image)" style="cursor: pointer;">
         <div class="description" v-html="mountain.description"></div>
-        <button class="cctv" v-if="mountain.cctv_url !=='blank'" @click = "openCCTVNewTab(mountain.cctv_url)"> 실시간 cctv</button>
       </div>
     </div>
 </template>
