@@ -1,50 +1,129 @@
 <template>
-    <div>
-      <div class="image-container">
-        <img class="mountainRoute" v-if="mountain.status === '통제' && mountain.dead_image_url" :src="mountain.dead_image_url" alt="산통제정보" @click="openImageInNewTab(mountain.dead_image_url)" style="cursor: pointer;">
-        <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://13.210.210.221:8000/` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`http://13.210.210.221:8000/` + mountain.alive_image)" style="cursor: pointer;">
-        <div class="description" v-html="mountain.description"></div>
-        <button class="cctv" v-if="mountain.cctv_url !=='blank'" @click = "openCCTVNewTab(mountain.cctv_url)"> 실시간 cctv</button>
+    <div class="page">
+    <main class="main">
+      <div class="date-navigation">
+        <button @click="changeDate('prev')">⬅️</button>
+        <span>{{ selectedDate }}</span>
+        <button @click="changeDate('next')">➡️</button>
       </div>
-    </div>
+      <div v-if="filteredForecastData.length" >
+        <h2 class="weather-heading">날씨 요약</h2>
+        <div class="weather-info">
+        <div class="weather-detail">
+          <div>🌡️ 기온</div>
+          <div v-if="selectedDateTemperatures.minTemp !== null && selectedDateTemperatures.maxTemp !== null">
+            {{ Math.round(selectedDateTemperatures.minTemp) }} °C / {{ Math.round(selectedDateTemperatures.maxTemp) }} °C
+          </div>
+        </div>
+        <div class="weather-detail">
+          <div v-if="isSnowOnSelectedDate">❄️ 총 적설량</div>
+          <div v-else>💧 총 강수량</div>
+          <div v-if="selectedDateTotalRainOrSnow !== null">{{selectedDateTotalRainOrSnow.toFixed(2) }} mm</div>
+          <div v-else>없음</div>
+        </div>
+        <div class="weather-detail">
+          <div>💨 최대 풍속</div>
+          <div v-if="selectedDateMaxWindSpeed !== null">{{ Math.round(selectedDateMaxWindSpeed) }} m/s</div>
+          <div v-else>없음</div>
+        </div>
+        <div class="weather-detail">
+          <div>🌪️ 최대 돌풍</div>
+          <div v-if="selectedDateMaxGust !== null">{{ Math.round(selectedDateMaxGust) }} m/s</div>
+          <div v-else>없음</div>
+        </div>
+      </div>
+
+      </div>
+      <div v-else >
+        <h2 class="weather-heading">현재 날씨</h2>
+        <div class="weather-info">
+        <div class="weather-detail">
+          <div>🌡️ 기온</div>
+          <div>{{ Math.round(weatherInfo?.main?.temp) }} °C</div>
+        </div>
+        <div class="weather-detail">
+          <div>
+            {{ weatherInfo?.snow ? '❄️ 적설량' : '💧 강수량' }}
+          </div>
+          <div>
+            <template v-if="weatherInfo?.snow">
+              {{ weatherInfo.snow['1h'] }} mm
+            </template>
+            <template v-else-if="weatherInfo?.rain">
+              {{ weatherInfo.rain['1h'] }} mm
+            </template>
+            <template v-else>
+              0.00 mm
+            </template>
+          </div>
+        </div>
+        <div class="weather-detail">
+          <div>💨 풍속</div>
+          <div>{{ weatherInfo?.wind?.speed? Math.round(weatherInfo?.wind?.speed) + ' m/s' : '없음' }}</div>
+        </div>
+        <div class="weather-detail">
+          <div>🌪️ 돌풍</div>
+          <div>{{ weatherInfo?.wind?.gust ? Math.round(weatherInfo?.wind?.gust) + ' m/s' : '없음' }}</div>
+        </div>
+      </div>
+      </div>
+      <button @click="openPopup">팝업 열기</button>
+      <!-- <WeatherTimeline v-if="showPopup" @close="closePopup" :filteredForecastData= "filteredForecastData" :/> -->
+    <!-- WeatherTimeline -->
+    <div v-if="filteredForecastData.length && selectedDate">
+        <div class="forecast-day-graph">
+          <v-chart :option="chartOption" style="width: 350px; height: 200px;" v-if="chartOption"/>
+        </div>
+        <div class="forecast-day">
+          <div v-for="item in filteredForecastData" :key="item.dt" class="forecast-time">
+            <div class="forecast-day-details" >
+              <p v-if="item.dt_txt">{{ item.dt_txt.split(' ')[1].substring(0, 5) }}</p>
+              <span v-html="weatherDescriptionMap[item.weather[0].description]?.icon"></span>
+              <span> {{ weatherDescriptionMap[item.weather[0].description]?.description }}</span>
+              <p>🌡️ {{  Math.round(item.main.temp) }}°C</p>
+              <p v-if="item.weather[0].description.includes('snow')">
+                💧 {{ item.snow ? `${item.snow['3h']} mm` : '없음' }}
+              </p>
+              <p v-else-if="item.rain">
+                💧 {{ `${item.rain['3h'].toFixed(2)} mm` }}
+              </p>
+              <p v-else>
+                💧 없음
+              </p>
+              <p>💨 {{ Math.round(item.wind.speed) }} m/s</p>
+              <p v-if="item.wind.gust">🌪️ {{ Math.round(item.wind.gust) }} m/s </p>
+              <p v-else>🌪️ 없음</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
-import MountainWeather from './MountainWeather.vue';
-
+import WeatherTimeline from "@/components/WeatherTimeline.vue"
 export default {
+  name: "MountainWeather",
+  props: ['id','filteredForecastData',],
   components: {
-    MountainWeather
+    WeatherTimeline
   },
-  props: ['id'],
   data() {
     return {
-      mountain: {}
-    }
+      showPopup: false // 팝업 창 표시 여부
+    };
   },
   methods: {
-    fetchMountainData() {
-      const apiUrl = `http://13.210.210.221:8000/api/${this.id}`
-      axios.get(apiUrl)
-        .then(response => {
-          this.mountain = response.data.data;
-        })
-        .catch(error => {
-          console.error('Failed to fetch store data:', error);
-        });
+    openPopup() {
+      this.showPopup = true; // 팝업 창 열기
     },
-    openImageInNewTab(imageUrl) {
-      window.open(imageUrl, '_blank');
-    },
-    openCCTVNewTab(cctvUrl) {
-      window.open(cctvUrl, '_blank');
+    closePopup() {
+      this.showPopup = false; // 팝업 창 닫기
     }
-  },
-  created() {
-    this.fetchMountainData();
   }
-}
+};
+
 </script>
 
 <script setup>
@@ -370,60 +449,111 @@ const isSnowOnSelectedDate = computed(() => {
 </script>
 
 <style scoped>
+.main {
+  width: 100%;
+  border-radius: 25px;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
-.image-container {
+.weather-heading{
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.weather-icon {
+  font-size: 3em;
+}
+
+.weather-description {
+  font-size: 0.8em;
+}
+
+.weather-info {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  justify-content: center; 
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 20px;
+}
+
+.weather-detail {
+  margin: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-top: 15px;
-  text-align: center;
 }
 
-.mountainRoute {
-  max-width: 50%; /* 이미지 너비를 최대로 지정 */
-  height: auto;
-  margin-bottom: 20px;
-}
-
-.description {
-  margin-bottom: 30px;
+.weather-detail-icon{
+  width: 100%; 
   display: flex;
-  text-align: left; /* 텍스트를 가운데 정렬 */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.cctv-button {
-  background-color: #4CAF50; /* 배경색 */
-  border: none; /* 테두리 제거 */
-  color: white; /* 글자색 */
-  padding: 10px 20px; /* 안쪽 여백 */
-  text-align: center; /* 가운데 정렬 */
-  text-decoration: none; /* 밑줄 제거 */
-  display: inline-block;
-  font-size: 16px; /* 글꼴 크기 */
-  margin: 4px 2px; /* 바깥 여백 */
-  cursor: pointer; /* 커서 모양 */
-  border-radius: 8px; /* 모서리 둥글게 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 */
+.loading {
+  text-align: center;
+  color: #888;
 }
 
-.cctv-button:hover {
-  background-color: #45a049; /* 마우스 호버 시 배경색 변경 */
+.date-navigation{
+  text-align: center;
+  margin-bottom: 10px;
 }
 
-
-@media only screen and (max-width: 767px) {
-  .mountainRoute {
-  max-width: 90%; /* 이미지 너비를 최대로 지정 */
-  height: auto;
-  margin-bottom: 20px;
+.date-navigation button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 }
-  .description{
-    margin-bottom: 30px;
+/* WeatherTimeline */
+.forecast-day-graph {
+    width: 400px;
+    height: 300px;
     margin-left: 10px;
     margin-right: 10px;
+    /* display: flex; 
+    justify-content: center; 
+    .v-chart {
+        width: 100%; 
+        max-width: 400px; 
+    } */
+    }
+
+    .forecast-day {
+    width: 400px;
+    /* margin: 0 auto; */
+    justify-content: space-around; 
+    align-items: flex-start;
+    text-align: center;
     display: flex;
-    text-align: left; /* 텍스트를 가운데 정렬 */
-  }
-}
-</style>
+    flex-wrap: wrap;
+
+    }
+
+    .forecast-day-details {
+    justify-content: start;
+    align-items: center;
+    }
+    .forecast-day-details, .forecast-day-details * {
+    font-size: 0.9em !important;
+    }
+
+    .forecast-time {
+    padding: 5px;
+    }
+    .forecast-time p {
+    margin: 0;
+    padding: 2px;
+    }
+  </style>
+  

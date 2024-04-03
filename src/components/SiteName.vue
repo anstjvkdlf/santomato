@@ -2,8 +2,8 @@
   <div class="site-name">
     <div class="title-container">
       <router-link to="/">
-      <img src="@/assets/logo.png" class="logo">
-    </router-link>
+        <img src="@/assets/logo.png" class="logo">
+      </router-link>
     </div>
     <div class="sns">
       <a href="https://www.youtube.com/channel/UCF1YRWbTrf5T9CdwB8ZHAAA" class="sns-item">
@@ -16,12 +16,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "SiteName",
-};
-</script>
-
 <style scoped>
 .site-name {
   display: flex;
@@ -33,6 +27,7 @@ export default {
   display: flex; /* Flexbox를 사용하여 요소를 정렬합니다. */
   align-items: center; /* 요소를 수직 중앙으로 정렬합니다. */
   justify-content: center; /* 요소를 가로 중앙으로 정렬합니다. */
+  margin-bottom: 10px; /* sns와의 간격을 조정합니다. */
 }
 
 .logo {
@@ -42,6 +37,7 @@ export default {
 .sns {
   display: flex;
   align-items: center;
+  justify-content: center; /* 가로 중앙으로 정렬합니다. */
 }
 
 .sns-item {
@@ -52,4 +48,18 @@ export default {
 .insta-logo {
   width: 40px;
 }
+
+@media only screen and (max-width: 767px) {
+  .site-name {
+    flex-direction: row; /* 요소를 가로로 나열합니다. */
+  }
+  .logo {
+    padding-right: 25px;
+  }
+
+  .sns-item {
+  margin-right: 5px;
+  }
+}
+
 </style>
