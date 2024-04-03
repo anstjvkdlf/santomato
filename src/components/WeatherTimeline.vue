@@ -1,15 +1,10 @@
 <template>
   <div class="popup">
-    <!-- 팝업 내용 -->
     <div class="popup-content">
-      <!-- 팝업 내용 -->
-      <h2>팝업 창</h2>
-      <!-- 팝업 내용 -->
-      <p>팝업 내용을 이곳에 넣으세요.</p>
-      <!-- 팝업 닫기 버튼 -->
+      <h2>{{ selectedDate }}</h2>
         <div v-if="filteredForecastData.length && selectedDate">
         <div class="forecast-day-graph">
-          <v-chart :option="chartOption" style="width: 350px; height: 200px;" v-if="chartOption"/>
+          <v-chart :option="chartOption" style="width: 70%; height: 200px;" v-if="chartOption"/>
         </div>
         <div class="forecast-day">
           <div v-for="item in filteredForecastData" :key="item.dt" class="forecast-time">
@@ -43,6 +38,7 @@
 <script>
 export default {
     name: "WeatherTimeline",
+    props: ['filteredForecastData', 'chartOption', 'selectedDate'],
     methods: {
     closePopup() {
       this.$emit('close'); // 부모 컴포넌트에 닫기 이벤트 전달
@@ -51,41 +47,61 @@ export default {
 }
 </script>
 
-<style>
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
+<script setup>
 
+import VChart from 'vue-echarts';
+
+const weatherDescriptionMap = {
+  'clear sky': { icon: '☀️', description: '맑음' },
+  'few clouds': { icon: '🌤️', description: '구름 조금' },
+  'scattered clouds': { icon: '⛅', description: '구름' },
+  'broken clouds': { icon: '🌥️', description: '구름' },
+  'overcast clouds': { icon: '☁️', description: '구름 많음' },
+  'shower rain': { icon: '🌦️', description: '소나기' },
+  'rain': { icon: '🌧️', description: '비' },
+  'moderate rain' : { icon: '🌧️', description: '비' },
+  'light rain' : { icon: '☔', description: '비 조금' },
+  'thunderstorm': { icon: '⚡', description: '천둥번개' },
+  'snow': { icon: '❄️', description: '눈' },
+  'light snow' :  { icon: '🌨️', description: '약한 눈' },
+  'mist': { icon: '🌫️', description: '안개' }
+};
+</script>
+
+<style>
+    .popup {
+    width: 90%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
     .forecast-day-graph {
     width: 400px;
     height: 300px;
     margin-left: 10px;
     margin-right: 10px;
-    /* display: flex; 
+    display: flex; 
     justify-content: center; 
     .v-chart {
         width: 100%; 
         max-width: 400px; 
-    } */
+    }
     }
 
     .forecast-day {
     width: 400px;
-    /* margin: 0 auto; */
+    margin: 0 auto;
     justify-content: space-around; 
     align-items: flex-start;
     text-align: center;
     display: flex;
     flex-wrap: wrap;
-
     }
 
     .forecast-day-details {

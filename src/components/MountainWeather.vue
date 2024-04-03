@@ -68,7 +68,7 @@
       </div>
       </div>
       <button @click="openPopup">팝업 열기</button>
-      <!-- <WeatherTimeline v-if="showPopup" @close="closePopup" :filteredForecastData= "filteredForecastData" :/> -->
+      <WeatherTimeline v-if="showPopup" @close="closePopup" :filteredForecastData= "filteredForecastData" :chartOption= "chartOption" :selectedDate ="selectedDate"/>
     <!-- WeatherTimeline -->
     <!-- <div v-if="filteredForecastData.length && selectedDate">
         <div class="forecast-day-graph">
@@ -105,7 +105,7 @@
 import WeatherTimeline from "@/components/WeatherTimeline.vue"
 export default {
   name: "MountainWeather",
-  props: ['id','filteredForecastData',],
+  props: ['id'],
   components: {
     WeatherTimeline
   },
@@ -324,21 +324,21 @@ watch(selectedDate, (newDate) => {
   }
 }, { immediate: true });
 
-const weatherDescriptionMap = {
-  'clear sky': { icon: '☀️', description: '맑음' },
-  'few clouds': { icon: '🌤️', description: '구름 조금' },
-  'scattered clouds': { icon: '⛅', description: '구름' },
-  'broken clouds': { icon: '🌥️', description: '구름' },
-  'overcast clouds': { icon: '☁️', description: '구름 많음' },
-  'shower rain': { icon: '🌦️', description: '소나기' },
-  'rain': { icon: '🌧️', description: '비' },
-  'moderate rain' : { icon: '🌧️', description: '비' },
-  'light rain' : { icon: '☔', description: '비 조금' },
-  'thunderstorm': { icon: '⚡', description: '천둥번개' },
-  'snow': { icon: '❄️', description: '눈' },
-  'light snow' :  { icon: '🌨️', description: '약한 눈' },
-  'mist': { icon: '🌫️', description: '안개' }
-};
+// const weatherDescriptionMap = {
+//   'clear sky': { icon: '☀️', description: '맑음' },
+//   'few clouds': { icon: '🌤️', description: '구름 조금' },
+//   'scattered clouds': { icon: '⛅', description: '구름' },
+//   'broken clouds': { icon: '🌥️', description: '구름' },
+//   'overcast clouds': { icon: '☁️', description: '구름 많음' },
+//   'shower rain': { icon: '🌦️', description: '소나기' },
+//   'rain': { icon: '🌧️', description: '비' },
+//   'moderate rain' : { icon: '🌧️', description: '비' },
+//   'light rain' : { icon: '☔', description: '비 조금' },
+//   'thunderstorm': { icon: '⚡', description: '천둥번개' },
+//   'snow': { icon: '❄️', description: '눈' },
+//   'light snow' :  { icon: '🌨️', description: '약한 눈' },
+//   'mist': { icon: '🌫️', description: '안개' }
+// };
 
 const groupForecastByDate = (forecastData) => {
   const groupedData = {};
