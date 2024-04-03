@@ -8,6 +8,10 @@
       </div>
       <div v-if="filteredForecastData.length" >
         <h2 class="weather-heading">날씨 요약</h2>
+        <div class="weather-timeline">
+          <button class="weather-timeline-button" @click="openPopup">시간별 날씨보기</button>
+          <WeatherTimeline v-if="showPopup" @close="closePopup" :filteredForecastData= "filteredForecastData" :chartOption= "chartOption" :selectedDate ="selectedDate"/>
+        </div>
         <div class="weather-info">
         <div class="weather-detail">
           <div>🌡️ 기온</div>
@@ -67,36 +71,6 @@
         </div>
       </div>
       </div>
-      <button @click="openPopup">팝업 열기</button>
-      <WeatherTimeline v-if="showPopup" @close="closePopup" :filteredForecastData= "filteredForecastData" :chartOption= "chartOption" :selectedDate ="selectedDate"/>
-    <!-- WeatherTimeline -->
-    <!-- <div v-if="filteredForecastData.length && selectedDate">
-        <div class="forecast-day-graph">
-          <v-chart :option="chartOption" style="width: 350px; height: 200px;" v-if="chartOption"/>
-        </div>
-        <div class="forecast-day">
-          <div v-for="item in filteredForecastData" :key="item.dt" class="forecast-time">
-            <div class="forecast-day-details" >
-              <p v-if="item.dt_txt">{{ item.dt_txt.split(' ')[1].substring(0, 5) }}</p>
-              <span v-html="weatherDescriptionMap[item.weather[0].description]?.icon"></span>
-              <span> {{ weatherDescriptionMap[item.weather[0].description]?.description }}</span>
-              <p>🌡️ {{  Math.round(item.main.temp) }}°C</p>
-              <p v-if="item.weather[0].description.includes('snow')">
-                💧 {{ item.snow ? `${item.snow['3h']} mm` : '없음' }}
-              </p>
-              <p v-else-if="item.rain">
-                💧 {{ `${item.rain['3h'].toFixed(2)} mm` }}
-              </p>
-              <p v-else>
-                💧 없음
-              </p>
-              <p>💨 {{ Math.round(item.wind.speed) }} m/s</p>
-              <p v-if="item.wind.gust">🌪️ {{ Math.round(item.wind.gust) }} m/s </p>
-              <p v-else>🌪️ 없음</p>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </main>
   </div>
 </template>
@@ -324,22 +298,6 @@ watch(selectedDate, (newDate) => {
   }
 }, { immediate: true });
 
-// const weatherDescriptionMap = {
-//   'clear sky': { icon: '☀️', description: '맑음' },
-//   'few clouds': { icon: '🌤️', description: '구름 조금' },
-//   'scattered clouds': { icon: '⛅', description: '구름' },
-//   'broken clouds': { icon: '🌥️', description: '구름' },
-//   'overcast clouds': { icon: '☁️', description: '구름 많음' },
-//   'shower rain': { icon: '🌦️', description: '소나기' },
-//   'rain': { icon: '🌧️', description: '비' },
-//   'moderate rain' : { icon: '🌧️', description: '비' },
-//   'light rain' : { icon: '☔', description: '비 조금' },
-//   'thunderstorm': { icon: '⚡', description: '천둥번개' },
-//   'snow': { icon: '❄️', description: '눈' },
-//   'light snow' :  { icon: '🌨️', description: '약한 눈' },
-//   'mist': { icon: '🌫️', description: '안개' }
-// };
-
 const groupForecastByDate = (forecastData) => {
   const groupedData = {};
   forecastData.forEach(item => {
@@ -449,6 +407,7 @@ const isSnowOnSelectedDate = computed(() => {
 </script>
 
 <style scoped>
+
 .main {
   width: 100%;
   border-radius: 25px;
@@ -515,45 +474,30 @@ const isSnowOnSelectedDate = computed(() => {
   background-color: transparent;
   cursor: pointer;
 }
-/* WeatherTimeline */
-.forecast-day-graph {
-    width: 400px;
-    height: 300px;
-    margin-left: 10px;
-    margin-right: 10px;
-    /* display: flex; 
-    justify-content: center; 
-    .v-chart {
-        width: 100%; 
-        max-width: 400px; 
-    } */
-    }
 
-    .forecast-day {
-    width: 400px;
-    /* margin: 0 auto; */
-    justify-content: space-around; 
-    align-items: flex-start;
-    text-align: center;
-    display: flex;
-    flex-wrap: wrap;
+.weather-timeline {
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 5px;
+}
 
-    }
+.weather-timeline-button {
+  background-color: #f3e91d; /* 배경색 */
+  border: none; /* 테두리 제거 */
+  color: black; /* 글자색 */
+  padding: 5px 10px; /* 안쪽 여백 */
+  text-align: center; /* 가운데 정렬 */
+  text-decoration: none; /* 밑줄 제거 */
+  display: inline-block;
+  font-size: 12px; /* 글꼴 크기 */
+  margin: 4px 2px; /* 바깥 여백 */
+  cursor: pointer; /* 커서 모양 */
+  border-radius: 8px; /* 모서리 둥글게 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 */
+}
 
-    .forecast-day-details {
-    justify-content: start;
-    align-items: center;
-    }
-    .forecast-day-details, .forecast-day-details * {
-    font-size: 0.9em !important;
-    }
-
-    .forecast-time {
-    padding: 5px;
-    }
-    .forecast-time p {
-    margin: 0;
-    padding: 2px;
-    }
-  </style>
+.weather-timeline-button:hover {
+  background-color: #fff702; /* 마우스 호버 시 배경색 변경 */
+}
+</style>
   
