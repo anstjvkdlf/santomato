@@ -252,8 +252,6 @@ const getWeather = async () => {
     .map(item => {
       return { ...item, dt_txt: convertToKST(item.dt_txt) }; 
     });
-    console.log(weatherInfo)
-    console.log(weatherInfoForecast )
 
     const allTemperatures = Object.values(weatherInfoForecast.value).flat().map(item => Math.round(item.main.temp));
     overallMinTemp.value = Math.min(...allTemperatures);

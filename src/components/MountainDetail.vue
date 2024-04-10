@@ -1,5 +1,6 @@
 <template>
     <div>
+      <div class="mountain-name">{{ mountain.name }}</div>
       <div class="mountain-weather">
         <MountainWeather :id="id"/>
       </div>
@@ -52,12 +53,18 @@ export default {
 
 <style scoped>
 
+.mountain-name {
+  text-align: center;
+  font-size: 3em;
+  font-weight: bold;
+}
+
 .image-container {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-top: 15px;
+  margin-top: 5px;
   text-align: center;
 }
 
@@ -86,6 +93,7 @@ export default {
   cursor: pointer; /* 커서 모양 */
   border-radius: 8px; /* 모서리 둥글게 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 */
+  margin-bottom: 10px;
 }
 
 .cctv-button:hover {

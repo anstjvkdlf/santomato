@@ -48,7 +48,6 @@ export default {
   },
   mounted() {
     this.fetchmountains('http://13.210.210.221:8000/api/all/')
-    //this.fetchmountains('http://127.0.0.1:8000/api/all/')
   },
   methods: {
     viewMountainDetail(mountain) {
@@ -59,8 +58,6 @@ export default {
       .then(response => {
         this.mountains = response.data;
         this.filteredMountains = response.data;
-        console.log(this.mountains);
-        console.log(this.filteredMountains);
       })
       .catch(error => {
         console.error('Error al obtener la lista de personajes:', error);

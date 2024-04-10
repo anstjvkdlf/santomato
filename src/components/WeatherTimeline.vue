@@ -71,6 +71,7 @@
   .popup {
     width: 80%;
     max-width: 600px; /* 팝업 최대 너비 지정 */
+    height: auto;
     position: fixed;
     top: 50%;
     left: 50%;
