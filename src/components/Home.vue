@@ -24,7 +24,7 @@
                 <span v-if="mountain.status === '정상'"> {{ mountain.status }}</span>
                 <span v-if="mountain.status === '통제'"> {{ mountain.status }} - 산방통제</span>
               </div>
-              <img :src="`http://13.210.210.221:8000/` + mountain.image" :alt="mountain">
+              <img :src="`http://3.39.161.55:8000/` + mountain.image" :alt="mountain">
             </div>
           </div>
           <h2>{{ mountain.name }}</h2>
@@ -47,7 +47,7 @@ export default {
     };
   },
   mounted() {
-    this.fetchmountains('http://13.210.210.221:8000/api/all/')
+    this.fetchmountains('http://3.39.161.55:8000/api/all/')
   },
   methods: {
     viewMountainDetail(mountain) {
