@@ -1,5 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import SiteName from "@/components/SiteName.vue";
+import Footer from "@/components/Footer.vue"
 </script>
 
 <template>
@@ -9,6 +10,7 @@ import SiteName from "@/components/SiteName.vue";
         <SiteName/>
       </div>
       <router-view></router-view>
+      <Footer/>
     </div>
   </main>
 </template>
