@@ -10,7 +10,7 @@ import Footer from "@/components/Footer.vue"
         <SiteName/>
       </div>
       <router-view></router-view>
-      <Footer/>
+      <Footer></Footer>
     </div>
   </main>
 </template>
