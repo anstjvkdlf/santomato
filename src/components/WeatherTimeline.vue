@@ -3,9 +3,9 @@
     <div class="popup-content">
       <!-- 오른쪽 상단에 X 표시를 추가한 닫기 버튼 -->
       <button class="close-button" @click="closePopup">X</button>
-      <button @click="changeDate('prev')">⬅️</button>
+      <button @click="changeDate('prev')" :class="{ 'invisible': !canGoPrev }">⬅️</button>
       <span>{{ selectedDate }}</span>
-      <button @click="changeDate('next')">➡️</button>
+      <button @click="changeDate('next')" :class="{ 'invisible': !canGoNext }">➡️</button>
       <div v-if="filteredForecastData.length && selectedDate">
         <div class="forecast-day-graph">
           <v-chart :option="chartOption" style="width: 100%; height: 200px;" v-if="chartOption"/>
@@ -40,14 +40,11 @@
 <script>
 export default {
     name: "WeatherTimeline",
-    props: ['filteredForecastData', 'chartOption', 'selectedDate'],
+    props: ['filteredForecastData', 'chartOption', 'selectedDate', 'canGoPrev', 'canGoNext', 'changeDate'],
     methods: {
       closePopup() {
         this.$emit('close'); // 부모 컴포넌트에 닫기 이벤트 전달
       },
-      changeDate(direction) {
-    this.$emit('change-date', direction); // 부모 컴포넌트에 날짜 변경 이벤트 전달
-  }
     }
 }
 </script>
@@ -115,7 +112,8 @@ const weatherDescriptionMap = {
   align-items: flex-start;
   text-align: center;
   display: flex;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  white-space: nowrap; 
 }
 
 .forecast-day-details {
@@ -128,7 +126,7 @@ const weatherDescriptionMap = {
 }
 
 .forecast-time {
-  padding: 5px;
+  padding: 4px;
 }
 
 .forecast-time p {
@@ -137,9 +135,16 @@ const weatherDescriptionMap = {
 }
 
 .popup-content button {
-border: none;
-background-color: transparent;
-cursor: pointer;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  opacity: 1; /* 기본적으로 버튼은 보임 */
+  transition: opacity 0.3s;
+}
+
+.popup-content button.invisible {
+  opacity: 0; /* 버튼을 숨김 */
+  pointer-events: none; /* 클릭 이벤트 무시 */
 }
 
 </style>

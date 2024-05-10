@@ -65,6 +65,7 @@ export default {
   align-items: center;
   flex-direction: column;
   margin-top: 5px;
+  margin-bottom: 80px;
   text-align: center;
 }
 

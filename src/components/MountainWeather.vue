@@ -2,14 +2,21 @@
   <div class="page">
   <main class="main">
     <div class="date-navigation">
-      <button @click="changeDate('prev')">⬅️</button>
+      <button @click="changeDate('prev')" :class="{ 'invisible': !canGoPrev }">⬅️</button>
       <span>{{ selectedDate }}</span>
-      <button @click="changeDate('next')">➡️</button>
+      <button @click="changeDate('next')" :class="{ 'invisible': !canGoNext }">➡️</button>
     </div>
-    <div v-if="filteredForecastData.length" >
+    <div v-if="filteredForecastData.length && selectedDate">
       <div class="weather-timeline">
         <button class="weather-timeline-button" @click="openPopup">시간별 날씨보기</button>
-        <WeatherTimeline v-if="showPopup" @close="closePopup" :filteredForecastData="filteredForecastData" :chartOption="chartOption" :selectedDate="selectedDate" @change-date="changeDate"/>
+        <WeatherTimeline v-if="showPopup"
+                 @close="closePopup"
+                 :filteredForecastData="filteredForecastData"
+                 :chartOption="chartOption"
+                 :selectedDate="selectedDate"
+                 :canGoPrev="canGoPrev"
+                 :canGoNext="canGoNext"
+                 :changeDate="changeDate" />
       </div>
       <h2 class="weather-heading">날씨 요약</h2>
       <div class="weather-info">
@@ -224,6 +231,14 @@ const city = ref(cityNameKor)
 const weatherInfo = ref(null);
 const weatherInfoForecast = reactive({});
 const selectedDate = ref('');
+const canGoPrev = computed(() => {
+  const index = forecastDates.value.indexOf(selectedDate.value);
+  return index > 0; // 0보다 크면 이전 버튼 활성화
+});
+const canGoNext = computed(() => {
+  const index = forecastDates.value.indexOf(selectedDate.value);
+  return index < forecastDates.value.length - 1; // 마지막 인덱스보다 작으면 다음 버튼 활성화
+});
 const forecastDates = ref([]);
 const isError = computed(() => weatherInfo.value?.cod !== 200);
 const isErrorForecast = computed(() => weatherInfoForecast.value?.cod !== 200);
@@ -249,6 +264,7 @@ try {
   const response_forecast = await fetch(`${BASE_URL_FORECAST}?lat=${latitude}&lon=${longtitude}&units=metric&appid=${API_KEY}`);
   weatherInfo.value = await response.json();
   weatherInfoForecast.value = (await response_forecast.json()).list
+
   .map(item => {
     return { ...item, dt_txt: convertToKST(item.dt_txt) }; 
   });
@@ -341,7 +357,7 @@ return weatherInfoForecast[selectedDate.value]
 });
 
 
-const excludedTimes = ['00:00', '03:00', '21:00'];
+const excludedTimes = ['00:00', '03:00'];
 
 const selectedDateTemperatures = computed(() => {
 if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
@@ -391,16 +407,17 @@ return Math.max(...weatherInfoForecast[selectedDate.value]
 });
 
 // 강수량, 적설량 둘 다 있을 때 강수량으로 표기 (봄~가을)
-/*
 const isSnowOnSelectedDate = computed(() => {
 return filteredForecastData.value.every(item => 
   !item.rain && item.weather[0].description.includes("snow")
 );
-});*/
+});
 // 강수량, 적설량 둘 다 있을 때 적설량으로 표기 (겨울)
+/*
 const isSnowOnSelectedDate = computed(() => {
 return filteredForecastData.value.some(item => item.weather[0].description.includes("snow"));
 });
+*/
 
 </script>
 
@@ -439,19 +456,21 @@ padding: 5px;
 border-radius: 10px;
 box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 margin: 20px;
+white-space: nowrap;
 }
 
 .weather-detail {
-margin: 10px;
 display: flex;
 justify-content: center;
 align-items: center;
 flex-direction: column;
+flex-shrink: 0;
+margin: 10px;
 }
 @media screen and (max-width: 600px) {
 .weather-detail {
   font-size: 0.8em;
-  margin: 5px;
+  margin: 2.5px;
 }
 }
 
@@ -468,15 +487,24 @@ text-align: center;
 color: #888;
 }
 
-.date-navigation{
-text-align: center;
-margin-bottom: 10px;
+.date-navigation {
+  display: flex;
+  justify-content: center; /* 중앙 정렬을 강화 */
+  align-items: center;
+  text-align: center;
 }
 
 .date-navigation button {
-border: none;
-background-color: transparent;
-cursor: pointer;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  opacity: 1; /* 기본적으로 버튼은 보임 */
+  transition: opacity 0.3s;
+}
+
+.date-navigation button.invisible {
+  opacity: 0; /* 버튼을 숨김 */
+  pointer-events: none; /* 클릭 이벤트 무시 */
 }
 
 .weather-timeline {
