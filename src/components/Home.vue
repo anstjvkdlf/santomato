@@ -27,7 +27,6 @@
               <img :src="`http://3.39.161.55:8000/` + mountain.image" :alt="mountain">
             </div>
           </div>
-          <h2>{{ mountain.name }}</h2>
         </li>
         </ul>
       </div>
