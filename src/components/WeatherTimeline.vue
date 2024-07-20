@@ -14,8 +14,14 @@
           <div v-for="item in filteredForecastData" :key="item.dt" class="forecast-time">
             <div class="forecast-day-details" >
               <p v-if="item.dt_txt">{{ item.dt_txt.split(' ')[1].substring(0, 5) }}</p>
-              <span v-html="weatherDescriptionMap[item.weather[0].description]?.icon"></span>
-              <span> {{ weatherDescriptionMap[item.weather[0].description]?.description }}</span>
+              <span v-if="weatherDescriptionMap[item.weather[0].description]">
+                <span v-html="weatherDescriptionMap[item.weather[0].description].icon"></span>
+                <span>{{ weatherDescriptionMap[item.weather[0].description].description }}</span>
+              </span>
+              <span v-else>
+                <span>❔ </span>
+                <span>{{ item.weather[0].description }}</span>
+              </span>
               <p>🌡️ {{  Math.round(item.main.temp) }}°C</p>
               <p v-if="item.weather[0].description.includes('snow')">
                 💧 {{ item.snow ? `${item.snow['3h']} mm` : '없음' }}
@@ -65,7 +71,8 @@ const weatherDescriptionMap = {
   'thunderstorm': { icon: '⚡', description: '천둥번개' },
   'snow': { icon: '❄️', description: '눈' },
   'light snow' :  { icon: '🌨️', description: '약한 눈' },
-  'mist': { icon: '🌫️', description: '안개' }
+  'mist': { icon: '🌫️', description: '안개' },
+  'heavy intensity rain': { icon: '⛈️', description: '폭우' },
 };
 </script>
 
