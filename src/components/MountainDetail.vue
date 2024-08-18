@@ -7,8 +7,11 @@
       <div class="image-container">
         <button class="cctv-button" v-if="mountain.cctv_url !== 'blank'" @click="openCCTVNewTab(mountain.cctv_url)">실시간 CCTV</button>
         <img class="mountainRoute" v-if="mountain.status === '통제' && mountain.dead_image_url" :src="mountain.dead_image_url" alt="산통제정보" @click="openImageInNewTab(mountain.dead_image_url)" style="cursor: pointer;">
-        <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://3.39.161.55:8000/` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`http://3.39.161.55:8000/` + mountain.alive_image)" style="cursor: pointer;">
+        <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://localhost:8000/` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`http://localhost:8000/` + mountain.alive_image)" style="cursor: pointer;">
         <div class="description" v-html="mountain.description"></div>
+      </div>
+      <div class="comment-container">
+        <Comment />
       </div>
     </div>
 </template>
@@ -16,10 +19,12 @@
 <script>
 import axios from 'axios';
 import MountainWeather from './MountainWeather.vue';
+import Comment from './Comment.vue';
 
 export default {
   components: {
-    MountainWeather
+    MountainWeather,
+    Comment
   },
   props: ['id'],
   data() {
@@ -29,7 +34,7 @@ export default {
   },
   methods: {
     fetchMountainData() {
-      const apiUrl = `http://3.39.161.55:8000/api/${this.id}`
+      const apiUrl = `http://localhost:8000/api/${this.id}`
       axios.get(apiUrl)
         .then(response => {
           this.mountain = response.data.data;
@@ -65,8 +70,13 @@ export default {
   align-items: center;
   flex-direction: column;
   margin-top: 5px;
-  margin-bottom: 80px;
+  margin-bottom: 5px;
   text-align: center;
+}
+
+.comment-container {
+  width: 800px;
+  margin: 0 auto
 }
 
 .mountainRoute {
