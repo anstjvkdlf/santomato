@@ -50,7 +50,12 @@ export default {
   },
   methods: {
     viewMountainDetail(mountain) {
-      this.$router.push({name: 'MountainDetail', params: { id: mountain.id }});
+      if (mountain.id == 22) {
+        //this.$router.push({ name: 'MountainDetailHalla', params: { id: mountain.id } });
+        window.location.href = 'https://www.jeju.go.kr/hallasan/index.htm';
+      } else {
+        this.$router.push({ name: 'MountainDetail', params: { id: mountain.id } });
+      }
     },
     fetchmountains(url) {
     axios.get(url)
