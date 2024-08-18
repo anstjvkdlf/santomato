@@ -221,6 +221,11 @@ case 21:
   latitude = 36.016555;
   longtitude = 128.695349;
   break;
+case 22:
+  cityNameKor = '한라산';
+  latitude = 33.3617;
+  longtitude = 126.5297;
+  break;
 default:
   // 기본값 설정
   cityNameKor = '서울';
