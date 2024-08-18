@@ -22,113 +22,116 @@
         <button class="submit-button" @click="submitComment">등록</button>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import axios from 'axios';
-  
-  export default {
-    data() {
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  props: ['id'],
+  data() {
     return {
       nickname: '',
       password: '',
       content: '',
       comments: [
             {
-            id: 1,
-            nickname: 'user1',
-            password: 'password1',
-            content: '첫 번째 댓글입니다.',
-            ip: '127.0.0.1',
-            date: '2024. 8. 18. 오후 3:49:40'
+                id: 1,
+                nickname: 'user1',
+                password: 'password1',
+                content: '첫 번째 댓글입니다.',
+                ip: '127.0.0.1',
+                date: '2024. 8. 18. 오후 3:49:40'
             },
             {
-            id: 2,
-            nickname: 'user2',
-            password: 'password2',
-            content: '두 번째 댓글입니다.',
-            ip: '127.0.0.1',
-            date: '2024. 8. 18. 오후 3:49:40'
+                id: 2,
+                nickname: 'user2',
+                password: 'password2',
+                content: '두 번째 댓글입니다.',
+                ip: '127.0.0.1',
+                date: '2024. 8. 18. 오후 3:49:40'
             }
-            ]
-        };
-    },
-    methods: {
+        ]
+    };
+  },
+  computed: {
+    apiUrl() {
+      return `http://3.39.161.55:8000/api/comments/${this.id}`;
+    }
+  },
+  methods: {
+    // fetchIpAddress() 백엔드에서 처리하게 변경 
     async fetchIpAddress() {
+      try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        return response.data.ip;
+      } catch (error) {
+        console.warn('IPv4 API failed, trying IPv6:', error);
         try {
-            // IPv4 API 시도
-            const response = await axios.get('https://api.ipify.org?format=json');
-            return response.data.ip;
+          const response = await axios.get('https://api64.ipify.org?format=json');
+          return response.data.ip;
         } catch (error) {
-            console.warn('IPv4 API failed, trying IPv6:', error);
-            try {
-                // IPv4 실패 시 IPv6 API 시도
-                const response = await axios.get('https://api64.ipify.org?format=json');
-                return response.data.ip;
-            } catch (error) {
-                console.error('Failed to fetch IP address:', error);
-                return 'unknown'; // IP 주소를 가져오는 데 실패한 경우
-            }
+          console.error('Failed to fetch IP address:', error);
+          return 'unknown';
         }
+      }
     },
-    
+
     async submitComment() {
-        if (!this.nickname || !this.password || !this.content) {
-          alert('모든 필드를 입력해 주세요.');
-          return;
-        }
-        try {
-          const ipAddress = await this.fetchIpAddress();
-          await axios.post(this.apiUrl, {
-            nickname: this.nickname,
-            password: this.password,
-            content: this.content,
-            ip: ipAddress,
-            date: new Date().toLocaleString()
-          });
-          this.fetchComments(); // 댓글을 새로고침
-          this.nickname = '';
-          this.password = '';
-          this.content = '';
-        } catch (error) {
-          console.error('Failed to submit comment:', error);
-        }
+      if (!this.nickname || !this.password || !this.content) {
+        alert('모든 필드를 입력해 주세요.');
+        return;
+      }
+      try {
+        await axios.post(this.apiUrl, {
+          mountain_id: this.id,
+          nickname: this.nickname,
+          password: this.password,
+          content: this.content,
+          date: new Date().toLocaleString()
+        });
+        this.fetchComments(); // 댓글을 새로고침
+        this.nickname = '';
+        this.password = '';
+        this.content = '';
+      } catch (error) {
+        console.error('Failed to submit comment:', error);
+      }
     },
-    
+
     async fetchComments() {
-        try {
-          const response = await axios.get(this.apiUrl);
-          this.comments = response.data;
-        } catch (error) {
-          console.error('Failed to fetch comments:', error);
-        }
-    },
-    
-    async deleteComment(comment) {
-        const password = prompt('댓글 삭제를 위한 비밀번호를 입력해 주세요:');
-        if (!password) {
-            return; // 비밀번호가 입력되지 않은 경우
-        }
-        try {
-            const ipAddress = await this.fetchIpAddress();
-            if (password === comment.password && ipAddress === comment.ip) {
-                await axios.delete(`${this.apiUrl}/${comment.id}`);
-                this.fetchComments(); // 댓글을 새로고침
-            } else {
-                alert('비밀번호가 일치하지 않거나 댓글 작성자가 아닙니다. 댓글을 삭제할 수 없습니다.');
-            }
-        } catch (error) {
-            console.error('Failed to delete comment:', error);
-        }
-    }
+      try {
+        const response = await axios.get(this.apiUrl);
+        this.comments = response.data;
+      } catch (error) {
+        console.error('Failed to fetch comments:', error);
+      }
     },
 
-    created() {
-      this.fetchComments();
+    async deleteComment(commentId) {
+      const password = prompt('댓글 삭제를 위한 비밀번호를 입력해 주세요:');
+      if (!password) {
+        return; // 비밀번호가 입력되지 않은 경우
+      }
+      try {
+        const comment = this.comments.find(c => c.id === commentId);
+        if (comment && password === comment.password) {
+          await axios.delete('${this.apiUrl}/${commentId}');
+          this.fetchComments(); // 댓글을 새로고침
+        } else {
+          alert('삭제 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('Failed to delete comment:', error);
+      }
     }
+  },
+
+  created() {
+    this.fetchComments();
   }
-  </script>
-
+}
+</script>
 
   <style scoped>
   .comment-form {
