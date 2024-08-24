@@ -80,7 +80,7 @@ export default {
 }
 
 .mountainRoute {
-  max-width: 50%; /* 이미지 너비를 최대로 지정 */
+  max-width: 80%; /* 이미지 너비를 최대로 지정 */
   height: auto;
   margin-bottom: 20px;
 }
