@@ -34,41 +34,24 @@ export default {
       nickname: '',
       password: '',
       content: '',
-      comments: [
-            {
-                id: 1,
-                nickname: 'user1',
-                password: 'password1',
-                content: '첫 번째 댓글입니다.',
-                ip: '127.0.0.1',
-                date: '2024. 8. 18. 오후 3:49:40'
-            },
-            {
-                id: 2,
-                nickname: 'user2',
-                password: 'password2',
-                content: '두 번째 댓글입니다.',
-                ip: '127.0.0.1',
-                date: '2024. 8. 18. 오후 3:49:40'
-            }
-        ]
+      comments: []
     };
   },
   computed: {
     apiUrl() {
-      return `http://3.39.161.55:8000/api/comments/${this.id}`;
+        return `http://3.39.161.55:8000/api/comments/mountain/${this.id}/`;
     }
   },
   methods: {
     // fetchIpAddress() 백엔드에서 처리하게 변경 
     async fetchIpAddress() {
       try {
-        const response = await axios.get('https://api.ipify.org?format=json');
+        const response = await axios.get(`https://api.ipify.org?format=json`);
         return response.data.ip;
       } catch (error) {
         console.warn('IPv4 API failed, trying IPv6:', error);
         try {
-          const response = await axios.get('https://api64.ipify.org?format=json');
+          const response = await axios.get(`https://api64.ipify.org?format=json`);
           return response.data.ip;
         } catch (error) {
           console.error('Failed to fetch IP address:', error);
@@ -78,25 +61,28 @@ export default {
     },
 
     async submitComment() {
-      if (!this.nickname || !this.password || !this.content) {
-        alert('모든 필드를 입력해 주세요.');
-        return;
-      }
-      try {
-        await axios.post(this.apiUrl, {
-          mountain_id: this.id,
-          nickname: this.nickname,
-          password: this.password,
-          content: this.content,
-          date: new Date().toLocaleString()
-        });
-        this.fetchComments(); // 댓글을 새로고침
-        this.nickname = '';
-        this.password = '';
-        this.content = '';
-      } catch (error) {
-        console.error('Failed to submit comment:', error);
-      }
+        if (!this.nickname || !this.password || !this.content) {
+            alert('모든 필드를 입력해 주세요.');
+            return;
+        }
+        if (this.password.length < 4) {
+            alert('비밀번호를 4자 이상으로 입력해주세요.');
+            return;
+        }
+        try {
+            await axios.post(this.apiUrl, {
+            nickname: this.nickname,
+            password: this.password,
+            content: this.content,
+            date: new Date().toLocaleString(),
+            });
+            this.fetchComments(); // 댓글을 새로고침
+            this.nickname = '';
+            this.password = '';
+            this.content = '';
+        } catch (error) {
+            console.error('Failed to submit comment:', error);
+        }
     },
 
     async fetchComments() {
@@ -109,23 +95,32 @@ export default {
     },
 
     async deleteComment(commentId) {
-      const password = prompt('댓글 삭제를 위한 비밀번호를 입력해 주세요:');
-      if (!password) {
-        return; // 비밀번호가 입력되지 않은 경우
-      }
-      try {
-        const comment = this.comments.find(c => c.id === commentId);
-        if (comment && password === comment.password) {
-          await axios.delete('${this.apiUrl}/${commentId}');
-          this.fetchComments(); // 댓글을 새로고침
-        } else {
-          alert('삭제 실패했습니다.');
+        const password = prompt('댓글 삭제를 위한 비밀번호를 입력해 주세요:');
+        if (!password) {
+            return; // 비밀번호가 입력되지 않은 경우
         }
-      } catch (error) {
-        console.error('Failed to delete comment:', error);
-      }
+        try {
+            const comment = this.comments.find(c => c.id === commentId);
+            if (comment) {
+                // 댓글 삭제 요청
+                await axios.delete(`http://3.39.161.55:8000/api/comments/${commentId}/`, {
+                    data: { 
+                        password: password,
+                    }
+                });
+                this.fetchComments(); // 댓글을 새로고침
+                alert('댓글이 성공적으로 삭제되었습니다.');
+            }
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(`삭제 실패: ${error.response.data.message}`);
+            } else {
+                console.error('Failed to delete comment:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        }
     }
-  },
+},
 
   created() {
     this.fetchComments();
