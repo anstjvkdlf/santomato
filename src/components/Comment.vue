@@ -2,25 +2,31 @@
     <div>
       <div class="comment-list">
         <div v-for="comment in comments" :key="comment.id" class="comment-item">
-          <div class="comment-header">
-            <span class="comment-info">{{ comment.nickname }} ({{ comment.ip }})</span>
+            <div class="comment-header">
+            <span class="comment-info">{{ comment.nickname }} ({{ maskIp(comment.ip) }})</span>
             <span class="comment-date">
-              {{ comment.date }}
-              <button class="delete-button" @click="deleteComment(comment.id)">x</button>
+                {{ formatDate(comment.date) }}
+                <button class="delete-button" @click="togglePasswordInput(comment.id)">x</button>
             </span>
-          </div>
-          <div class="comment-content">{{ comment.content }}</div>
+            </div>
+            <div class="comment-content">{{ comment.content }}</div>
+
+            <div v-if="comment.showPasswordInput" class="password-input-group">
+                <input v-model="comment.password" class="password-input" type="password" placeholder="비밀번호 입력" />
+                <button class="submit-delete-button" @click="deleteComment(comment.id, comment.password)">삭제</button>
+            </div>
         </div>
       </div>
       <br>
-      <div class="comment-form">
+       <!-- 댓글 작성 폼 -->
+        <div class="comment-form">
         <div class="input-group">
-          <input v-model="nickname" class="nickname-input" placeholder="닉네임" />
-          <input v-model="password" class="password-input" type="password" placeholder="비밀번호" />
+            <input v-model="nickname" class="nickname-input" placeholder="닉네임" />
+            <input v-model="password" class="password-input" type="password" placeholder="비밀번호" />
         </div>
         <textarea v-model="content" class="comment-input" placeholder="댓글 내용"></textarea>
         <button class="submit-button" @click="submitComment">등록</button>
-      </div>
+        </div>
     </div>
 </template>
 
@@ -59,6 +65,26 @@ export default {
         }
       }
     },
+    
+    maskIp(ip) {
+        // 예: '192.168.0.1' -> '192.168'
+        return ip.replace(/^(\d{1,3}\.\d{1,3})\.\d{1,3}\.\d{1,3}$/, "$1");
+    },
+
+    formatDate(dateString) {
+        // 날짜 문자열을 Date 객체로 변환
+        const date = new Date(dateString);
+        // 포맷팅
+        return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+        }).replace(',', ''); // 예: 2024-09-08 15:30:45
+    },
 
     async submitComment() {
         if (!this.nickname || !this.password || !this.content) {
@@ -74,7 +100,7 @@ export default {
             nickname: this.nickname,
             password: this.password,
             content: this.content,
-            date: new Date().toLocaleString(),
+            date: new Date().toLocaleString('ko-KR'),
             });
             this.fetchComments(); // 댓글을 새로고침
             this.nickname = '';
@@ -88,39 +114,48 @@ export default {
     async fetchComments() {
       try {
         const response = await axios.get(this.apiUrl);
-        this.comments = response.data;
+        this.comments = response.data.map(comment => ({
+          ...comment,
+          showPasswordInput: false, // 비밀번호 입력 필드 기본적으로 숨김
+          password: '' // 삭제 비밀번호 초기화
+        }));
       } catch (error) {
         console.error('Failed to fetch comments:', error);
       }
     },
 
-    async deleteComment(commentId) {
-        const password = prompt('댓글 삭제를 위한 비밀번호를 입력해 주세요:');
+    togglePasswordInput(commentId) {
+      this.comments = this.comments.map(comment =>
+        comment.id === commentId
+          ? { ...comment, showPasswordInput: !comment.showPasswordInput }
+          : comment
+      );
+    },
+
+    async deleteComment(commentId, password) {
         if (!password) {
-            return; // 비밀번호가 입력되지 않은 경우
-        }
+            alert('비밀번호를 입력해 주세요.');
+        return;
+      }
         try {
             const comment = this.comments.find(c => c.id === commentId);
             if (comment) {
-                // 댓글 삭제 요청
-                await axios.delete(`http://3.39.161.55:8000/api/comments/${commentId}/`, {
-                    data: { 
-                        password: password,
-                    }
+                const response = await axios.delete(`http://3.39.161.55:8000/api/comments/${commentId}/`, {
+                data: { password: password }
                 });
                 this.fetchComments(); // 댓글을 새로고침
-                alert('댓글이 성공적으로 삭제되었습니다.');
+                alert(`${response.data.message}`);
             }
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
-                alert(`삭제 실패: ${error.response.data.message}`);
-            } else {
-                console.error('Failed to delete comment:', error);
-                alert('삭제 중 오류가 발생했습니다.');
-            }
+            alert(`삭제 실패: ${error.response.data.message}`);
+        } else {
+            console.error('Failed to delete comment:', error);
+            alert('삭제 중 오류가 발생했습니다.');
         }
+      }
     }
-},
+  },
 
   created() {
     this.fetchComments();
@@ -175,6 +210,7 @@ export default {
   .comment-item {
     border-bottom: 1px solid #ddd;
     padding: 10px 0;
+    position: relative;
   }
   .comment-header {
     display: flex;
@@ -205,4 +241,25 @@ export default {
   .delete-button:hover {
     color: #d32f2f;
   }
+  .password-input-group {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 1px; /* Adjust right position */
+    top: 35px; /* Adjust top position to be below the comment header */
+    width: auto; /* Adjust width to fit content */
+  }
+.password-input {
+  flex: 1;
+  padding: 5px;
+  font-size: 14px;
+  align-items: center;
+}
+.submit-delete-button {
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  align-items: center;
+}
   </style>
