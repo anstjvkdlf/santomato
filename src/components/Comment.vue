@@ -30,7 +30,7 @@
 
             <!-- 대댓글 표시 -->
             <div class="replies" v-if="comment.replies && comment.replies.length">
-                <div v-for="reply in comment.replies" :key="reply.id" class="reply-item">
+                <div v-for="reply in comment.replies" :key="reply.id" class="comment-item">
                     <div class="comment-header">
                     <span class="comment-info">{{ reply.nickname }} ({{ maskIp(reply.ip) }})</span>
                     <span class="comment-date">
@@ -406,15 +406,6 @@ export default {
   padding: 10px 0;
   position: relative;
 }
-
-.reply-item {
-  background-color: #e6e6e673;
-  margin-left: 20px; /* 대댓글 들여쓰기 */
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd; /* 대댓글 간 구분선 */
-  position: relative;
-}
-
 .comment-header {
   display: flex;
   justify-content: space-between;
@@ -424,6 +415,10 @@ export default {
 .replies .comment-header,
 .replies .comment-content {
   margin-left: 10px;
+}
+
+.replies .comment-item {
+  background-color: #e6e6e673;
 }
 
 .comment-info {
@@ -462,6 +457,7 @@ export default {
   position: absolute;
   top: 35px; 
   right: 0; 
+  z-index: 10;
 
   /* 강제로 보이게 하는 스타일 */
   display: block !important;
