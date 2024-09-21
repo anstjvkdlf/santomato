@@ -9,10 +9,10 @@
                 <button class="delete-button" @click="togglePasswordInput(comment.id)">x</button>
             </span>
             </div>
-            <div class="comment-content" @click="toggleReplyInput(comment.id)">
+            <div class="comment-content comment-clickable" @click="toggleReplyInput(comment.id)">
                 {{ comment.content }}
             </div>
-            <div v-if="comment.showPasswordInput" class="password-input-group">
+            <div div v-if="activePasswordInput === comment.id" class="password-input-group">
                 <input v-model="comment.password" class="password-input" type="password" placeholder="비밀번호 입력" />
                 <button class="submit-delete-button" @click="deleteComment(comment.id, comment.password)">삭제</button>
             </div>
@@ -35,11 +35,11 @@
                     <span class="comment-info">{{ reply.nickname }} ({{ maskIp(reply.ip) }})</span>
                     <span class="comment-date">
                         {{ formatDate(reply.date) }}
-                        <button class="delete-button" @click="toggleReplyPasswordInput(comment.id, reply.id)">x</button>
+                        <button class="delete-button" @click="togglePasswordInput(reply.id)">x</button>
                     </span>
                     </div>
                     <div class="comment-content">{{ reply.content }}</div>
-                    <div v-if="reply.showPasswordInput" class="password-input-group">
+                    <div div v-if="activePasswordInput === reply.id" class="password-input-group">
                         <input v-model="reply.password" class="password-input" type="password" placeholder="비밀번호 입력" />
                         <button class="submit-delete-button" @click="deleteReply(comment.id, reply.id, reply.password)">삭제</button>
                     </div>
@@ -72,6 +72,7 @@ export default {
       nickname: '',
       password: '',
       content: '',
+      activePasswordInput: null,
       comments: [
       {
         id: 1,
@@ -216,12 +217,9 @@ export default {
         }
     },
 
-    togglePasswordInput(commentId) {
-      this.comments = this.comments.map(comment =>
-        comment.id === commentId
-          ? { ...comment, showPasswordInput: !comment.showPasswordInput }
-          : comment
-      );
+    togglePasswordInput(id) {
+      // 기존 활성화된 비밀번호 입력창을 닫고 새로운 창을 활성화
+      this.activePasswordInput = this.activePasswordInput === id ? null : id;
     },
 
     toggleReplyInput(commentId) {
@@ -231,21 +229,6 @@ export default {
           : comment
       );
     },
-
-    toggleReplyPasswordInput(commentId, replyId) {
-    this.comments = this.comments.map(comment => {
-      if (comment.id === commentId) {
-        comment.replies = comment.replies.map(reply => {
-          if (reply.id === replyId) {
-            reply.showPasswordInput = !reply.showPasswordInput;
-          }
-          return reply;
-        });
-      }
-      return comment;
-    });
-  },
-
 
     async deleteComment(commentId, password) {
         if (!password) {
@@ -335,6 +318,10 @@ export default {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
+}
+
+.comment-clickable {
+  cursor: pointer;
 }
 
 .reply-form {
