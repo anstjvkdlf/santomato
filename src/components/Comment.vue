@@ -18,13 +18,13 @@
             </div>
             
             <!-- 댓글에 대한 대댓글 작성 폼 -->
-            <div v-if="comment.showReplyInput" class="reply-form">
+            <div v-if="activeReplyCommentId === comment.id" class="reply-form">
             <div class="input-group">
-                <input v-model="comment.replyNickname" class="nickname-input" placeholder="닉네임" />
-                <input v-model="comment.replyPassword" class="password-input" type="password" placeholder="비밀번호" />
+                <input v-model="replyNickname" class="nickname-input" placeholder="닉네임" />
+                <input v-model="replyPassword" class="password-input" type="password" placeholder="비밀번호" />
             </div>
-            <textarea v-model="comment.replyContent" class="reply-input" placeholder="대댓글 내용"></textarea>
-            <button class="reply-submit-button" @click="submitReply(comment.id, comment.replyNickname, comment.replyPassword, comment.replyContent)">대댓글 등록</button>
+            <textarea v-model="replyContent" class="reply-input" placeholder="대댓글 내용"></textarea>
+            <button class="reply-submit-button" @click="submitReply(comment.id)">대댓글 등록</button>
             </div>
 
 
@@ -41,7 +41,7 @@
                     <div class="comment-content">{{ reply.content }}</div>
                     <div div v-if="activePasswordInput === reply.id" class="password-input-group">
                         <input v-model="reply.password" class="password-input" type="password" placeholder="비밀번호 입력" />
-                        <button class="submit-delete-button" @click="deleteReply(comment.id, reply.id, reply.password)">삭제</button>
+                        <button class="submit-delete-button" @click="deleteComment(reply.id, reply.password)">삭제</button>
                     </div>
                 </div>
             </div>
@@ -72,58 +72,12 @@ export default {
       nickname: '',
       password: '',
       content: '',
+      replyNickname: '', 
+      replyPassword: '', 
+      replyContent: '',  
       activePasswordInput: null,
-      comments: [
-      {
-        id: 1,
-        nickname: 'User1',
-        content: '첫 번째 댓글입니다.',
-        ip: '127.0.0.1',
-        date: '2024. 09. 08. 15:30:45',
-        replies: [
-          { id: 101, 
-            nickname: 'ReplyUser1', 
-            content: '첫 번째 대댓글입니다.', 
-            ip: '192.168.0.1', 
-            date: '2024-09-08 15:30:45', 
-            },
-          { id: 102, 
-            nickname: 'ReplyUser2', 
-            content: '두 번째 대댓글입니다.', 
-            ip: '192.168.0.2', 
-            date: '2024-09-08 16:30:45', 
-            }
-        ],
-      },
-      {
-        id: 2,
-        nickname: 'User2',
-        content: '두 번째 댓글입니다.',
-        ip: '127.0.0.1',
-        date: '2024. 09. 08. 15:30:45',
-        replies: [
-          { id: 103, nickname: 'ReplyUser3', content: '세 번째 대댓글입니다.', ip: '192.168.0.3', date: '2024-09-08 17:30:45', showPasswordInput: false }
-        ],
-        showPasswordInput: false, 
-        showReplyInput: false,
-        replyNickname: '',
-        replyPassword: '',
-        replyContent: ''
-      },
-      {
-        id: 3,
-        nickname: 'User3',
-        content: '세 번째 댓글입니다.',
-        ip: '127.0.0.1',
-        date: '2024. 09. 08. 15:30:45',
-        replies: [],
-        showPasswordInput: false, 
-        showReplyInput: false,
-        replyNickname: '',
-        replyPassword: '',
-        replyContent: ''
-      }
-    ],
+      activeReplyCommentId: null,
+      comments: [],
     };
   },
   computed: {
@@ -171,6 +125,86 @@ export default {
         hour12: false
         }).replace(',', ''); // 예: 2024-09-08 15:30:45
     },
+  
+    async fetchComments() {
+        try {
+            const response = await axios.get(this.apiUrl);
+            
+            this.comments = response.data.map(comment => ({
+                ...comment,
+                showPasswordInput: false, 
+                showReplyInput: false,
+                replyNickname: '', 
+                replyPassword: '',  
+                replyContent: '',   
+                password: '',
+                replies: (comment.replies || []).map(reply => ({
+                    ...reply,
+                    showPasswordInput: false, 
+                    password: '',
+                }))
+            }));
+        } catch (error) {
+            console.error('Failed to fetch comments:', error);
+        }
+    },
+
+    togglePasswordInput(id) {
+      // 기존 활성화된 비밀번호 입력창을 닫고 새로운 창을 활성화
+      this.activePasswordInput = this.activePasswordInput === id ? null : id;
+    },
+
+    toggleReplyInput(commentId) {
+        this.activeReplyCommentId = this.activeReplyCommentId === commentId ? null : commentId;
+    },
+
+    async deleteComment(commentId, password) {
+      if (!password) {
+          alert('비밀번호를 입력해 주세요.');
+          return;
+      }
+      try {
+          const response = await axios.delete(`http://3.39.161.55:8000/api/comments/${commentId}/`, {
+              data: { password: password }
+          });
+          this.fetchComments(); // 댓글 및 대댓글 목록 새로 고침
+          alert(`${response.data.message}`);
+      } catch (error) {
+          if (error.response && error.response.data && error.response.data.message) {
+              alert(`삭제 실패: ${error.response.data.message}`);
+          } else {
+              console.error('Failed to delete comment:', error);
+              alert('삭제 중 오류가 발생했습니다.');
+          }
+      }
+    },
+      
+      async submitReply(commentId) {
+      if (!this.replyNickname || !this.replyPassword || !this.replyContent) {
+          alert('모든 필드를 입력해 주세요.');
+          return;
+      }
+      if (this.replyPassword.length < 4) {
+          alert('비밀번호를 4자 이상으로 입력해주세요.');
+          return;
+      }
+      try {
+          await axios.post(this.apiUrl, {
+              nickname: this.replyNickname,
+              password: this.replyPassword,
+              content: this.replyContent,
+              date: new Date().toLocaleString('ko-KR'),
+              parent_comment: commentId  // 대댓글임을 나타내는 parent_comment ID 추가
+          });
+          this.fetchComments();
+          this.replyNickname = '';
+          this.replyPassword = '';
+          this.replyContent = '';
+          this.activeReplyCommentId = null;
+      } catch (error) {
+          console.error('Failed to submit reply:', error);
+      }
+    },
 
     async submitComment() {
         if (!this.nickname || !this.password || !this.content) {
@@ -187,6 +221,7 @@ export default {
             password: this.password,
             content: this.content,
             date: new Date().toLocaleString('ko-KR'),
+            parent_comment: null
             });
             this.fetchComments(); // 댓글을 새로고침
             this.nickname = '';
@@ -196,119 +231,11 @@ export default {
             console.error('Failed to submit comment:', error);
         }
     },
-
-    async fetchComments() {
-        try {
-            const response = await axios.get(this.apiUrl);
-            
-            this.comments = response.data.map(comment => ({
-            ...comment,
-            showPasswordInput: false, 
-            showReplyInput: false,  
-            password: '',
-            replies: (comment.replies || []).map(reply => ({
-                ...reply,
-                showPasswordInput: false, 
-                password: '',
-            }))
-            }));
-        } catch (error) {
-            console.error('Failed to fetch comments:', error);
-        }
-    },
-
-    togglePasswordInput(id) {
-      // 기존 활성화된 비밀번호 입력창을 닫고 새로운 창을 활성화
-      this.activePasswordInput = this.activePasswordInput === id ? null : id;
-    },
-
-    toggleReplyInput(commentId) {
-      this.comments = this.comments.map((comment) =>
-        comment.id === commentId
-          ? { ...comment, showReplyInput: !comment.showReplyInput }
-          : comment
-      );
-    },
-
-    async deleteComment(commentId, password) {
-        if (!password) {
-            alert('비밀번호를 입력해 주세요.');
-            return;
-        }
-        try {
-            const comment = this.comments.find(c => c.id === commentId);
-            if (comment) {
-                const response = await axios.delete(`http://3.39.161.55:8000/api/comments/${commentId}/`, {
-                data: { password: password }
-                });
-                this.fetchComments(); // 댓글을 새로고침
-                alert(`${response.data.message}`);
-            }
-        } catch (error) {
-            if (error.response && error.response.data && error.response.data.message) {
-                alert(`삭제 실패: ${error.response.data.message}`);
-            } else {
-                console.error('Failed to delete comment:', error);
-                alert('삭제 중 오류가 발생했습니다.');
-            }
-        }
-        }
-    },
+  },
     
-
-    async submitReply(commentId, nickname, password, content) {
-        if (!nickname || !password || !content) {
-            alert('모든 필드를 입력해 주세요.');
-            return;
-        }
-        if (password.length < 4) {
-            alert('비밀번호를 4자 이상으로 입력해주세요.');
-            return;
-        }
-        try {
-            await axios.post(`${this.apiUrl}${commentId}/reply/`, {
-                nickname: nickname,
-                password: password,
-                content: content,
-                date: new Date().toLocaleString('ko-KR'),
-            });
-            this.fetchComments();
-        } catch (error) {
-            console.error('Failed to submit reply:', error);
-        }   
-    },
-  
-    async deleteReply(commentId, replyId, password) {
-        if (!password) {
-            alert('비밀번호를 입력해 주세요.');
-            return;
-        }
-        try {
-            const comment = this.comments.find(c => c.id === commentId);
-            if (comment) {
-                const reply = comment.replies.find(r => r.id === replyId);
-                if (reply) {
-                    const response = await axios.delete(`http://3.39.161.55:8000/api/comments/${commentId}/reply/${replyId}/`, {
-                        data: { password: password }
-                    });
-                    this.fetchComments(); // 댓글과 대댓글을 새로고침
-                    alert(`${response.data.message}`);
-                }
-            }
-        } catch (error) {
-            if (error.response && error.response.data && error.response.data.message) {
-                alert(`삭제 실패: ${error.response.data.message}`);
-            } else {
-                console.error('Failed to delete reply:', error);
-                alert('대댓글 삭제 중 오류가 발생했습니다.');
-            }
-        }
-    },
-
-
-    created() {
-        this.fetchComments();
-    }
+  created() {
+      this.fetchComments();
+  }
 }
 </script>
 
