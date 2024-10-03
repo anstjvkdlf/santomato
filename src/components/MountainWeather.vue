@@ -8,7 +8,7 @@
     </div>
     <div v-if="filteredForecastData.length && selectedDate">
       <div class="weather-timeline">
-        <button class="weather-timeline-button" @click="openPopup">시간별 날씨보기</button>
+        <button class="weather-timeline-button" @click="openPopup">전체 날씨보기</button>
         <WeatherTimeline v-if="showPopup"
                  @close="closePopup"
                  :filteredForecastData="filteredForecastData"
@@ -18,7 +18,6 @@
                  :canGoNext="canGoNext"
                  :changeDate="changeDate" />
       </div>
-      <h2 class="weather-heading">날씨 요약</h2>
       <div class="weather-info">
       <div class="weather-detail">
         <div>🌡️ 기온</div>
