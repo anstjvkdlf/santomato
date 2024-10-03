@@ -1,66 +1,69 @@
 <template>
-    <div>
-      <div class="comment-list">
-        <div v-for="comment in comments" :key="comment.id" class="comment-item">
+  <div>
+    <div class="comment-list">
+      <div v-for="comment in filteredComments" :key="comment.id" class="comment-item">
+          <!-- 댓글이 삭제되었고 대댓글이 있을 경우 "삭제된 댓글입니다" 표시 -->
+          <div>
             <div class="comment-header">
-            <span class="comment-info">{{ comment.nickname }} ({{ maskIp(comment.ip) }})</span>
-            <span class="comment-date">
-                {{ formatDate(comment.date) }}
-                <button class="delete-button" @click="togglePasswordInput(comment.id)">x</button>
-            </span>
+                <span class="comment-info">{{ comment.nickname }} ({{ maskIp(comment.ip) }})</span>
+                <span class="comment-date">
+                    {{ formatDate(comment.date) }}
+                    <button class="delete-button" @click="togglePasswordInput(comment.id)">x</button>
+                </span>
             </div>
             <div class="comment-content comment-clickable" @click="toggleReplyInput(comment.id)">
                 {{ comment.content }}
             </div>
-            <div div v-if="activePasswordInput === comment.id" class="password-input-group">
+            <div v-if="activePasswordInput === comment.id" class="password-input-group">
                 <input v-model="comment.password" class="password-input" type="password" placeholder="비밀번호 입력" />
                 <button class="submit-delete-button" @click="deleteComment(comment.id, comment.password)">삭제</button>
             </div>
             
             <!-- 댓글에 대한 대댓글 작성 폼 -->
             <div v-if="activeReplyCommentId === comment.id" class="reply-form">
-            <div class="input-group">
-                <input v-model="replyNickname" class="nickname-input" placeholder="닉네임" />
-                <input v-model="replyPassword" class="password-input" type="password" placeholder="비밀번호" />
+              <div class="input-group">
+                  <input v-model="replyNickname" class="nickname-input" placeholder="닉네임" />
+                  <input v-model="replyPassword" class="password-input" type="password" placeholder="비밀번호" />
+              </div>
+              <textarea v-model="replyContent" class="reply-input" placeholder="대댓글 내용"></textarea>
+              <button class="reply-submit-button" @click="submitReply(comment.id)">대댓글 등록</button>
             </div>
-            <textarea v-model="replyContent" class="reply-input" placeholder="대댓글 내용"></textarea>
-            <button class="reply-submit-button" @click="submitReply(comment.id)">대댓글 등록</button>
-            </div>
-
 
             <!-- 대댓글 표시 -->
             <div class="replies" v-if="comment.replies && comment.replies.length">
                 <div v-for="reply in comment.replies" :key="reply.id" class="comment-item">
                     <div class="comment-header">
-                    <span class="comment-info">{{ reply.nickname }} ({{ maskIp(reply.ip) }})</span>
-                    <span class="comment-date">
-                        {{ formatDate(reply.date) }}
-                        <button class="delete-button" @click="togglePasswordInput(reply.id)">x</button>
-                    </span>
+                        <span class="comment-info">{{ reply.nickname }} ({{ maskIp(reply.ip) }})</span>
+                        <span class="comment-date">
+                            {{ formatDate(reply.date) }}
+                            <button class="delete-button" @click="togglePasswordInput(reply.id)">x</button>
+                        </span>
                     </div>
                     <div class="comment-content">{{ reply.content }}</div>
-                    <div div v-if="activePasswordInput === reply.id" class="password-input-group">
+                    <div v-if="activePasswordInput === reply.id" class="password-input-group">
                         <input v-model="reply.password" class="password-input" type="password" placeholder="비밀번호 입력" />
                         <button class="submit-delete-button" @click="deleteComment(reply.id, reply.password)">삭제</button>
                     </div>
                 </div>
             </div>
-           
-        </div>
+          </div>
       </div>
-      <br>
-
-       <!-- 댓글 작성 폼 -->
-        <div class="comment-form">
-            <div class="input-group">
-                <input v-model="nickname" class="nickname-input" placeholder="닉네임" />
-                <input v-model="password" class="password-input" type="password" placeholder="비밀번호" />
-            </div>
-            <textarea v-model="content" class="comment-input" placeholder="댓글 내용"></textarea>
-            <button class="submit-button" @click="submitComment">등록</button>
-        </div>
     </div>
+    <br>
+
+    <!-- 댓글 작성 폼 -->
+    <div class="comment-form">
+        <div class="input-group">
+            <input v-model="nickname" class="nickname-input" placeholder="닉네임" />
+            <input v-model="password" class="password-input" type="password" placeholder="비밀번호" />
+        </div>
+        <textarea v-model="content" class="comment-input" placeholder="댓글 내용"></textarea>
+        <button class="submit-button" @click="submitComment">등록</button>
+    </div>
+
+  </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -77,14 +80,97 @@ export default {
       replyContent: '',  
       activePasswordInput: null,
       activeReplyCommentId: null,
-      comments: [],
+      comments: [
+        {
+            "id": 26,
+            "nickname": "안녕",
+            "password": "1234",
+            "content": "안녕",
+            "date": "2024-09-08T14:23:37.063895Z",
+            "ip": "127.0.0.1",
+            "parent_comment": null,
+            "deleted": true,
+            "replies": [
+                {
+                    "id": 33,
+                    "nickname": "123",
+                    "password": "1234",
+                    "content": "1234",
+                    "date": "2024-09-24T15:37:20.535064Z",
+                    "ip": "1.1.1.1",
+                    "parent_comment": 26,
+                    "deleted": false,
+                    "replies": []
+                }
+            ]
+        },
+        {
+            "id": 27,
+            "nickname": "야호",
+            "password": "1234",
+            "content": "야호",
+            "date": "2024-09-08T14:25:10.697420Z",
+            "ip": "127.0.0.1",
+            "parent_comment": null,
+            "deleted": false,
+            "replies": [
+                {
+                    "id": 36,
+                    "nickname": "지현",
+                    "password": "1234",
+                    "content": "지현",
+                    "date": "2024-09-24T15:50:24.942595Z",
+                    "ip": "127.0.0.1",
+                    "parent_comment": 27,
+                    "deleted": false,
+                    "replies": []
+                }
+            ]
+        },
+        {
+            "id": 28,
+            "nickname": "지현",
+            "password": "1234",
+            "content": "지현",
+            "date": "2024-09-08T14:25:10.697420Z",
+            "ip": "127.0.0.1",
+            "parent_comment": null,
+            "deleted": false,
+            "replies": [
+                
+            ]
+        }
+    ],
     };
   },
   computed: {
     apiUrl() {
         return `http://3.39.161.55:8000/api/comments/mountain/${this.id}/`;
+    },
+    filteredComments() {
+      return this.comments.map(comment => {
+        // 대댓글이 없는 댓글은 deleted가 true일 때 표시하지 않음
+        if (comment.deleted && comment.replies.length === 0) {
+          return null;
+        }
+
+        // 댓글이 deleted 상태이고, 대댓글이 있으면 "삭제된 댓글입니다"를 표시
+        if (comment.deleted && comment.replies.length > 0) {
+          return {
+            ...comment,
+            content: "삭제된 댓글입니다.",
+            replies: comment.replies.filter(reply => !reply.deleted) // 대댓글 필터링: deleted가 false인 것만 남김
+          };
+        }
+
+        return {
+          ...comment,
+          replies: comment.replies.filter(reply => !reply.deleted) // 대댓글 필터링: deleted가 false인 것만 남김
+        };
+      }).filter(comment => comment !== null); // null 댓글을 제외하고 반환
     }
   },
+
   methods: {
     // fetchIpAddress() 백엔드에서 처리하게 변경 
     async fetchIpAddress() {
@@ -157,7 +243,7 @@ export default {
     toggleReplyInput(commentId) {
         this.activeReplyCommentId = this.activeReplyCommentId === commentId ? null : commentId;
     },
-
+    
     async deleteComment(commentId, password) {
       if (!password) {
           alert('비밀번호를 입력해 주세요.');
@@ -333,6 +419,7 @@ export default {
 
 .replies .comment-item {
   background-color: #e6e6e673;
+  margin-top: 5px;
 }
 
 .comment-info {
