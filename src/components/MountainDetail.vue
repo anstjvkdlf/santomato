@@ -59,73 +59,110 @@ created() {
 <style scoped>
 
 .mountain-name {
-text-align: center;
-font-size: 3em;
-font-weight: bold;
+  text-align: center;
+  font-size: 3em;
+  font-weight: bold;
 }
 
 .image-container {
-display: flex;
-justify-content: center;
-align-items: center;
-flex-direction: column;
-margin-top: 5px;
-margin-bottom: 5px;
-text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  text-align: center;
 }
 
 .comment-container {
-width: 800px;
-margin: 0 auto
+  width: 800px;
+  margin: 0 auto;
 }
 
 .mountainRoute {
-max-width: 80%; /* 이미지 너비를 최대로 지정 */
-height: auto;
-margin-bottom: 20px;
+  max-width: 80%;
+  height: auto;
+  margin-bottom: 20px;
 }
 
 .description {
-margin-bottom: 30px;
-display: flex;
-text-align: left; /* 텍스트를 가운데 정렬 */
-flex-direction: column;
+  margin-bottom: 30px;
+  display: flex;
+  text-align: left;
+  flex-direction: column;
 }
 
 .cctv-button {
-background-color: #4CAF50; /* 배경색 */
-border: none; /* 테두리 제거 */
-color: white; /* 글자색 */
-padding: 10px 20px; /* 안쪽 여백 */
-text-align: center; /* 가운데 정렬 */
-text-decoration: none; /* 밑줄 제거 */
-display: inline-block;
-font-size: 16px; /* 글꼴 크기 */
-margin: 4px 2px; /* 바깥 여백 */
-cursor: pointer; /* 커서 모양 */
-border-radius: 8px; /* 모서리 둥글게 */
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 */
-margin-bottom: 10px;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
 }
 
 .cctv-button:hover {
-background-color: #45a049; /* 마우스 호버 시 배경색 변경 */
+  background-color: #45a049;
 }
-
 
 @media only screen and (max-width: 767px) {
-  .mountainRoute {
-    max-width: 90%; /* 이미지 너비를 최대로 지정 */
-    height: auto;
-    margin-bottom: 20px;
+  .mountain-name {
+    font-size: 2em; /* 글자 크기 조정 */
   }
-  .description{
-    margin-bottom: 30px;
-    margin-left: 10px;
-    margin-right: 10px;
-    display: flex;
-    flex-direction: column; /* 모바일에서도 세로 정렬 */
-    text-align: left; /* 텍스트를 왼쪽 정렬 */
+
+  .image-container {
+    width: 100%;
+    padding: 0 10px; /* 여백 추가 */
+  }
+
+  .mountainRoute {
+    max-width: 90%;
+    height: auto;
+    margin-bottom: 15px;
+  }
+
+  .description {
+    margin: 0 10px;
+    text-align: left;
+  }
+
+  .comment-container {
+    width: 100%;
+    padding: 0 10px;
+    margin: 0 auto;
+  }
+
+  .cctv-button {
+    font-size: 14px; /* 버튼 글자 크기 축소 */
+    padding: 8px 16px; /* 버튼 패딩 축소 */
   }
 }
+
+@media only screen and (max-width: 480px) {
+  .mountain-name {
+    font-size: 1.5em; /* 더 작은 화면에서 글자 크기 더 줄이기 */
+  }
+
+  .mountainRoute {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .description {
+    font-size: 14px; /* 설명 글자 크기 축소 */
+  }
+
+  .cctv-button {
+    font-size: 12px; /* 버튼 글자 크기 더 축소 */
+    padding: 6px 12px; /* 패딩 축소 */
+  }
+}
+
 </style>
