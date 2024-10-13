@@ -145,27 +145,36 @@ export default {
   },
   computed: {
     apiUrl() {
-        return `http://3.39.161.55:8000/api/comments/mountain/${this.id}/`;
+      return `http://3.39.161.55:8000/api/comments/mountain/${this.id}/`;
     },
+
     filteredComments() {
       return this.comments.map(comment => {
-        // 대댓글이 없는 댓글은 deleted가 true일 때 표시하지 않음
+        // 1. 댓글이 삭제된 상태이고 대댓글이 없으면 해당 댓글을 제외
         if (comment.deleted && comment.replies.length === 0) {
           return null;
         }
 
-        // 댓글이 deleted 상태이고, 대댓글이 있으면 "삭제된 댓글입니다"를 표시
+        // 2. 댓글이 삭제된 상태이고 대댓글이 있는 경우: "삭제된 댓글입니다."로 표시
         if (comment.deleted && comment.replies.length > 0) {
+          const remainingReplies = comment.replies.filter(reply => !reply.deleted);
+          
+          // 대댓글이 모두 삭제되었으면 부모 댓글도 제외
+          if (remainingReplies.length === 0) {
+            return null;
+          }
+
           return {
             ...comment,
             content: "삭제된 댓글입니다.",
-            replies: comment.replies.filter(reply => !reply.deleted) // 대댓글 필터링: deleted가 false인 것만 남김
+            replies: remainingReplies // 삭제되지 않은 대댓글만 표시
           };
         }
 
+        // 3. 댓글이 삭제되지 않은 경우: 삭제되지 않은 대댓글만 포함하여 반환
         return {
           ...comment,
-          replies: comment.replies.filter(reply => !reply.deleted) // 대댓글 필터링: deleted가 false인 것만 남김
+          replies: comment.replies.filter(reply => !reply.deleted)
         };
       }).filter(comment => comment !== null); // null 댓글을 제외하고 반환
     }
@@ -218,15 +227,12 @@ export default {
             
             this.comments = response.data.map(comment => ({
                 ...comment,
-                showPasswordInput: false, 
-                showReplyInput: false,
                 replyNickname: '', 
                 replyPassword: '',  
                 replyContent: '',   
                 password: '',
                 replies: (comment.replies || []).map(reply => ({
                     ...reply,
-                    showPasswordInput: false, 
                     password: '',
                 }))
             }));
@@ -254,6 +260,8 @@ export default {
               data: { password: password }
           });
           this.fetchComments(); // 댓글 및 대댓글 목록 새로 고침
+          this.activePasswordInput = null;
+          this.activeReplyCommentId=  null;
           alert(`${response.data.message}`);
       } catch (error) {
           if (error.response && error.response.data && error.response.data.message) {
@@ -287,7 +295,8 @@ export default {
           this.replyPassword = '';
           this.replyContent = '';
           this.activeReplyCommentId = null;
-      } catch (error) {
+          this.activePasswordInput = null;
+          } catch (error) {
           console.error('Failed to submit reply:', error);
       }
     },
