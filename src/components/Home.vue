@@ -1,6 +1,5 @@
 <template>
-    <section>      
-      <input class = "searchTab" type="text" placeholder="산 이름으로 검색하기" v-model="searchTerm" @input="filterByName">
+    <section>
       <div class="filter">
         <div class="item" :class="{ active: activeFilter === 'All' }" @click="filterByStatus('All')">전체</div>
         <span class="separator"></span>
@@ -37,11 +36,19 @@
 import axios from 'axios';
 
 export default {
+  name: 'Home',
+  props: {
+    searchTerm: String,
+  },
+  watch: {
+    searchTerm(newTerm) {
+      this.filterByName(newTerm);
+    },
+  },
   data() {
     return {
       mountains: [],
       filteredMountains: [],
-      searchTerm: '',
       activeFilter: 'All',
     };
   },
@@ -83,7 +90,7 @@ export default {
     filterByName() {
       const searchTerm = this.searchTerm.toLowerCase();
       this.filteredMountains = this.mountains.filter(
-        mountain => mountain.name.toLowerCase().includes(searchTerm)
+        mountain => mountain.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     },
   },
@@ -289,6 +296,7 @@ export default {
     width: 40%;
     margin-bottom: 1rem;
   }
+
 }
 
 
