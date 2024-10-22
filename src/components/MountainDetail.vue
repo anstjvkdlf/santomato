@@ -7,7 +7,7 @@
     <div class="image-container">
       <button class="cctv-button" v-if="mountain.cctv_url !== 'blank'" @click="openCCTVNewTab(mountain.cctv_url)">실시간 CCTV</button>
       <img class="mountainRoute" v-if="mountain.status === '통제' && mountain.dead_image_url" :src="mountain.dead_image_url" alt="산통제정보" @click="openImageInNewTab(mountain.dead_image_url)" style="cursor: pointer;">
-      <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`http://3.39.161.55:8000/` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`http://3.39.161.55:8000/` + mountain.alive_image)" style="cursor: pointer;">
+      <img class="mountainRoute" v-if="mountain.status === '정상' && mountain.alive_image" :src="`https://backend.santomato.com` + mountain.alive_image" alt="정상탐방로" @click="openImageInNewTab(`https://backend.santomato.com` + mountain.alive_image)" style="cursor: pointer;">
       <div class="description" v-html="mountain.description"></div>
     </div>
     <div class="comment-container">
@@ -34,7 +34,7 @@ data() {
 },
 methods: {
   fetchMountainData() {
-    const apiUrl = `http://3.39.161.55:8000/api/${this.id}`
+    const apiUrl = `https://backend.santomato.com/api/${this.id}`
     axios.get(apiUrl)
       .then(response => {
         this.mountain = response.data.data;

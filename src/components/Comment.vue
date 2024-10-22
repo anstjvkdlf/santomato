@@ -145,7 +145,7 @@ export default {
   },
   computed: {
     apiUrl() {
-      return `http://3.39.161.55:8000/api/comments/mountain/${this.id}/`;
+      return `https://backend.santomato.com/api/comments/mountain/${this.id}/`;
     },
 
     filteredComments() {
@@ -236,6 +236,7 @@ export default {
                     password: '',
                 }))
             }));
+            console.log(response.data)
         } catch (error) {
             console.error('Failed to fetch comments:', error);
         }
@@ -256,7 +257,7 @@ export default {
           return;
       }
       try {
-          const response = await axios.delete(`http://3.39.161.55:8000/api/comments/${commentId}/`, {
+          const response = await axios.delete(`https://backend.santomato.com/api/comments/${commentId}/`, {
               data: { password: password }
           });
           this.fetchComments(); // 댓글 및 대댓글 목록 새로 고침

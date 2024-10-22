@@ -24,7 +24,7 @@
                 <span v-if="mountain.status === '정상'"> {{ mountain.status }}</span>
                 <span v-if="mountain.status === '통제'"> {{ mountain.status }}</span>
               </div>
-              <img :src="`http://3.39.161.55:8000/` + mountain.image" :alt="mountain">
+              <img :src="`https://backend.santomato.com` + mountain.image" :alt="mountain">
             </div>
           </div>
         </li>
@@ -46,7 +46,7 @@ export default {
     };
   },
   mounted() {
-    this.fetchmountains('http://3.39.161.55:8000/api/all/')
+    this.fetchmountains('https://backend.santomato.com/api/all/')
   },
   methods: {
     viewMountainDetail(mountain) {
@@ -62,6 +62,7 @@ export default {
       .then(response => {
         this.mountains = response.data;
         this.filteredMountains = response.data;
+        console.log(response.data)
       })
       .catch(error => {
         console.error('Error al obtener la lista de personajes:', error);
