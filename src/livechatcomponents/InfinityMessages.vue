@@ -60,15 +60,11 @@ onMounted(() => {
       event.target.scrollHeight - event.target.scrollTop - event.target.clientHeight > 100
   })
 
-  const headerHeight = document.getElementById('header').offsetHeight
-  const footerHeight = document.getElementById('footer').offsetHeight
   const inputFormHeight = document.getElementById('input-form').offsetHeight
   const messagesHeaderHeight = document.getElementById('messages-header').offsetHeight
 
   const contentHeight =
     windowHeight -
-    headerHeight -
-    footerHeight -
     inputFormHeight -
     messagesHeaderHeight -
     marginY * 2
@@ -116,6 +112,9 @@ onMounted(() => {
 }
 
 #infinity-comments {
+  background-color: #ffffff;
+  border: 2px solid #ddd9d9; /* Add border to the entire container */
+  
   &::-webkit-scrollbar {
     width: 2px;
   }
@@ -132,7 +131,5 @@ onMounted(() => {
   &::-webkit-scrollbar-thumb:hover {
     background-color: #a0a0a0;
   }
-
-  box-shadow: inset 0px 0px 10px 10px #000;
 }
 </style>

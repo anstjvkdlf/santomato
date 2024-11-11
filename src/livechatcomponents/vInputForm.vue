@@ -41,6 +41,15 @@ function sendMessage() {
 </template>
 
 <style lang="scss" scoped>
+#input-form {
+  background-color: #ddd9d9; /* Replace this with your desired color */
+}
+
+input {
+  background-color: #3f3d3d; /* Replace this with your desired color */
+  color: #f0f0f0; /* Adjust text color for readability */
+}
+
 #message-input::-webkit-scrollbar {
   width: 0.5rem;
 }

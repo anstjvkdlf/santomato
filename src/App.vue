@@ -19,12 +19,9 @@ import VFooter from "@/livechatcomponents/vFooter.vue"
         <SiteName :searchTerm="searchTerm" @update-search-term="updateSearchTerm" />
       </div>
       <Advertise></Advertise>
-
-      <v-header />
-      <router-view :searchTerm="searchTerm"></router-view>
-        <!-- <router-view /> -->
-      <v-footer />
-      <!-- <router-view></router-view> -->
+      <!-- <v-header/> -->
+        <router-view :searchTerm="searchTerm"></router-view>
+      <!-- <v-footer/> -->
       <Footer></Footer>
     </div>
   </main>

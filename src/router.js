@@ -11,19 +11,16 @@ const routes = [
     component: Home
   },
   {
+    path: '/carpool',
+    name: 'livechat',
+    component: LiveChat,
+  },
+  {
     path: '/detail/:id',
     name: 'MountainDetail',
-    component: LiveChat,
+    component: MountainDetail,
     props: true
   }
-  // {
-  //   // path: '/',
-  //   // name: 'home',
-  //   path: '/detail/:id',
-  //   name: 'LiveChat',
-  //   component: LiveChat,
-  //   props: true
-  // }
 ];
 
 const router = createRouter({

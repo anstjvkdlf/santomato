@@ -7,8 +7,8 @@ import vInputForm from '../livechatcomponents/vInputForm.vue'
 
 <template>
   <content-wrapper>
-    <v-messages-header class="mb-5" />
+    <v-messages-header class="mb-1" />
     <infinity-messages />
-    <v-input-form class="mt-5" />
+    <v-input-form class="mt-1" />
   </content-wrapper>
 </template>

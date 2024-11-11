@@ -39,4 +39,7 @@ const online = computed(() => store.online)
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+#messages-header {
+  background-color: #ddd9d9; /* Replace this with your desired color */
+}</style>
