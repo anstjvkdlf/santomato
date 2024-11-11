@@ -2,73 +2,98 @@
   <div>
     <div class="comment-list">
       <div v-for="comment in filteredComments" :key="comment.id" class="comment-item">
-          <!-- 댓글이 삭제되었고 대댓글이 있을 경우 "삭제된 댓글입니다" 표시 -->
-          <div>
-            <div class="comment-header">
-                <span class="comment-info">{{ comment.nickname }} ({{ maskIp(comment.ip) }})</span>
-                <span class="comment-date">
-                    {{ formatDate(comment.date) }}
-                    <button class="delete-button" @click="togglePasswordInput(comment.id)">x</button>
-                </span>
-            </div>
+        <div>
+          <div class="comment-header">
+            <span class="comment-info">{{ comment.nickname }} ({{ maskIp(comment.ip) }})</span>
+            <span class="comment-date">
+              {{ formatDate(comment.date) }}
+              <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" @click="togglePasswordInput(comment.id)" />
+            </span>
+          </div>
+          <div class="comment-content-wrapper">
             <div class="comment-content comment-clickable" @click="toggleReplyInput(comment.id)">
-                {{ comment.content }}
+              {{ comment.content }}
             </div>
             <div v-if="activePasswordInput === comment.id" class="password-input-group">
-                <input v-model="comment.password" class="password-input" type="password" placeholder="비밀번호 입력" />
-                <button class="submit-delete-button" @click="deleteComment(comment.id, comment.password)">삭제</button>
-            </div>
-            
-            <!-- 댓글에 대한 대댓글 작성 폼 -->
-            <div v-if="activeReplyCommentId === comment.id" class="reply-form">
-              <div class="input-group">
-                  <input v-model="replyNickname" class="nickname-input" placeholder="닉네임" />
-                  <input v-model="replyPassword" class="password-input" type="password" placeholder="비밀번호" />
-              </div>
-              <textarea v-model="replyContent" class="reply-input" placeholder="대댓글 내용"></textarea>
-              <button class="reply-submit-button" @click="submitReply(comment.id)">대댓글 등록</button>
-            </div>
-
-            <!-- 대댓글 표시 -->
-            <div class="replies" v-if="comment.replies && comment.replies.length">
-                <div v-for="reply in comment.replies" :key="reply.id" class="comment-item">
-                    <div class="comment-header">
-                        <span class="comment-info">{{ reply.nickname }} ({{ maskIp(reply.ip) }})</span>
-                        <span class="comment-date">
-                            {{ formatDate(reply.date) }}
-                            <button class="delete-button" @click="togglePasswordInput(reply.id)">x</button>
-                        </span>
-                    </div>
-                    <div class="comment-content">{{ reply.content }}</div>
-                    <div v-if="activePasswordInput === reply.id" class="password-input-group">
-                        <input v-model="reply.password" class="password-input" type="password" placeholder="비밀번호 입력" />
-                        <button class="submit-delete-button" @click="deleteComment(reply.id, reply.password)">삭제</button>
-                    </div>
-                </div>
+              <InputText v-model="comment.password" class="password-input" type="password" placeholder="비밀번호 입력" />
+              <Button label="삭제" icon="pi pi-check" class="p-button-danger" @click="deleteComment(comment.id, comment.password)" />
             </div>
           </div>
+
+          <!-- 대댓글 작성 폼 -->
+          <div v-if="activeReplyCommentId === comment.id" class="reply-form">
+            <div class="input-group-horizontal">
+              <!-- 닉네임과 비밀번호를 가로로 나란히 배치 -->
+              <InputText v-model="replyNickname" placeholder="닉네임" />
+              <Password v-model="replyPassword" feedback="false" toggleMask placeholder="비밀번호" />
+            </div>
+
+            <!-- 대댓글 내용 입력 -->
+            <div class="input-field">
+              <Textarea v-model="replyContent" rows="3" cols="30" autoResize placeholder="댓글 내용을 입력하세요" />
+            </div>
+
+            <!-- 대등록 버튼 -->
+            <Button label="대댓글 등록" icon="pi pi-check" class="p-button-success" @click="submitReply(comment.id)" />
+          </div>
+
+          <!-- 대댓글 표시 -->
+          <div class="replies" v-if="comment.replies && comment.replies.length">
+            <div v-for="reply in comment.replies" :key="reply.id" class="comment-item">
+              <div class="comment-header">
+                <span class="comment-info">{{ reply.nickname }} ({{ maskIp(reply.ip) }})</span>
+                <span class="comment-date">
+                  {{ formatDate(reply.date) }}
+                  <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" @click="togglePasswordInput(reply.id)" />
+                </span>
+              </div>
+              <div class="comment-content-wrapper">
+                <div class="comment-content">{{ reply.content }}</div>
+                <div v-if="activePasswordInput === reply.id" class="password-input-group">
+                  <InputText v-model="reply.password" class="password-input" type="password" placeholder="비밀번호 입력" />
+                  <Button label="삭제" icon="pi pi-check" class="p-button-danger" @click="deleteComment(reply.id, reply.password)" />
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <br>
+    <br />
 
     <!-- 댓글 작성 폼 -->
     <div class="comment-form">
-        <div class="input-group">
-            <input v-model="nickname" class="nickname-input" placeholder="닉네임" />
-            <input v-model="password" class="password-input" type="password" placeholder="비밀번호" />
-        </div>
-        <textarea v-model="content" class="comment-input" placeholder="댓글 내용"></textarea>
-        <button class="submit-button" @click="submitComment">등록</button>
-    </div>
+      <div class="input-group-horizontal">
+        <!-- 닉네임과 비밀번호를 가로로 나란히 배치 -->
+        <InputText v-model="nickname" placeholder="닉네임" />
+        <Password v-model="password" feedback="false" toggleMask placeholder="비밀번호" />
+      </div>
 
+      <!-- 댓글 내용 입력 -->
+      <div class="input-field">
+        <Textarea v-model="content" rows="3" cols="30" autoResize placeholder="댓글 내용을 입력하세요" />
+      </div>
+
+      <!-- 등록 버튼 -->
+      <Button label="등록" icon="pi pi-check" class="p-button-success" @click="submitComment" />
+    </div>
   </div>
 </template>
 
-
 <script>
 import axios from 'axios';
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+import Password from 'primevue/password';
 
 export default {
+  components: {
+    Button,
+    InputText,
+    Textarea,
+    Password,
+  },
   props: ['id'],
   data() {
     return {
@@ -236,19 +261,24 @@ export default {
                     password: '',
                 }))
             }));
-            console.log(response.data)
         } catch (error) {
             console.error('Failed to fetch comments:', error);
         }
     },
 
     togglePasswordInput(id) {
-      // 기존 활성화된 비밀번호 입력창을 닫고 새로운 창을 활성화
       this.activePasswordInput = this.activePasswordInput === id ? null : id;
     },
 
     toggleReplyInput(commentId) {
-        this.activeReplyCommentId = this.activeReplyCommentId === commentId ? null : commentId;
+      if (this.activeReplyCommentId === commentId) {
+        this.activeReplyCommentId = null;
+      } else {
+        this.activeReplyCommentId = commentId;
+      }
+      this.replyNickname = '';
+      this.replyPassword = '';
+      this.replyContent = '';
     },
     
     async deleteComment(commentId, password) {
@@ -335,159 +365,79 @@ export default {
 }
 </script>
 
-<style>
-.comment-form, .reply-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+<style scoped>
+.comment-form,
+.reply-form {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
   margin-bottom: 20px;
+}
+
+.comment-item {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0px;
 }
 
 .comment-clickable {
   cursor: pointer;
 }
 
-.reply-form {
+.input-group-horizontal {
   display: flex;
-  margin-left: 20px; /* 대댓글 폼 들여쓰기 */
-  margin-top: 5px;
-  margin-bottom: 5px;
-  padding: 10px;
-  border-radius: 5px;
+  gap: 10px;
+  justify-content: left;
   width: 100%;
 }
 
-.input-group {
-  display: flex;
-  gap: 10px;
+.input-field {
+  margin-top: 10px;
+  width: 100%;
 }
 
-.nickname-input, .password-input {
-  flex: 1;
+.input-field textarea {
+  width: 100%;
+  max-width: 100%;
+}
+
+.replies .comment-item {
+  background-color: #f5f5f5;
   padding: 10px;
-  font-size: 16px;
-  max-width: 150px;
+  margin-top: 0;
 }
 
-.comment-input .reply-input {
-  flex: 2;
-  min-height: 100px;
-  padding: 10px;
-  font-size: 16px;
-  resize: vertical;
-}
-
-.submit-button {
-  background-color: #4CAF50;
-  border: none;
-  color: white;
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.submit-button:hover {
-  background-color: #45a049;
-}
-
-.reply-submit-button {
-  background-color: #c0eac1;
-  border: none;
-  color: rgb(0, 0, 0);
-  padding: 8px 12px; 
-  font-size: 14px; 
-  cursor: pointer;
-  width: auto; 
-  align-self: flex-end; 
-  margin-top: 10px; 
-}
-
-.reply-submit-button:hover {
-  background-color: #a9d9a5; 
-}
-
-.comment-list {
-  margin-top: 30px;
-}
-
-.comment-item {
-  border-bottom: 1px solid #ddd; /* 댓글 간 구분선 */
-  padding: 10px 0;
-  position: relative;
-}
 .comment-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.replies .comment-header,
-.replies .comment-content {
-  margin-left: 10px;
-}
-
-.replies .comment-item {
-  background-color: #e6e6e673;
-  margin-top: 5px;
-}
-
-.comment-info {
-  display: flex;
-  align-items: center;
-}
-
 .comment-date {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  margin-left: auto;
 }
 
-.comment-content {
+.password-input-group .password-input,
+.password-input-group .p-button-danger {
+  height: 30px; 
+  padding: 0 5px; 
+  font-size: 0.85rem; 
+}
+
+.comment-form .p-button-success,
+.reply-form .p-button-success {
+  display: block;
+  margin-left: auto;
   margin-top: 5px;
 }
-
-.delete-button {
-  background: none;
-  border: none;
-  color: #f44336;
-  font-size: 0.9em;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-}
-
-.delete-button:hover {
-  color: #d32f2f;
+.comment-content-wrapper {
+  display: flex; /* 수평으로 배치 */
+  align-items: center; /* 수직 중앙 정렬 */
 }
 
 .password-input-group {
-  display: flex; 
-  align-items: end;
-  width: auto;  
-  position: absolute;
-  top: 35px; 
-  right: 0; 
-  z-index: 10;
-
-  /* 강제로 보이게 하는 스타일 */
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-.password-input {
-  flex: 1;
-  padding: 5px;
-  font-size: 14px;
-  align-items: center;
-}
-
-.submit-delete-button {
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 14px;
+  margin-left: auto; 
+  display: flex;
+  gap: 5px; 
   align-items: center;
 }
 </style>

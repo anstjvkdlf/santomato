@@ -1,109 +1,136 @@
 <template>
   <div class="page">
-  <main class="main">
+    <!-- 날짜 네비게이션 -->
     <div class="date-navigation">
-      <button @click="changeDate('prev')" :class="{ 'invisible': !canGoPrev }">⬅️</button>
-      <span>{{ selectedDate }}</span>
-      <button @click="changeDate('next')" :class="{ 'invisible': !canGoNext }">➡️</button>
-    </div>
-    <div v-if="filteredForecastData.length && selectedDate">
-      <div class="weather-timeline">
-        <button class="weather-timeline-button" @click="openPopup">전체 날씨보기</button>
-        <WeatherTimeline v-if="showPopup"
-                 @close="closePopup"
-                 :filteredForecastData="filteredForecastData"
-                 :chartOption="chartOption"
-                 :selectedDate="selectedDate"
-                 :canGoPrev="canGoPrev"
-                 :canGoNext="canGoNext"
-                 :changeDate="changeDate" />
-      </div>
-      <div class="weather-info">
-      <div class="weather-detail">
-        <div>🌡️ 기온</div>
-        <div v-if="selectedDateTemperatures.minTemp !== null && selectedDateTemperatures.maxTemp !== null">
-          {{ Math.round(selectedDateTemperatures.minTemp) }} °C / {{ Math.round(selectedDateTemperatures.maxTemp) }} °C
-        </div>
-      </div>
-      <div class="weather-detail">
-        <div v-if="isSnowOnSelectedDate">❄️ 총 적설량</div>
-        <div v-else>💧 총 강수량</div>
-        <div v-if="selectedDateTotalRainOrSnow !== null">{{selectedDateTotalRainOrSnow.toFixed(2) }} mm</div>
-        <div v-else>없음</div>
-      </div>
-      <div class="weather-detail">
-        <div>💨 최대 풍속</div>
-        <div v-if="selectedDateMaxWindSpeed !== null">{{ Math.round(selectedDateMaxWindSpeed) }} m/s</div>
-        <div v-else>없음</div>
-      </div>
-      <div class="weather-detail">
-        <div>🌪️ 최대 돌풍</div>
-        <div v-if="selectedDateMaxGust !== null">{{ Math.round(selectedDateMaxGust) }} m/s</div>
-        <div v-else>없음</div>
-      </div>
+      <Button
+        icon="pi pi-chevron-left"
+        @click="changeDate('prev')"
+        :disabled="!canGoPrev"
+        class="p-button-rounded"
+      />
+      <span>{{ selectedDate }} ({{ dayOfWeek }})</span>
+      <Button
+        icon="pi pi-chevron-right"
+        @click="changeDate('next')"
+        :disabled="!canGoNext"
+        class="p-button-rounded"
+      />
     </div>
 
-    </div>
-    <div v-else >
-      <h2 class="weather-heading">현재 날씨</h2>
-      <div class="weather-info">
-      <div class="weather-detail">
-        <div>🌡️ 기온</div>
-        <div>{{ Math.round(weatherInfo?.main?.temp) }} °C</div>
+    
+
+    <main class="main-layout">
+      <!-- WeatherTimeline -->
+      <div class="weather-timeline">
+        <WeatherTimeline
+          :filteredForecastData="filteredForecastData || []"
+          :chartOption="chartOption || {}"
+          :selectedDate="selectedDate || ''"
+          :canGoPrev="canGoPrev"
+          :canGoNext="canGoNext"
+          :changeDate="changeDate"
+        />
       </div>
-      <div class="weather-detail">
-        <div>
-          {{ weatherInfo?.snow ? '❄️ 적설량' : '💧 강수량' }}
+
+
+      <!-- Weather info section -->
+      <div class="weather-info-grid">
+        <div class="card">
+            <div class="card-title">
+              🌡️ 최저 / 최고 기온
+            </div>
+            <div class="card-pic card-pic--pressure"></div>
+            <div class="card-info">
+                <div class="card-centered">
+                    <div class="info-main">
+                        <div class="info-main-num">
+                          {{ Math.round(selectedDateTemperatures.minTemp) }}  / {{ Math.round(selectedDateTemperatures.maxTemp) }} 
+
+                        </div>
+                        <div class="info-main-text">
+                          °C
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-          <template v-if="weatherInfo?.snow">
-            {{ weatherInfo.snow['1h'] }} mm
-          </template>
-          <template v-else-if="weatherInfo?.rain">
-            {{ weatherInfo.rain['1h'] }} mm
-          </template>
-          <template v-else>
-            0.00 mm
-          </template>
+        
+        <div class="card">
+            <div class="card-title">
+              <div v-if="isSnowOnSelectedDate">❄️ 총 적설량</div>
+              <div v-else>💧 총 강수량</div>
+            </div>
+            <div class="card-pic card-pic--humidity"></div>
+            <div class="card-info">
+                <div class="card-centered">
+                    <div class="info-main">
+                        <div class="info-main-num">
+                          {{ selectedDateTotalRainOrSnow.toFixed(2) }}
+                        </div>
+                        <div class="info-main-text">
+                           mm 
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="weather-detail">
-        <div>💨 풍속</div>
-        <div>{{ weatherInfo?.wind?.speed? Math.round(weatherInfo?.wind?.speed) + ' m/s' : '없음' }}</div>
-      </div>
-      <div class="weather-detail">
-        <div>🌪️ 돌풍</div>
-        <div>{{ weatherInfo?.wind?.gust ? Math.round(weatherInfo?.wind?.gust) + ' m/s' : '없음' }}</div>
-      </div>
+
+        <div class="card">
+            <div class="card-title">
+              💨 최고 풍속 
+            </div>
+            <div class="card-pic card-pic--wind"></div>
+            <div class="card-info">
+                <div class="card-centered">
+                    <div class="info-main">
+                        <div class="info-main-num">
+                          {{ Math.round(selectedDateMaxWindSpeed) }}
+                        </div>
+                        <div class="info-main-text">
+                           m/s 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            🌪️ 최대 돌풍  
+          </div>
+          <div class="card-pic card-pic--gusts"></div>
+          <div class="card-info">
+              <div class="card-centered">
+                  <div class="info-main">
+                      <div class="info-main-num">
+                        {{ Math.round(selectedDateMaxGust) }}
+                      </div>
+                      <div class="info-main-text">
+                          m/s 
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+
     </div>
-    </div>
-  </main>
-</div>
+    </main>
+  </div>
 </template>
 
-<script>
-import WeatherTimeline from "@/components/WeatherTimeline.vue"
-export default {
-name: "MountainWeather",
-props: ['id'],
-components: {
-  WeatherTimeline
-},
-data() {
-  return {
-    showPopup: false // 팝업 창 표시 여부
-  };
-},
-methods: {
-  openPopup() {
-    this.showPopup = true; // 팝업 창 열기
-  },
-  closePopup() {
-    this.showPopup = false; // 팝업 창 닫기
-  }
-}
-};
 
+<script>
+import WeatherTimeline from "@/components/WeatherTimeline.vue";
+import Button from 'primevue/button';
+
+export default {
+  name: "MountainWeather",
+  props: ["id"],
+  components: {
+    WeatherTimeline,
+    Button,
+  },
+};
 </script>
 
 <script setup>
@@ -329,31 +356,37 @@ return groupedData;
 };
 
 onMounted(async () => {
-await getWeather();
+  await getWeather();
 
-if (weatherInfoForecast .value) {
-  const groupedForecast = groupForecastByDate(weatherInfoForecast.value);
-  // 반응형 객체에 데이터 할당
-  for (const date in groupedForecast) {
-    weatherInfoForecast[date] = groupedForecast[date];
+  if (weatherInfoForecast .value) {
+    const groupedForecast = groupForecastByDate(weatherInfoForecast.value);
+    // 반응형 객체에 데이터 할당
+    for (const date in groupedForecast) {
+      weatherInfoForecast[date] = groupedForecast[date];
+    }
+    forecastDates.value = Object.keys(groupedForecast);
+    selectedDate.value = forecastDates.value[0];
   }
-  forecastDates.value = Object.keys(groupedForecast);
-  selectedDate.value = forecastDates.value[0];
-}
 });
 
 const changeDate = (direction) => {
-const currentIndex = forecastDates.value.indexOf(selectedDate.value);
-if (direction === 'next' && currentIndex < forecastDates.value.length - 1) {
-  selectedDate.value = forecastDates.value[currentIndex + 1];
-} else if (direction === 'prev' && currentIndex > 0) {
-  selectedDate.value = forecastDates.value[currentIndex - 1];
-}
+  const currentIndex = forecastDates.value.indexOf(selectedDate.value);
+  if (direction === 'next' && currentIndex < forecastDates.value.length - 1) {
+    selectedDate.value = forecastDates.value[currentIndex + 1];
+  } else if (direction === 'prev' && currentIndex > 0) {
+    selectedDate.value = forecastDates.value[currentIndex - 1];
+  }
 };
 
+const dayOfWeek = computed(() => {
+  if (!selectedDate.value) return '';
+  const date = new Date(selectedDate.value);
+  return date.toLocaleDateString('ko-KR', { weekday: 'short' }).slice(0, 1);
+});
+
 const filteredForecastData = computed(() => {
-if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
-  return [];
+  if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
+    return [];
 }
 
 return weatherInfoForecast[selectedDate.value]
@@ -364,22 +397,22 @@ return weatherInfoForecast[selectedDate.value]
 const excludedTimes = ['00:00', '03:00'];
 
 const selectedDateTemperatures = computed(() => {
-if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
-  return { minTemp: null, maxTemp: null };
-}
-const temps = weatherInfoForecast[selectedDate.value]
-  .filter(item => !excludedTimes.includes(item.dt_txt.split(' ')[1].substring(0, 5)))
-  .map(item => item.main.temp);
+  if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
+    return { minTemp: null, maxTemp: null };
+  }
+  const temps = weatherInfoForecast[selectedDate.value]
+    .filter(item => !excludedTimes.includes(item.dt_txt.split(' ')[1].substring(0, 5)))
+    .map(item => item.main.temp);
 
-return {
-  minTemp: Math.min(...temps),
-  maxTemp: Math.max(...temps)
-};
+  return {
+    minTemp: Math.min(...temps),
+    maxTemp: Math.max(...temps)
+  };
 });
 
 const selectedDateTotalRainOrSnow = computed(() => {
-if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
-  return 0;
+  if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
+    return 0;
 }
 
 return weatherInfoForecast[selectedDate.value]
@@ -393,146 +426,234 @@ return weatherInfoForecast[selectedDate.value]
 });
 
 const selectedDateMaxWindSpeed = computed(() => {
-if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
-  return null;
+  if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
+    return null;
 }
+
 return Math.max(...weatherInfoForecast[selectedDate.value]
   .filter(item => !excludedTimes.includes(item.dt_txt.split(' ')[1].substring(0, 5)))
   .map(item => item.wind.speed));
 });
 
 const selectedDateMaxGust = computed(() => {
-if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
-  return null;
+  if (!selectedDate.value || !weatherInfoForecast[selectedDate.value]) {
+    return null;
 }
 return Math.max(...weatherInfoForecast[selectedDate.value]
   .filter(item => !excludedTimes.includes(item.dt_txt.split(' ')[1].substring(0, 5)))
   .map(item => item.wind.gust || 0));
 });
 
+const timezone = computed(() => weatherInfo.value?.timezone)
+
+
 // 강수량, 적설량 둘 다 있을 때 강수량으로 표기 (봄~가을)
+/*
 const isSnowOnSelectedDate = computed(() => {
 return filteredForecastData.value.every(item => 
   !item.rain && item.weather[0].description.includes("snow")
 );
 });
+*/
+
 // 강수량, 적설량 둘 다 있을 때 적설량으로 표기 (겨울)
-/*
 const isSnowOnSelectedDate = computed(() => {
 return filteredForecastData.value.some(item => item.weather[0].description.includes("snow"));
 });
-*/
+
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use '../assets/styles/main.scss' as *;
 
-.main {
-width: 100%;
-border-radius: 25px;
-color: black;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-}
-
-.weather-heading{
-justify-content: center;
-text-align: center;
-margin-bottom: 5px;
-}
-
-.weather-icon {
-font-size: 3em;
-}
-
-.weather-description {
-font-size: 0.8em;
-}
-
-.weather-info {
-display: flex;
-align-items: center;
-background: #fff;
-justify-content: center; 
-padding: 5px;
-border-radius: 10px;
-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-margin: 20px;
-white-space: nowrap;
-}
-
-.weather-detail {
-display: flex;
-justify-content: center;
-align-items: center;
-flex-direction: column;
-flex-shrink: 0;
-margin: 10px;
-}
-@media screen and (max-width: 600px) {
-.weather-detail {
-  font-size: 0.8em;
-  margin: 2.5px;
-}
-}
-
-.weather-detail-icon{
-width: 100%; 
-display: flex;
-justify-content: center;
-align-items: center;
-flex-direction: column;
-}
-
-.loading {
-text-align: center;
-color: #888;
+.main-layout {
+  display: flex;
+  flex-direction: row; /* 가로 정렬을 위해 row 설정 */
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  gap: 20px;
 }
 
 .date-navigation {
   display: flex;
-  justify-content: center; /* 중앙 정렬을 강화 */
+  justify-content: center;
   align-items: center;
-  text-align: center;
+  margin-bottom: 20px;
 }
 
-.date-navigation button {
+.date-navigation span {
+  font-size: 1.3rem; 
+  margin: 0 1rem; 
+}
+
+.date-navigation .p-button {
+  background-color:  #2196F3; 
   border: none;
-  background-color: transparent;
-  cursor: pointer;
-  opacity: 1; /* 기본적으로 버튼은 보임 */
-  transition: opacity 0.3s;
+  color: white;
+  border-radius: 4px; 
+  padding: 0.5rem 1rem; 
+  margin: 10px;
 }
 
-.date-navigation button.invisible {
-  opacity: 0; /* 버튼을 숨김 */
-  pointer-events: none; /* 클릭 이벤트 무시 */
+.date-navigation .p-button:hover {
+  background-color:  #1976D2; 
+  border: none;
+}
+
+.date-navigation .p-button:disabled {
+  background-color: transparent;
+  color: transparent; 
+  cursor: default;
 }
 
 .weather-timeline {
-justify-content: center;
-text-align: center;
-margin-bottom: 5px;
+  flex: 1;
+  margin-bottom: 50px;
 }
 
-.weather-timeline-button {
-background-color: #f3e91d; /* 배경색 */
-border: none; /* 테두리 제거 */
-color: black; /* 글자색 */
-padding: 5px 10px; /* 안쪽 여백 */
-text-align: center; /* 가운데 정렬 */
-text-decoration: none; /* 밑줄 제거 */
-display: inline-block;
-font-size: 12px; /* 글꼴 크기 */
-margin: 4px 2px; /* 바깥 여백 */
-cursor: pointer; /* 커서 모양 */
-border-radius: 8px; /* 모서리 둥글게 */
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 */
+.weather-info-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2x2 배치 설정 */
+  gap: 0px;
 }
 
-.weather-timeline-button:hover {
-background-color: #fff702; /* 마우스 호버 시 배경색 변경 */
+.weather-detail {
+  display: flex;
+  flex-direction: column; /* 텍스트를 세로로 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  justify-content: center; /* 수평 중앙 정렬 */
+  text-align: center;
 }
+
+.highlights {
+    padding: 28px 16px 16px;
+    background: url('/src/assets/img/gradient-4.jpg') no-repeat 0% 0%;
+    background-size: cover;
+    border-radius: 25px;
+
+    &-wrapper {
+        display: flex;
+        justify-content: space-between;
+
+        @media (max-width: 575px) {
+            flex-direction: column;
+        }
+    }
+}
+
+.title {
+    padding-bottom: 16px;
+}
+
+.highlight {
+    width: 32%;
+
+    @media (max-width: 575px) {
+        width: 100%;
+        margin-bottom: 16px;
+    }
+}
+
+.card {
+    width: 90%;
+    height: 50%;
+    margin: auto;
+    min-height: 230px;
+    padding: 16px;
+    background: url('/src/assets/img/gradient-2.jpg') no-repeat 50% 50%;
+    background-size: cover;
+    border-radius: 8px;
+
+    @media (max-width: 1199px) {
+        padding: 12px;
+    }
+
+    &-centered {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+    }
+
+    &-justify {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+    }
+
+
+    &-title {
+        padding-bottom: 12px;
+        font-size: 16px;
+        color: rgba(#fff, 0.75);
+        @media (max-width: 1199px) {
+            font-size: 12px;
+        }
+    }
+
+    &-pic {
+        width: 100%;
+        height: 90px;
+        margin-bottom: 5x;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        background-size: contain;
+
+        &--wind {
+        background-image: url('/src/assets/img/equalizer (2).png');
+    }
+
+    &--pressure {
+        background-image: url('/src/assets/img/barometer.png');
+    }
+
+    &--sun {
+        background-image: url('/src/assets/img/sun-moving.png');
+    }
+
+    &--humidity {
+        background-image: url('/src/assets/img/humidity.png');
+    }
+
+    &--gusts {
+        background-image: url('/src/assets/img/gusts.svg');
+    }
+
+  }
+}
+
+
+.info-main {
+    display: flex;
+    align-items: flex-end;
+
+    &:last-child {
+        text-align: right;
+    }
+
+    &-num {
+        font-size: 25px;
+        color: rgba(#fff, 0.75);
+        @media (max-width: 1199px) {
+            font-size: 18px;
+        }
+    }
+
+    &-text {
+        padding-left: 2px;
+        padding-bottom: 3px;
+        font-size: 13px;
+        color: rgba(#fff, 0.75);
+        margin-left: 5px;
+
+        @media (max-width: 1199px) {
+            padding-bottom: 1.5px;
+            font-size: 12px;
+        }
+    }
+}
+
 </style>

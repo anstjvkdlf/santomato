@@ -25,7 +25,13 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (to.path.startsWith('/detail')) {
+      return { top: 0 };
+    }
+    return savedPosition || { top: 0 }; 
+  },
 });
 
 export default router;
