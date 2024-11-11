@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SiteName from "@/components/SiteName.vue";
+import SiteName from "@/components/SiteName.vue"
 import Footer from "@/components/Footer.vue"
 import { ref } from 'vue';
 import Advertise from "@/components/Advertise.vue";
@@ -7,6 +7,9 @@ const searchTerm = ref('');
 function updateSearchTerm(newTerm) {
   searchTerm.value = newTerm;
 }
+import vHeader from "@/liveChatcomponents/vHeader.vue"
+import VFooter from "@/livechatcomponents/vFooter.vue"
+
 </script>
 
 <template>
@@ -16,7 +19,12 @@ function updateSearchTerm(newTerm) {
         <SiteName :searchTerm="searchTerm" @update-search-term="updateSearchTerm" />
       </div>
       <Advertise></Advertise>
+
+      <v-header />
       <router-view :searchTerm="searchTerm"></router-view>
+        <!-- <router-view /> -->
+      <v-footer />
+      <!-- <router-view></router-view> -->
       <Footer></Footer>
     </div>
   </main>
