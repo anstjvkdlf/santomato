@@ -1,25 +1,51 @@
 <template>
   <div class="page">
     <!-- 날짜 네비게이션 -->
-    <div class="date-navigation">
-      <Button
-        icon="pi pi-chevron-left"
-        @click="changeDate('prev')"
-        :disabled="!canGoPrev"
-        class="p-button-rounded"
-      />
-      <span>{{ selectedDate }} ({{ dayOfWeek }})</span>
-      <Button
-        icon="pi pi-chevron-right"
-        @click="changeDate('next')"
-        :disabled="!canGoNext"
-        class="p-button-rounded"
-      />
+    <div class="navigation-container">
+      <h2 class="page-title">⛰️ 산 정상 날씨</h2>
+      <div class="date-navigation">
+        <Button
+          icon="pi pi-chevron-left"
+          @click="changeDate('prev')"
+          :disabled="!canGoPrev"
+          class="p-button-rounded"
+          size="small"
+        />
+        <span>{{ selectedDate }} ({{ dayOfWeek }})</span>
+        <Button
+          icon="pi pi-chevron-right"
+          @click="changeDate('next')"
+          :disabled="!canGoNext"
+          class="p-button-rounded"
+          size="small"
+        />
+      </div>
     </div>
 
-    
-
+    <!-- weather-info -->
     <main class="main-layout">
+      <div class="weather-info-container">
+        <div class="temperature-large">
+          <div class="temperature-title">🌡️ 최저 / 최고 기온</div>
+          <div class="temperature-values">{{ Math.round(selectedDateTemperatures.minTemp) }} / {{ Math.round(selectedDateTemperatures.maxTemp) }} °C</div>
+        </div>
+        
+        <div class="other-weather-info">
+          <div class="weather-item">
+            <div class="weather-title">{{ isSnowOnSelectedDate ? '❄️ 총 적설량' : '💧 총 강수량' }}</div>
+            <div class="weather-value">{{ selectedDateTotalRainOrSnow.toFixed(2) }} mm</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-title">💨 최고 풍속</div>
+            <div class="weather-value">{{ Math.round(selectedDateMaxWindSpeed) }} m/s</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-title">🌪️ 최대 돌풍</div>
+            <div class="weather-value">{{ Math.round(selectedDateMaxGust) }} m/s</div>
+          </div>
+        </div>
+      </div>
+
       <!-- WeatherTimeline -->
       <div class="weather-timeline">
         <WeatherTimeline
@@ -31,89 +57,6 @@
           :changeDate="changeDate"
         />
       </div>
-
-
-      <!-- Weather info section -->
-      <div class="weather-info-grid">
-        <div class="card">
-            <div class="card-title">
-              🌡️ 최저 / 최고 기온
-            </div>
-            <div class="card-pic card-pic--pressure"></div>
-            <div class="card-info">
-                <div class="card-centered">
-                    <div class="info-main">
-                        <div class="info-main-num">
-                          {{ Math.round(selectedDateTemperatures.minTemp) }}  / {{ Math.round(selectedDateTemperatures.maxTemp) }} 
-
-                        </div>
-                        <div class="info-main-text">
-                          °C
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-title">
-              <div v-if="isSnowOnSelectedDate">❄️ 총 적설량</div>
-              <div v-else>💧 총 강수량</div>
-            </div>
-            <div class="card-pic card-pic--humidity"></div>
-            <div class="card-info">
-                <div class="card-centered">
-                    <div class="info-main">
-                        <div class="info-main-num">
-                          {{ selectedDateTotalRainOrSnow.toFixed(2) }}
-                        </div>
-                        <div class="info-main-text">
-                           mm 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">
-              💨 최고 풍속 
-            </div>
-            <div class="card-pic card-pic--wind"></div>
-            <div class="card-info">
-                <div class="card-centered">
-                    <div class="info-main">
-                        <div class="info-main-num">
-                          {{ Math.round(selectedDateMaxWindSpeed) }}
-                        </div>
-                        <div class="info-main-text">
-                           m/s 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">
-            🌪️ 최대 돌풍  
-          </div>
-          <div class="card-pic card-pic--gusts"></div>
-          <div class="card-info">
-              <div class="card-centered">
-                  <div class="info-main">
-                      <div class="info-main-num">
-                        {{ Math.round(selectedDateMaxGust) }}
-                      </div>
-                      <div class="info-main-text">
-                          m/s 
-                      </div>
-                  </div>
-              </div>
-          </div>
-        </div>
-
-    </div>
     </main>
   </div>
 </template>
@@ -286,13 +229,13 @@ const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 �
 const day = String(date.getDate()).padStart(2, '0');
 const hours = String(date.getHours()).padStart(2, '0');
 const minutes = String(date.getMinutes()).padStart(2, '0');
-return `${year}-${month}-${day} ${hours}:${minutes}`;
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
 const getWeather = async () => {
 try {
   const response = await fetch(`${BASE_URL}?lat=${latitude}&lon=${longtitude}&units=metric&appid=${API_KEY}`);
-  const response_forecast = await fetch(`${BASE_URL_FORECAST}?lat=${latitude}&lon=${longtitude}&units=metric&appid=${API_KEY}`);
+const response_forecast = await fetch(`${BASE_URL_FORECAST}?lat=${latitude}&lon=${longtitude}&units=metric&appid=${API_KEY}`);
   weatherInfo.value = await response.json();
   weatherInfoForecast.value = (await response_forecast.json()).list
 
@@ -460,200 +403,193 @@ return filteredForecastData.value.every(item =>
 const isSnowOnSelectedDate = computed(() => {
 return filteredForecastData.value.some(item => item.weather[0].description.includes("snow"));
 });
-
-
 </script>
 
 <style lang="scss" scoped>
 @use '../assets/styles/main.scss' as *;
 
-.main-layout {
+.navigation-container {
   display: flex;
-  flex-direction: row; /* 가로 정렬을 위해 row 설정 */
   justify-content: center;
   align-items: center;
+  gap: 20px;
   width: 100%;
   max-width: 1200px;
-  gap: 20px;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 15px 0;
 }
 
 .date-navigation {
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  position: absolute;
+  right: 0; /* 오른쪽에 고정 */
 }
 
 .date-navigation span {
-  font-size: 1.3rem; 
-  margin: 0 1rem; 
+  font-size: 1.1rem;
+  margin: 0 0.5rem;
 }
 
 .date-navigation .p-button {
-  background-color:  #2196F3; 
+  background-color: white;
   border: none;
-  color: white;
-  border-radius: 4px; 
-  padding: 0.5rem 1rem; 
-  margin: 10px;
+  color: #2196F3;
+  border-radius: 4px;
 }
 
 .date-navigation .p-button:hover {
-  background-color:  #1976D2; 
+  background-color: #e4f0fb;
+  color: #2196F3;
   border: none;
 }
 
 .date-navigation .p-button:disabled {
   background-color: transparent;
-  color: transparent; 
+  color: transparent;
   cursor: default;
 }
 
-.weather-timeline {
-  flex: 1;
-  margin-bottom: 50px;
-}
-
-.weather-info-grid {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2x2 배치 설정 */
-  gap: 0px;
-}
-
-.weather-detail {
+.main-layout {
   display: flex;
-  flex-direction: column; /* 텍스트를 세로로 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
-  justify-content: center; /* 수평 중앙 정렬 */
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  gap: 20px;
+  padding: 0 30px;
+}
+
+.left-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.weather-info-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  gap: 20px;
+}
+
+.temperature-large {
   text-align: center;
 }
 
-.highlights {
-    padding: 28px 16px 16px;
-    background: url('/src/assets/img/gradient-4.jpg') no-repeat 0% 0%;
-    background-size: cover;
-    border-radius: 25px;
-
-    &-wrapper {
-        display: flex;
-        justify-content: space-between;
-
-        @media (max-width: 575px) {
-            flex-direction: column;
-        }
-    }
+.temperature-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
-.title {
-    padding-bottom: 16px;
+.temperature-values {
+  font-size: 1.6rem;
+  color: #333;
 }
 
-.highlight {
-    width: 32%;
-
-    @media (max-width: 575px) {
-        width: 100%;
-        margin-bottom: 16px;
-    }
+.other-weather-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.card {
-    width: 90%;
-    height: 50%;
-    margin: auto;
-    min-height: 230px;
-    padding: 16px;
-    background: url('/src/assets/img/gradient-2.jpg') no-repeat 50% 50%;
-    background-size: cover;
-    border-radius: 8px;
+.weather-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+  gap: 5px;
+}
 
-    @media (max-width: 1199px) {
-        padding: 12px;
-    }
+.weather-item:last-child {
+  border-bottom: none;
+}
 
-    &-centered {
-        display: flex;
-        justify-content: center;
-        margin-top: 40px;
-    }
+.weather-title {
+  font-size: 0.9rem;
+  color: #555;
+}
 
-    &-justify {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 40px;
-    }
+.weather-value {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+}
 
+.weather-timeline {
+  flex: 2;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
 
-    &-title {
-        padding-bottom: 12px;
-        font-size: 16px;
-        color: rgba(#fff, 0.75);
-        @media (max-width: 1199px) {
-            font-size: 12px;
-        }
-    }
-
-    &-pic {
-        width: 100%;
-        height: 90px;
-        margin-bottom: 5x;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        background-size: contain;
-
-        &--wind {
-        background-image: url('/src/assets/img/equalizer (2).png');
-    }
-
-    &--pressure {
-        background-image: url('/src/assets/img/barometer.png');
-    }
-
-    &--sun {
-        background-image: url('/src/assets/img/sun-moving.png');
-    }
-
-    &--humidity {
-        background-image: url('/src/assets/img/humidity.png');
-    }
-
-    &--gusts {
-        background-image: url('/src/assets/img/gusts.svg');
-    }
-
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .main-layout {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
+@media (max-width: 768px) {
+  .navigation-container {
+    flex-direction: column;
+    align-items: center;
+  }
 
-.info-main {
-    display: flex;
-    align-items: flex-end;
+  .page-title {
+    font-size: 1.2rem;
+  }
 
-    &:last-child {
-        text-align: right;
-    }
+  .date-navigation {
+    position: static;
+    margin-top: 10px;
+  }
 
-    &-num {
-        font-size: 25px;
-        color: rgba(#fff, 0.75);
-        @media (max-width: 1199px) {
-            font-size: 18px;
-        }
-    }
+  .date-navigation span {
+    font-size: 0.9rem;
+  }
 
-    &-text {
-        padding-left: 2px;
-        padding-bottom: 3px;
-        font-size: 13px;
-        color: rgba(#fff, 0.75);
-        margin-left: 5px;
+  .temperature-title,
+  .temperature-values,
+  .weather-title,
+  .weather-value {
+    font-size: 0.9rem;
+  }
 
-        @media (max-width: 1199px) {
-            padding-bottom: 1.5px;
-            font-size: 12px;
-        }
-    }
+  .weather-info-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .temperature-large {
+    flex: 1;
+    min-width: 100%;
+  }
+
+  .other-weather-info {
+    flex: 1;
+    min-width: 100%;
+  }
+
+  .weather-timeline {
+    width: 100%;
+    margin: 0 auto; 
+    padding: 10px;
+    border: none;
+  }
 }
-
 </style>

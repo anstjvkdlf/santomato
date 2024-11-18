@@ -16,7 +16,7 @@
             </div>
             <div v-if="activePasswordInput === comment.id" class="password-input-group">
               <InputText v-model="comment.password" class="password-input" type="password" placeholder="비밀번호 입력" />
-              <Button label="삭제" icon="pi pi-check" class="p-button-danger" @click="deleteComment(comment.id, comment.password)" />
+              <Button label="삭제" icon="pi" class="p-button-danger" @click="deleteComment(comment.id, comment.password)" />
             </div>
           </div>
 
@@ -25,7 +25,7 @@
             <div class="input-group-horizontal">
               <!-- 닉네임과 비밀번호를 가로로 나란히 배치 -->
               <InputText v-model="replyNickname" placeholder="닉네임" />
-              <Password v-model="replyPassword" feedback="false" toggleMask placeholder="비밀번호" />
+              <Password v-model="replyPassword" :feedback="false" toggleMask placeholder="비밀번호" />
             </div>
 
             <!-- 대댓글 내용 입력 -->
@@ -51,7 +51,7 @@
                 <div class="comment-content">{{ reply.content }}</div>
                 <div v-if="activePasswordInput === reply.id" class="password-input-group">
                   <InputText v-model="reply.password" class="password-input" type="password" placeholder="비밀번호 입력" />
-                  <Button label="삭제" icon="pi pi-check" class="p-button-danger" @click="deleteComment(reply.id, reply.password)" />
+                  <Button label="삭제" icon="pi" class="p-button-danger" @click="deleteComment(reply.id, reply.password)" />
                 </div>
             </div>
             </div>
@@ -66,7 +66,7 @@
       <div class="input-group-horizontal">
         <!-- 닉네임과 비밀번호를 가로로 나란히 배치 -->
         <InputText v-model="nickname" placeholder="닉네임" />
-        <Password v-model="password" feedback="false" toggleMask placeholder="비밀번호" />
+        <Password v-model="password" :feedback="false" toggleMask placeholder="비밀번호" />
       </div>
 
       <!-- 댓글 내용 입력 -->
@@ -365,6 +365,7 @@ export default {
 }
 </script>
 
+
 <style scoped>
 .comment-form,
 .reply-form {
@@ -434,10 +435,89 @@ export default {
   align-items: center; /* 수직 중앙 정렬 */
 }
 
+.comment-content {
+  font-size: 0.9rem;
+  white-space: pre-wrap; /* 줄바꿈 허용 */
+  word-break: break-word; /* 긴 단어 줄바꿈 */
+  overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
+}
+
 .password-input-group {
   margin-left: auto; 
   display: flex;
   gap: 5px; 
   align-items: center;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .p-button .p-button-label {
+    font-size: 0.8rem; 
+  }
+
+  .password-input {
+    width: 70%; 
+  }
+
+  .comment-form,
+  .reply-form {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .comment-info {
+    display: flex;
+    align-items: center; 
+    font-size: 0.9rem; 
+  }
+
+  .comment-date {
+    margin-left: 0;
+    margin-top: 5px;
+    font-size: 0.85rem;
+  }
+
+  .comment-item {
+    padding: 8px 0;
+  }
+
+  .comment-content {
+    font-size: 0.9rem;
+  }
+
+  /* Adjust input-group-horizontal for mobile */
+  .input-group-horizontal {
+    width: 100%; 
+    gap: 5px; 
+  }
+  
+  .input-group-horizontal input,
+  .input-group-horizontal .p-button {
+    flex: 1; 
+    min-width: 0; 
+  }
+}
+
+@media (max-width: 480px) {
+  .password-input {
+    width: 60%; 
+  }
+
+  .comment-info,
+  .comment-date {
+    font-size: 0.8rem;
+  }
+
+  .comment-content {
+    font-size: 0.85rem;
+  }
+
+  .p-button {
+    font-size: 0.8rem;
+  }
+
+  .p-button-text {
+    font-size: 0.7rem;
+  }
 }
 </style>

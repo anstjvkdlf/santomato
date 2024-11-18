@@ -1,15 +1,13 @@
 <template>
   <div class="weather-timeline-container">
-
     <!-- Forecast Graph -->
     <div v-if="filteredForecastData.length && selectedDate">
       <div class="forecast-day-graph">
-        <v-chart :option="chartOption" style="width: 100%; height: 280px;" v-if="chartOption" />
+        <v-chart :option="chartOption" style="width: 100%; height: 100%;" v-if="chartOption" />
       </div>
       <div class="forecast-day">
         <div v-for="item in filteredForecastData" :key="item.dt" class="forecast-time">
           <div class="forecast-day-details">
-            <p v-if="item.dt_txt">{{ item.dt_txt.split(" ")[1].substring(0, 5) }}</p>
             <span v-if="weatherDescriptionMap[item.weather[0].description]">
               <span v-html="weatherDescriptionMap[item.weather[0].description].icon"></span>
               <span>{{ weatherDescriptionMap[item.weather[0].description].description }}</span>
@@ -65,40 +63,67 @@ const weatherDescriptionMap = {
 </script>
 
 <style>
+.weather-timeline-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .forecast-day-graph {
-  width: 100%;
-  margin: 10px 0;
-  display: flex; 
-  justify-content: center; 
+  width: 500px;
+  height: 270px;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
 }
 
 .forecast-day {
   width: 100%;
-  margin: 0 auto;
-  justify-content: space-around; 
-  align-items: flex-start;
-  text-align: center;
   display: flex;
+  justify-content: space-around;
+  align-items: center; 
+  text-align: center;
   overflow-x: auto;
-  white-space: nowrap; 
+  white-space: nowrap;
 }
 
 .forecast-day-details {
-  justify-content: start;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
 }
 
 .forecast-day-details, .forecast-day-details * {
   font-size: 0.9em !important;
 }
 
-.forecast-time {
-  padding: 4px;
-}
-
 .forecast-time p {
   margin: 0;
   padding: 2px;
 }
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .forecast-day-graph {
+    width: 100%; 
+    height: 240px;
+  }
+  .forecast-day {
+    justify-content: flex-start; 
+    gap: 10px; 
+  }
+}
 
+@media (max-width: 480px) {
+  .forecast-day-graph {
+    width: 100%;
+    height: 200px;
+  }
+  .forecast-day {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .forecast-day-details, .forecast-day-details * {
+    font-size: 0.8em !important; 
+  }
+}
 </style>

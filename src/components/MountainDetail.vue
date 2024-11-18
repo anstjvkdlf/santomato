@@ -52,7 +52,7 @@
         </TabPanel>
       </TabView>
     </div>
-    <Panel header="⛰️ 산 정상 날씨" class="weather-panel">
+    <Panel class="weather-panel">
       <MountainWeather :id="id"/>
     </Panel>
     <div class="comments-section">
@@ -136,9 +136,16 @@ created() {
 <style>
 /* 전체 레이아웃을 조정하는 컨테이너 */
 .mountain-container {
-  width: 1000px;
-  max-width: 90%;
+  width: 100%; 
+  max-width: 1000px;
   margin: 0 auto;
+  padding: 0 15px;
+  box-sizing: border-box; 
+}
+
+.mountainRoute {
+  width: 100%; 
+  height: auto;
 }
 
 .mountain-header {
@@ -236,25 +243,62 @@ created() {
 
 /* 반응형 조정 */
 @media only screen and (max-width: 767px) {
+  .mountain-container {
+    width: 95%;
+  }
+
   .mountain-name {
     font-size: 2em;
   }
-
 
   .cctv-button {
     font-size: 14px;
     padding: 8px 16px;
   }
+
+  .weather-panel {
+    font-size: 18px;
+  }
+
+  .comments-title {
+    font-size: 1.3em;
+  }
+
+  .p-tabview-tablist .p-tabview-nav {
+    flex-wrap: wrap;
+    font-size: 0.9em;
+  }
 }
 
 @media only screen and (max-width: 480px) {
+  .mountain-container {
+    width: 80%;
+  }
+
   .mountain-name {
     font-size: 1.5em;
   }
 
   .cctv-button {
-    font-size: 12px;
-    padding: 6px 12px;
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .weather-panel {
+    font-size: 16px;
+  }
+
+  .comments-title {
+    font-size: 1.2em;
+  }
+
+  .mountainRoute {
+    width: 100%;
+    height: auto;
+  }
+
+  .p-tabview-tablist {
+    font-size: 0.9rem;
   }
 }
 </style>
