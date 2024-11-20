@@ -550,19 +550,22 @@ return filteredForecastData.value.some(item => item.weather[0].description.inclu
 
   .page-title {
     font-size: 1.2rem;
+    margin: 5px 0;
   }
 
   .date-navigation {
     position: static;
-    margin-top: 10px;
   }
 
   .date-navigation span {
     font-size: 0.9rem;
   }
+  
+  .temperature-values{
+    font-size: 1.2rem;
+  }
 
   .temperature-title,
-  .temperature-values,
   .weather-title,
   .weather-value {
     font-size: 0.9rem;

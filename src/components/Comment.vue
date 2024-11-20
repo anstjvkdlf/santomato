@@ -430,23 +430,43 @@ export default {
   margin-left: auto;
   margin-top: 5px;
 }
-.comment-content-wrapper {
-  display: flex; /* 수평으로 배치 */
-  align-items: center; /* 수직 중앙 정렬 */
-}
 
-.comment-content {
-  font-size: 0.9rem;
-  white-space: pre-wrap; /* 줄바꿈 허용 */
-  word-break: break-word; /* 긴 단어 줄바꿈 */
-  overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
+.comment-content-wrapper {
+  position: relative;
 }
 
 .password-input-group {
-  margin-left: auto; 
+  position: absolute; /* 절대 위치 설정 */
+  top: 5%; /* X 버튼 바로 아래에 나타나도록 설정 */
+  right: 0; /* 오른쪽 정렬 */
+  z-index: 10; /* 다른 요소 위로 표시 */
+  background: white; /* 배경색 추가 (컨텐츠를 가리기 위해) */
+  border: 1px solid #ddd; /* 경계선 추가 */
+  padding: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
   display: flex;
-  gap: 5px; 
   align-items: center;
+  gap: 3px; 
+}
+
+.password-input-group .password-input {
+  flex-shrink: 0; 
+  height: 30px;
+  padding: 5px; 
+}
+
+.password-input-group .p-button-danger {
+  height: 30px; 
+  padding: 0 10px; 
+  font-size: 0.85rem; 
+}
+
+.comment-content {
+  position: relative; 
+  z-index: 1; 
+  white-space: pre-wrap; /* 줄바꿈 허용 */
+  word-break: break-word; /* 긴 단어 줄바꿈 */
+  overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
 }
 
 /* Mobile responsiveness */
@@ -457,6 +477,11 @@ export default {
 
   .password-input {
     width: 70%; 
+  }
+
+  .password-input-group .password-input {
+    flex-grow: 1; 
+    min-width: 0;
   }
 
   .comment-form,
