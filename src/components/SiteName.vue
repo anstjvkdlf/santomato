@@ -16,7 +16,9 @@
             placeholder="산 이름으로 검색하기"
             @input="updateTerm"
           />
-          <button @click="closeSearchModal">닫기</button>
+          <div class="button-container">
+            <button @click="closeSearchModal">검색</button>
+          </div>
         </div>
       </div>
 
@@ -98,12 +100,61 @@ export default {
 }
 
 .modal-content {
-  background-color: #fff;
+  background-color: #ffffff;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px; /* 둥근 모서리 */
   width: 80%;
-  max-width: 300px;
+  max-width: 400px;
   text-align: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15); /* 그림자 효과 */
+  animation: fadeIn 0.3s ease; /* 페이드 인 애니메이션 */
+}
+
+.button-container {
+  justify-content: center;
+}
+
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 10px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.modal-content input:focus {
+  border-color: #007BFF; /* 포커스 시 테두리 색상 */
+}
+
+.modal-content button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007BFF; /* 버튼 배경색 */
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal-content button:hover {
+  background-color: #0056b3; /* 호버 시 색상 */
 }
 
 .site-name {
