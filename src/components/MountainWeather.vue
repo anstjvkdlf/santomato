@@ -463,7 +463,7 @@ return filteredForecastData.value.some(item => item.weather[0].description.inclu
   width: 100%;
   max-width: 1200px;
   gap: 20px;
-  padding: 0 30px;
+  padding: 0 15px;
 }
 
 .left-container {
@@ -508,7 +508,7 @@ return filteredForecastData.value.some(item => item.weather[0].description.inclu
   justify-content: space-between;
   padding: 5px 0;
   border-bottom: 1px solid #ddd;
-  gap: 5px;
+  gap: 10px;
 }
 
 .weather-item:last-child {

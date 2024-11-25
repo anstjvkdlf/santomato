@@ -53,7 +53,7 @@ const weatherDescriptionMap = {
   'shower rain': { icon: '🌦️', description: '소나기' },
   'rain': { icon: '🌧️', description: '비' },
   'moderate rain' : { icon: '🌧️', description: '비' },
-  'light rain' : { icon: '☔', description: '비 조금' },
+  'light rain' : { icon: '☔', description: '약한 비' },
   'thunderstorm': { icon: '⚡', description: '천둥번개' },
   'snow': { icon: '❄️', description: '눈' },
   'light snow' :  { icon: '🌨️', description: '약한 눈' },
