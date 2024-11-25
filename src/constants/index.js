@@ -9,6 +9,7 @@ export const BASE_URL_KO = "https://apihub.kma.go.kr/api/typ01/cgi-bin/url/nph-a
 export const API_KEY_BJH = "15b326c9c3c7497f23a213fb964f6716";
 export const BASE_URL_FORECAST = "https://api.openweathermap.org/data/2.5/forecast"; 
 
+export const NAVER_MAPS_CLIENT_ID = "t04sooamwm";
 
 const PRESSURE_UNITS = 0.750062
 

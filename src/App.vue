@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import SiteName from "@/components/SiteName.vue"
 import Footer from "@/components/Footer.vue"
-import { ref } from 'vue';
+import CarpoolFooter from '@/components/CarpoolFooter.vue';
+import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
+
 import Advertise from "@/components/Advertise.vue";
+import vHeader from "@/liveChatcomponents/vHeader.vue"
+import VFooter from "@/livechatcomponents/vFooter.vue"
+
 const searchTerm = ref('');
 function updateSearchTerm(newTerm) {
   searchTerm.value = newTerm;
 }
-import vHeader from "@/liveChatcomponents/vHeader.vue"
-import VFooter from "@/livechatcomponents/vFooter.vue"
+
+// 현재 경로가 /carpool 또는 /chat일 때만 CarpoolFooter를 렌더링하도록 설정
+const route = useRoute();
+const showCarpoolFooter = computed(() => route.path === '/carpool' || route.path === '/chat');
 
 </script>
 
@@ -21,6 +29,8 @@ import VFooter from "@/livechatcomponents/vFooter.vue"
       <Advertise></Advertise>
       <!-- <v-header/> -->
         <router-view :searchTerm="searchTerm"></router-view>
+      <!-- 특정 페이지에서만 Carpool Footer 렌더링 -->
+      <CarpoolFooter v-if="showCarpoolFooter" />
       <!-- <v-footer/> -->
       <Footer></Footer>
     </div>

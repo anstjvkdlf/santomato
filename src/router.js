@@ -2,6 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from './components/Home.vue';
 import MountainDetail from './components/MountainDetail.vue';
+import Carpool from './components/Carpool.vue';
 import LiveChat from './views/HomeView.vue';
 
 const routes = [
@@ -12,7 +13,12 @@ const routes = [
   },
   {
     path: '/carpool',
-    name: 'livechat',
+    name: 'Carpool',
+    component: Carpool,
+  },
+  {
+    path: "/chat",
+    name: "LiveChat",
     component: LiveChat,
   },
   {
@@ -30,7 +36,7 @@ const router = createRouter({
     if (to.path.startsWith('/detail')) {
       return { top: 0 };
     }
-    return savedPosition || { top: 0 }; 
+    return savedPosition ; 
   },
 });
 
