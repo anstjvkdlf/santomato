@@ -1,27 +1,26 @@
 <template>
     <footer class="carpool-footer">
       <section class="carpool-footer-links d-flex justify-content-center">
-        <!-- 카풀 찾기 링크 -->
-        <router-link to="/carpool-find" class="footer-link" :class="{ active: isActive('/carpool-find') }">
-            <i class="fas fa-comments me-2 icon-gray"></i>
-            <span class="link-text">카풀 찾기</span>
-        </router-link>
         <!-- 카풀 생성 링크 -->
         <router-link to="/carpool" class="footer-link" :class="{ active: isActive('/carpool') }">
-            <i class="fas fa-comments me-2 icon-gray"></i>
-            <span class="link-text">카풀 생성</span>
+          <span class="material-icons">directions_car</span>
+          <span class="link-text">카풀 생성</span>
+        </router-link>
+        <!-- 카풀 찾기 링크 -->
+        <router-link to="/carpool-find" class="footer-link" :class="{ active: isActive('/carpool-find') }">
+          <span class="material-icons">search</span>
+          <span class="link-text">카풀 찾기</span>
         </router-link>
         <!-- 채팅 링크 -->
         <router-link to="/chat" class="footer-link" :class="{ active: isActive('/chat') }">
-            <i class="fas fa-comments me-2 icon-gray"></i>
-            <span class="link-text">채팅</span>
+          <span class="material-icons">forum</span>
+          <span class="link-text">채팅</span>
         </router-link>
       </section>
     </footer>
   </template>
   
   <script>
-  import { useRoute } from 'vue-router';
   
   export default {
     setup() {
@@ -80,5 +79,10 @@
     color: #0056b3;
     transform: scale(1.05); /* 호버 시 살짝 확대 */
   }
+
+.material-icons {
+  font-size: 30px;
+  color: gray; 
+}
   </style>
   
