@@ -29,7 +29,7 @@
         <img src="@/assets/카풀로고.png" class="carpool-logo">
       </router-link>
       <div v-if="isMobileView" class="search-icon" @click="openSearchModal">
-        <i class="fa-solid fa-magnifying-glass"></i>
+        <font-awesome-icon icon="magnifying-glass" />
       </div>
     </div>
   </div>

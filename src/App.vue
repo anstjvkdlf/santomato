@@ -6,8 +6,6 @@ import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 import Advertise from "@/components/Advertise.vue";
-import vHeader from "@/liveChatcomponents/vHeader.vue"
-import VFooter from "@/livechatcomponents/vFooter.vue"
 
 const searchTerm = ref('');
 function updateSearchTerm(newTerm) {

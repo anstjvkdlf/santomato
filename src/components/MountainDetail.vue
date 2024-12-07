@@ -1,5 +1,4 @@
 <template>
-  <Divider class="thin-divider" />
   <div class="mountain-container">
     <div class="mountain-header">
       <div class="mountain-name">{{ mountain.name }}</div>
@@ -8,14 +7,14 @@
           v-if="mountain.status === '정상'"
           label="정상"
           severity="success"
-          rounded
-        />
+          rounded>
+        </Button>
         <Button
           v-else-if="mountain.status === '통제'"
           label="통제"
           severity="danger"
-          rounded
-        />
+          rounded>
+        </Button>
       </div>
     </div>
     <Divider class="thin-divider" />
@@ -26,20 +25,26 @@
         v-if="mountain.cctv_url !== 'blank'"
         @click="openCCTVNewTab(mountain.cctv_url)"
         label="실시간 CCTV"
-        icon="pi pi-video" iconPos="left"
+        icon="pi pi-video" iconPos="left">
+      </Button>
+      <div class="image-wrapper">
+      <img
+        class="mountainRoute"
+        :src="mountain.status === '통제' ? mountain.dead_image_url : `https://backend.santomato.com` + mountain.alive_image"
+        alt="탐방로 이미지"
+        @click="openImagePreview"
       />
-      <Image alt="산통제정보" preview icon="pi pi-search"
-      width=1000px
-      class="mountainRoute" 
-      v-if="mountain.status === '통제' && mountain.dead_image_url"
-      :src="mountain.dead_image_url"
-      />
-      <Image alt="정상탐방로" preview icon="pi pi-search"
-      width=1000px
-      class="mountainRoute" 
-      v-if="mountain.status === '정상' && mountain.alive_image"
-      :src="`https://backend.santomato.com` + mountain.alive_image"
-      />
+      <i class="pi pi-search preview-icon" @click="openImagePreview"></i>
+      </div>
+
+      <!-- Preview Modal -->
+      <div v-if="showPreview" class="image-preview-modal" @click="closePreview">
+        <img
+          class="preview-image"
+          :src="mountain.status === '통제' ? mountain.dead_image_url : `https://backend.santomato.com` + mountain.alive_image"
+          alt="탐방로 이미지"
+        />
+      </div>
       
       <!-- TabView for description sections -->
       <TabView>
@@ -59,7 +64,7 @@
       <h4 class="comments-title">{{ mountain.name }} 댓글</h4>
       <Divider class="bold-divider" />
       <div class="comment-container">
-        <Comment :id="id" />
+        <Comment :id="id"/>
       </div>
     </div>
   </div>
@@ -92,6 +97,7 @@ data() {
   return {
     mountain: {},
     descriptionSections: [], 
+    showPreview: false,
   }
 },
 methods: {
@@ -125,7 +131,13 @@ methods: {
   },
   openCCTVNewTab(cctvUrl) {
     window.open(cctvUrl, '_blank');
-  }
+  },
+  openImagePreview() {
+    this.showPreview = true;
+  },
+  closePreview() {
+    this.showPreview = false;
+  },
 },
 created() {
   this.fetchMountainData();
@@ -136,11 +148,13 @@ created() {
 <style>
 /* 전체 레이아웃을 조정하는 컨테이너 */
 .mountain-container {
-  width: 100%; 
-  max-width: 1000px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 15px;
   box-sizing: border-box; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .mountainRoute {
@@ -172,11 +186,15 @@ created() {
 
 /* Comment, MountainWeather, ImageContainer 의 공통 스타일 */
 .image-container,
-.mountain-weather,
+.comment-section,
 .comment-container {
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.comment-container {
+  flex-direction: column;
 }
 
 /* Tab 스타일 */
@@ -214,6 +232,8 @@ created() {
 }
 
 .weather-panel{
+  width: 100%;
+  height: auto;
   font-size: 20px;
   margin-bottom: 50px;
 }
@@ -241,12 +261,71 @@ created() {
   border-radius: 2px; /* Optional: add rounded edges */
 }
 
+
+.mountainRoute {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.preview-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.preview-icon:hover {
+  color: #fff;
+}
+
+.image-preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.preview-image {
+  width: auto;
+  height: auto;
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+
 /* 반응형 조정 */
 @media only screen and (max-width: 767px) {
   .mountain-container {
-    width: 95%;
+    width: 100%;
   }
 
+  .image-container,
+  .comment-section,
+  .comment-container {
+    width: 100%;
+    height: auto;
+  }
+  
+  .comments-section{
+    max-width: 700px;
+  }
+  .image-container Image{
+    width: 100%;
+    height: auto;
+  }
   .mountain-name {
     font-size: 2em;
   }
@@ -268,11 +347,24 @@ created() {
     flex-wrap: wrap;
     font-size: 0.9em;
   }
+
+  .preview-image {
+    max-width: 90%;
+    max-height: 90%;
+  }
 }
+
 
 @media only screen and (max-width: 480px) {
   .mountain-container {
-    width: 80%;
+    width: 100%;
+  }
+
+  .image-container,
+  .comment-section,
+  .comment-container {
+    width: 100%;
+    height: auto;
   }
 
   .mountain-name {
@@ -299,6 +391,10 @@ created() {
 
   .p-tabview-tablist {
     font-size: 0.9rem;
+  }
+  .comments-section{
+    max-width: 300px;
+    height: auto;
   }
 }
 </style>

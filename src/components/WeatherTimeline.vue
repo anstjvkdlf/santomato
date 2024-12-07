@@ -1,7 +1,7 @@
 <template>
   <div class="weather-timeline-container">
     <!-- Forecast Graph -->
-    <div v-if="filteredForecastData.length && selectedDate">
+    <div class = "weather-container" v-if="filteredForecastData.length && selectedDate">
       <div class="forecast-day-graph">
         <v-chart :option="chartOption" style="width: 100%; height: 100%;" v-if="chartOption" />
       </div>
@@ -68,6 +68,11 @@ const weatherDescriptionMap = {
   flex-direction: column;
   align-items: center;
 }
+.weather-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .forecast-day-graph {
   width: 500px;
@@ -75,6 +80,7 @@ const weatherDescriptionMap = {
   display: flex;
   justify-content: center;
   align-items: center; 
+  padding: auto;
 }
 
 .forecast-day {
@@ -102,9 +108,9 @@ const weatherDescriptionMap = {
   padding: 2px;
 }
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .forecast-day-graph {
-    width: 100%; 
+    width: 300px; 
     height: 240px;
   }
   .forecast-day {
@@ -115,7 +121,7 @@ const weatherDescriptionMap = {
 
 @media (max-width: 480px) {
   .forecast-day-graph {
-    width: 100%;
+    width: 200px;
     height: 200px;
   }
   .forecast-day {

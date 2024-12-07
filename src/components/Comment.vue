@@ -105,67 +105,7 @@ export default {
       replyContent: '',  
       activePasswordInput: null,
       activeReplyCommentId: null,
-      comments: [
-        {
-            "id": 26,
-            "nickname": "안녕",
-            "password": "1234",
-            "content": "안녕",
-            "date": "2024-09-08T14:23:37.063895Z",
-            "ip": "127.0.0.1",
-            "parent_comment": null,
-            "deleted": true,
-            "replies": [
-                {
-                    "id": 33,
-                    "nickname": "123",
-                    "password": "1234",
-                    "content": "1234",
-                    "date": "2024-09-24T15:37:20.535064Z",
-                    "ip": "1.1.1.1",
-                    "parent_comment": 26,
-                    "deleted": false,
-                    "replies": []
-                }
-            ]
-        },
-        {
-            "id": 27,
-            "nickname": "야호",
-            "password": "1234",
-            "content": "야호",
-            "date": "2024-09-08T14:25:10.697420Z",
-            "ip": "127.0.0.1",
-            "parent_comment": null,
-            "deleted": false,
-            "replies": [
-                {
-                    "id": 36,
-                    "nickname": "지현",
-                    "password": "1234",
-                    "content": "지현",
-                    "date": "2024-09-24T15:50:24.942595Z",
-                    "ip": "127.0.0.1",
-                    "parent_comment": 27,
-                    "deleted": false,
-                    "replies": []
-                }
-            ]
-        },
-        {
-            "id": 28,
-            "nickname": "지현",
-            "password": "1234",
-            "content": "지현",
-            "date": "2024-09-08T14:25:10.697420Z",
-            "ip": "127.0.0.1",
-            "parent_comment": null,
-            "deleted": false,
-            "replies": [
-                
-            ]
-        }
-    ],
+      comments: [],
     };
   },
   computed: {
@@ -470,7 +410,7 @@ export default {
 }
 
 /* Mobile responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .p-button .p-button-label {
     font-size: 0.8rem; 
   }
@@ -486,7 +426,7 @@ export default {
 
   .comment-form,
   .reply-form {
-    max-width: 100%;
+    max-width: 600px;
     padding: 0 10px;
   }
 
@@ -524,6 +464,12 @@ export default {
 }
 
 @media (max-width: 480px) {
+  .comment-form,
+  .reply-form {
+    max-width: 400px;
+    height: auto;
+  }
+
   .password-input {
     width: 60%; 
   }

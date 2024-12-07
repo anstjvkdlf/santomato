@@ -10,7 +10,7 @@
           :disabled="!canGoPrev"
           class="p-button-rounded"
           size="small"
-        />
+        ></Button>
         <span>{{ selectedDate }} ({{ dayOfWeek }})</span>
         <Button
           icon="pi pi-chevron-right"
@@ -18,7 +18,7 @@
           :disabled="!canGoNext"
           class="p-button-rounded"
           size="small"
-        />
+        ></Button>
       </div>
     </div>
 
@@ -542,7 +542,7 @@ return filteredForecastData.value.some(item => item.weather[0].description.inclu
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .navigation-container {
     flex-direction: column;
     align-items: center;

@@ -1,5 +1,4 @@
 import './assets/main.css';
-import '@/index.css'
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia'
@@ -9,21 +8,30 @@ import onlineHandler from '@/utils/onlineHandler.js'
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 import Chart from 'primevue/chart';
-
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import 'primeicons/primeicons.css'; // PrimeIcons
 import 'primeflex/primeflex.css'; // PrimeFlex
 
 import App from './App.vue';
 import router from './router';
 
-const app = createApp(App);
+library.add(faMagnifyingGlass);
 
+const app = createApp(App);
+app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(createPinia())
 app.use(router);
 app.use(Chart);
+// app.use(PrimeVue);
 app.use(PrimeVue, {
   theme: {
-    preset: Aura
+    preset: Aura,
+    options: {
+      darkModeSelector: false || 'none',
+  }
   }
 });
 
