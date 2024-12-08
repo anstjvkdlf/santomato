@@ -1,4 +1,6 @@
 <template>
+  <h6 class = "carpool-title"> 생성할 서비스를 선택하세요. </h6>
+
   <div class="carpool-container">
     <!-- 들날 동행 버튼 -->
       <img 
@@ -58,16 +60,22 @@ export default {
 </script>
 
 <style scoped>
+.carpool-title{
+  font-size: 18px;
+  margin-top: 50px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
 .carpool-container {
   display: flex;
   flex-direction: column; /* Vertical layout */
-  justify-content: center; /* Center vertically */
   align-items: center; /* Center horizontally */
   gap: 20px; /* Space between buttons */
   padding: 20px;
   box-sizing: border-box;
   width: 300px;
-  height: 500px; 
+  height: 450px; 
 }
 
 .button-with-tooltip {
@@ -96,7 +104,7 @@ export default {
   z-index: 10;
 
   /* 줄바꿈 설정 */
-  white-space: normal;
+  word-break: keep-all;
 
 }
 
