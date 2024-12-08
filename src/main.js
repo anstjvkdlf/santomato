@@ -11,14 +11,14 @@ import Chart from 'primevue/chart';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faCar, faComments } from '@fortawesome/free-solid-svg-icons';
 import 'primeicons/primeicons.css'; // PrimeIcons
 import 'primeflex/primeflex.css'; // PrimeFlex
 
 import App from './App.vue';
 import router from './router';
 
-library.add(faMagnifyingGlass);
+library.add(faMagnifyingGlass, faCar, faComments);
 
 const app = createApp(App);
 app.component('font-awesome-icon', FontAwesomeIcon)

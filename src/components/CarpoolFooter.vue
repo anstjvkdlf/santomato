@@ -3,17 +3,17 @@
       <section class="carpool-footer-links d-flex justify-content-center">
         <!-- 카풀 생성 링크 -->
         <router-link to="/carpool" class="footer-link" :class="{ active: isActive('/carpool') }">
-          <span class="material-icons">directions_car</span>
-          <span class="link-text">카풀 생성</span>
+          <font-awesome-icon icon="car" style="color: grey;" />
+          <span class="link-text">동행 생성</span>
         </router-link>
         <!-- 카풀 찾기 링크 -->
         <router-link to="/carpool-find" class="footer-link" :class="{ active: isActive('/carpool-find') }">
-          <span class="material-icons">search</span>
-          <span class="link-text">카풀 찾기</span>
+          <font-awesome-icon icon="magnifying-glass" style="color: grey;"/>
+          <span class="link-text">동행 찾기</span>
         </router-link>
         <!-- 채팅 링크 -->
         <router-link to="/chat" class="footer-link" :class="{ active: isActive('/chat') }">
-          <span class="material-icons">forum</span>
+          <font-awesome-icon icon="comments" style="color: grey;"/>
           <span class="link-text">채팅</span>
         </router-link>
       </section>
@@ -38,7 +38,7 @@
     background-color: #f8f9fa; /* 전체 페이지 Footer와 동일한 색상 */
     padding: 15px 0;
     border-top: 1px solid #ddd;
-    max-width: 300px;
+    max-width: 500px;
     width: 100%;
   }
   
@@ -57,6 +57,7 @@
     display: flex;
     flex-direction: column; /* 아이콘과 텍스트를 세로로 배치 */
     align-items: center;
+    margin: 0 10px;
   }
   
   .footer-link i {

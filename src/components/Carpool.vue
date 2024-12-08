@@ -1,41 +1,88 @@
 <template>
   <div class="carpool-container">
+    <!-- 라디오 버튼 그룹 -->
+    <div class="radio-group">
+      <RadioButton
+        v-model="selectedMode"
+        name="들날 카풀"
+        value="companion"
+        class="p-radiobutton-sm"
+      />
+      <label for="companion" class="radio-label">들날 동행</label>
+      <div class="info-icon">
+        <i class="pi pi-question-circle p-button-secondary"></i>
+        <span class="info-tooltip">차량 두대를 각각 들머리, 날머리에 주차하고 함께 이동합니다.</span>
+      </div>
+
+      <RadioButton
+        v-model="selectedMode"
+        name="등산 카풀"
+        value="carpool"
+        class="p-radiobutton-sm"
+      />
+      <label for="carpool" class="radio-label">등산 카풀</label>
+      <div class="info-icon">
+        <i class="pi pi-question-circle p-button-secondary"></i>
+        <span class="info-tooltip">소정의 금액을 받고 목적지까지 카풀 동행을 태워줍니다.</span>
+      </div>
+    </div>
+    
     <div class="search-section">
       <!-- 출발지 검색 -->
       <div class="input-group">
         <InputText
-          id="start-location"
-          v-model="startLocationInput"
+          id="departure"
+          v-model="departureInput"
           placeholder="출발지를 검색하세요"
           readonly
           class="p-inputtext-sm"
         />
-        <Button label="출발지 검색" icon="pi pi-search" @click="openPostcodePopup" class="p-button-sm" />
+      </div>
+      <div class="input-group">
+        <Button
+          label="출발지 검색"
+          icon="pi pi-search"
+          @click="openPostcodePopup"
+          class="p-button-sm">
+        </Button>
       </div>
 
       <!-- 들머리 선택 -->
-      <div class="input-group">
+      <div class="input-group" v-if="selectedMode === 'companion'">
         <Dropdown
-          id="entrance-location"
-          v-model="entranceLocation"
+          id="start-location"
+          v-model="startLocation"
           :options="routeOptions"
           optionLabel="name"
           placeholder="들머리 선택"
           class="p-dropdown-sm"
-          @change="updateMarker('entrance')"
+          @change="updateMarker('start')"
         />
       </div>
 
       <!-- 날머리 선택 -->
-      <div class="input-group">
+      <div class="input-group" v-if="selectedMode === 'companion'">
         <Dropdown
-          id="exit-location"
-          v-model="exitLocation"
+          id="end-location"
+          v-model="endLocation"
           :options="routeOptions"
           optionLabel="name"
           placeholder="날머리 선택"
           class="p-dropdown-sm"
-          @change="updateMarker('exit')"
+          @change="updateMarker('end')"
+        />
+      </div>
+
+      <!-- 목적지 선택 -->
+      <div class="input-group" v-if="selectedMode === 'carpool'">
+        <Dropdown
+          id="end-location"
+          v-model="endLocation"
+          :options="routeOptions"
+          optionLabel="name"
+          placeholder="목적지 선택"
+          class="p-dropdown-sm"
+          @change="updateMarker('end')"
         />
       </div>
 
@@ -54,11 +101,22 @@
 
     <!-- 지도 -->
     <div id="map" class="map-container"></div>
+
+    <!-- 생성 버튼 -->
+    <div class="input-group">
+      <Button
+        label="생성"
+        @click="createCarpool"
+        icon="pi pi-check"
+        class="p-button-sm">
+      </Button>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from "vue";
+import RadioButton from "primevue/radiobutton";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
@@ -66,20 +124,25 @@ import DatePicker from "primevue/datepicker";
 
 export default {
   components: {
+    RadioButton,
     InputText,
     Button,
     Dropdown,
     DatePicker,
   },
-  setup() {
-    const startLocationInput = ref("");
-    const startDate = ref(null);
-    const entranceLocation = ref(null);
-    const exitLocation = ref(null);
+  props: {
+    type: String,
+  },
+  setup(props) { 
+    const selectedMode = ref(props.type || "companion"); // default mode
+    const departureInput = ref("");
+    const departureDate = ref(null);
+    const startLocation = ref(null);
+    const endLocation = ref(null);
 
     const map = ref(null);
     const markers = ref({
-      start: null,
+      departure: null,
       entrance: null,
       exit: null,
     });
@@ -88,9 +151,8 @@ export default {
     const routeOptions = ref([
       { name: "소공원", address: "강원 속초시 설악산로 1055" },
       { name: "한계령", address: "강원 양양군 설악로 1 중청봉대피소" },
-      { name: "장수대", address: "강원 인제군 설악로 4193" },
       { name: "오색", address: "강원 양양군 서면 대청봉길 95" },
-      { name: "오세암", address: "강원 인제군 북면 용대리 산75" },
+      { name: "백담사", address: "강원 인제군 북면 백담로 746" },
     ]);
 
     // 지도 초기화
@@ -113,7 +175,7 @@ export default {
       new daum.Postcode({
         oncomplete: function (data) {
           // 팝업에서 주소 선택 시 입력 필드에 채우기
-          startLocationInput.value = data.address;
+          departureInput.value = data.address;
 
           // 주소로 좌표 변환 후 지도에 마커 표시
           updateMarkerWithAddress("start", data.address);
@@ -123,7 +185,7 @@ export default {
 
     // 선택된 들머리 또는 날머리의 주소로 마커 업데이트
     const updateMarker = (type) => {
-      const selectedOption = type === "entrance" ? entranceLocation.value : exitLocation.value;
+      const selectedOption = type === "start" ? startLocation.value : endLocation.value;
 
       if (!selectedOption) return;
 
@@ -161,15 +223,28 @@ export default {
     };
 
     return {
-      startLocationInput,
-      startDate,
-      entranceLocation,
-      exitLocation,
+      selectedMode,
+      departureInput,
+      departureDate,
+      startLocation,
+      endLocation,
       routeOptions,
       openPostcodePopup,
       updateMarker,
     };
   },
+
+  method: {
+    async createCarpool() {
+      try {
+          await axios.post(`https://backend.santomato.com/api/carpool/`, {
+            
+          });
+          } catch (error) {
+          console.error('Failed to sumbit:', error);
+      }
+    },
+  }
 };
 </script>
 
@@ -182,8 +257,8 @@ export default {
   padding: 10px;
   gap: 15px;
   box-sizing: border-box;
-  min-height: 100vh;
   width: 300px;
+  height: 700px;
 }
 
 .search-section {
@@ -208,5 +283,44 @@ export default {
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow: hidden;
+}
+
+.radio-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.info-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+
+.info-tooltip {
+  background-color: #333;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font-size: 0.8em;
+  position: absolute;
+  top: 30px;
+  transform: translateX(-50%);
+  display: none;
+  z-index: 10;
+}
+
+.info-icon:hover .info-tooltip {
+  display: block;
 }
 </style>
