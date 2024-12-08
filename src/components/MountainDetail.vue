@@ -149,17 +149,13 @@ created() {
 /* 전체 레이아웃을 조정하는 컨테이너 */
 .mountain-container {
   width: 100%;
+  width: 1000px;
   margin: 0 auto;
   box-sizing: border-box; 
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-}
-
-.mountainRoute {
-  width: 100%; 
-  height: auto;
 }
 
 .mountain-header {
@@ -186,16 +182,16 @@ created() {
 
 /* Comment, MountainWeather, ImageContainer 의 공통 스타일 */
 .image-container,
-.comment-section,
+.comments-section,
 .comment-container {
   width: 100%;
-  max-width: 1000px;
   margin: 0 auto;
 }
 
 .comment-container {
   flex-direction: column;
 }
+
 
 /* Tab 스타일 */
 .p-tabview {
@@ -313,7 +309,7 @@ created() {
   }
 
   .image-container,
-  .comment-section,
+  .comments-section,
   .comment-container {
     width: 100%;
     height: auto;
@@ -334,9 +330,14 @@ created() {
     font-size: 14px;
     padding: 8px 16px;
   }
+  
+  .description {
+    font-size: 12px;
+  }
 
   .weather-panel {
     font-size: 18px;
+    width: 90%;
   }
 
   .comments-title {
@@ -344,8 +345,13 @@ created() {
   }
 
   .p-tabview-tablist .p-tabview-nav {
+    width: 90%;
     flex-wrap: wrap;
     font-size: 0.9em;
+  }
+
+  .p-tabview{
+    width: 90%;
   }
 
   .preview-image {
@@ -354,14 +360,13 @@ created() {
   }
 }
 
-
 @media only screen and (max-width: 480px) {
   .mountain-container {
     width: 100%;
   }
 
   .image-container,
-  .comment-section,
+  .comments-section,
   .comment-container {
     width: 100%;
     height: auto;
@@ -382,11 +387,6 @@ created() {
 
   .comments-title {
     font-size: 1.2em;
-  }
-
-  .mountainRoute {
-    width: 100%;
-    height: auto;
   }
 
   .p-tabview-tablist {

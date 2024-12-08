@@ -414,7 +414,6 @@ return filteredForecastData.value.some(item => item.weather[0].description.inclu
   align-items: center;
   gap: 20px;
   width: 100%;
-  max-width: 1200px;
   position: relative;
   margin-bottom: 15px;
 }
@@ -461,9 +460,9 @@ return filteredForecastData.value.some(item => item.weather[0].description.inclu
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  max-width: 1200px;
   gap: 20px;
   padding: 0 15px;
+  margin: 0 auto;
 }
 
 .left-container {
@@ -480,6 +479,7 @@ return filteredForecastData.value.some(item => item.weather[0].description.inclu
   background-color: #f5f5f5;
   border-radius: 8px;
   gap: 20px;
+  justify-content: center
 }
 
 .temperature-large {

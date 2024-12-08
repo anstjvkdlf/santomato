@@ -110,22 +110,23 @@ const weatherDescriptionMap = {
 /* Responsive adjustments */
 @media (max-width: 767px) {
   .forecast-day-graph {
-    width: 300px; 
+    width: 400px; 
     height: 240px;
   }
+
   .forecast-day {
-    justify-content: flex-start; 
+    justify-content: center; 
     gap: 10px; 
   }
 }
 
 @media (max-width: 480px) {
   .forecast-day-graph {
-    width: 200px;
+    width: 300px; 
     height: 200px;
   }
   .forecast-day {
-    justify-content: flex-start;
+    justify-content: center;
     gap: 8px;
   }
   .forecast-day-details, .forecast-day-details * {

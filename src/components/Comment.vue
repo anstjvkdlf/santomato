@@ -24,8 +24,8 @@
           <div v-if="activeReplyCommentId === comment.id" class="reply-form">
             <div class="input-group-horizontal">
               <!-- 닉네임과 비밀번호를 가로로 나란히 배치 -->
-              <InputText v-model="replyNickname" placeholder="닉네임" />
-              <Password v-model="replyPassword" :feedback="false" toggleMask placeholder="비밀번호" />
+              <InputText v-model="replyNickname" placeholder="닉네임"  />
+              <Password v-model="replyPassword" :feedback="false" toggleMask placeholder="비밀번호"/>
             </div>
 
             <!-- 대댓글 내용 입력 -->
@@ -65,8 +65,8 @@
     <div class="comment-form">
       <div class="input-group-horizontal">
         <!-- 닉네임과 비밀번호를 가로로 나란히 배치 -->
-        <InputText v-model="nickname" placeholder="닉네임" />
-        <Password v-model="password" :feedback="false" toggleMask placeholder="비밀번호" />
+        <InputText v-model="nickname" placeholder="닉네임"/>
+        <Password v-model="password" :feedback="false" toggleMask placeholder="비밀번호"/>
       </div>
 
       <!-- 댓글 내용 입력 -->
@@ -310,7 +310,6 @@ export default {
 .comment-form,
 .reply-form {
   width: 100%;
-  max-width: 1000px;
   margin: 0 auto;
   margin-bottom: 20px;
 }
@@ -322,13 +321,6 @@ export default {
 
 .comment-clickable {
   cursor: pointer;
-}
-
-.input-group-horizontal {
-  display: flex;
-  gap: 10px;
-  justify-content: left;
-  width: 100%;
 }
 
 .input-field {
@@ -381,18 +373,11 @@ export default {
   right: 0; /* 오른쪽 정렬 */
   z-index: 10; /* 다른 요소 위로 표시 */
   background: white; /* 배경색 추가 (컨텐츠를 가리기 위해) */
-  border: 1px solid #ddd; /* 경계선 추가 */
   padding: 5px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
   display: flex;
   align-items: center;
   gap: 3px; 
-}
-
-.password-input-group .password-input {
-  flex-shrink: 0; 
-  height: 30px;
-  padding: 5px; 
 }
 
 .password-input-group .p-button-danger {
@@ -409,6 +394,11 @@ export default {
   overflow-wrap: break-word; /* 긴 단어 줄바꿈 */
 }
 
+.input-group-horizontal {
+  display: flex; 
+  gap: 10px; 
+}
+
 /* Mobile responsiveness */
 @media (max-width: 767px) {
   .p-button .p-button-label {
@@ -419,15 +409,9 @@ export default {
     width: 70%; 
   }
 
-  .password-input-group .password-input {
-    flex-grow: 1; 
-    min-width: 0;
-  }
-
   .comment-form,
   .reply-form {
-    max-width: 600px;
-    padding: 0 10px;
+    max-width: 700px;
   }
 
   .comment-info {
@@ -450,16 +434,12 @@ export default {
     font-size: 0.9rem;
   }
 
-  /* Adjust input-group-horizontal for mobile */
   .input-group-horizontal {
-    width: 100%; 
     gap: 5px; 
   }
-  
-  .input-group-horizontal input,
-  .input-group-horizontal .p-button {
-    flex: 1; 
-    min-width: 0; 
+
+  .input-group-horizontal input{
+    width: 50%;
   }
 }
 
@@ -471,7 +451,7 @@ export default {
   }
 
   .password-input {
-    width: 60%; 
+    width: 70%; 
   }
 
   .comment-info,
@@ -490,5 +470,6 @@ export default {
   .p-button-text {
     font-size: 0.7rem;
   }
+
 }
 </style>
