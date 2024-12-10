@@ -15,7 +15,7 @@
         들날 동행
       </div>
       <span class="info-tooltip">차량 두대로 날머리에 도착한 뒤, 하나의 차량으로 함께 들머리로 이동합니다. 
-        등산을 마치고 날머리에 주차된 차량을 이용해 들머리로 이동합니다. </span>
+        등산을 마치고 날머리에 주차된 차량을 이용해 함께 들머리로 돌아가 각자의 차량으로 이동합니다. </span>
     </div>
 
     <!-- 등산 카풀 버튼 -->
@@ -30,7 +30,7 @@
         <i class="pi pi-question-circle"></i>
         등산 카풀
       </div>
-      <span class="info-tooltip">소정의 금액을 받고 등산 목적지까지 카풀 동행을 태워줍니다.</span>
+      <span class="info-tooltip">일정 금액을 받고 등산 목적지까지 카풀 동행을 태워줍니다.</span>
     </div>
   </div>
 </template>

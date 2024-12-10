@@ -17,7 +17,7 @@
         </Button>
       </div>
     </div>
-    <Divider class="thin-divider" />
+    <Divider class="" />
 
     <div class="image-container">
       <Button
@@ -149,9 +149,9 @@ created() {
 /* 전체 레이아웃을 조정하는 컨테이너 */
 .mountain-container {
   width: 100%;
-  width: 1000px;
+  max-width: 1000px;
   margin: 0 auto;
-  box-sizing: border-box; 
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -160,10 +160,10 @@ created() {
 
 .mountain-header {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
   margin-bottom: 20px;
-  gap: 10px; 
+  gap: 10px;
 }
 
 .mountain-name {
@@ -177,10 +177,9 @@ created() {
 }
 
 .status-button .p-button:hover {
-  cursor: default !important; 
+  cursor: default !important;
 }
 
-/* Comment, MountainWeather, ImageContainer 의 공통 스타일 */
 .image-container,
 .comments-section,
 .comment-container {
@@ -192,8 +191,6 @@ created() {
   flex-direction: column;
 }
 
-
-/* Tab 스타일 */
 .p-tabview {
   background-color: transparent !important;
   width: 100%;
@@ -208,7 +205,6 @@ created() {
 .p-tabview-tablist {
   background-color: transparent !important;
 }
-
 
 .description {
   display: flex;
@@ -227,7 +223,7 @@ created() {
   float: right;
 }
 
-.weather-panel{
+.weather-panel {
   width: 100%;
   height: auto;
   font-size: 20px;
@@ -245,23 +241,24 @@ created() {
 }
 
 .thin-divider {
-  height: 1px; /* Thinner line */
-  background-color: #ccc; /* Light gray color */
-  margin: 15px 0; /* Adjust spacing as needed */
+  height: 1px;
+  background-color: #ccc;
+  margin: 15px 0;
 }
 
 .bold-divider {
-  height: 3px; /* Thicker divider for emphasis */
-  background-color: #757575; /* Darker color for emphasis */
+  height: 3px;
+  background-color: #757575;
   margin: 15px 0;
-  border-radius: 2px; /* Optional: add rounded edges */
+  border-radius: 2px;
 }
-
 
 .mountainRoute {
   width: 100%;
   height: auto;
   cursor: pointer;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 .preview-icon {
@@ -293,35 +290,22 @@ created() {
 }
 
 .preview-image {
-  width: auto;
-  height: auto;
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
   border-radius: 8px;
 }
 
-
-/* 반응형 조정 */
 @media only screen and (max-width: 767px) {
   .mountain-container {
+    width: 90%;
+    padding: 0 10px;
+  }
+
+  .image-wrapper {
     width: 100%;
   }
 
-  .image-container,
-  .comments-section,
-  .comment-container {
-    width: 100%;
-    height: auto;
-  }
-  
-  .comments-section{
-    max-width: 700px;
-  }
-  .image-container Image{
-    width: 100%;
-    height: auto;
-  }
   .mountain-name {
     font-size: 2em;
   }
@@ -330,7 +314,7 @@ created() {
     font-size: 14px;
     padding: 8px 16px;
   }
-  
+
   .description {
     font-size: 12px;
   }
@@ -350,28 +334,16 @@ created() {
     font-size: 0.9em;
   }
 
-  .p-tabview{
+  .p-tabview {
     width: 90%;
   }
 
-  .preview-image {
-    max-width: 90%;
-    max-height: 90%;
+  .p-tabview-tab-title {
+    font-size: 0.9em;
   }
 }
 
 @media only screen and (max-width: 480px) {
-  .mountain-container {
-    width: 100%;
-  }
-
-  .image-container,
-  .comments-section,
-  .comment-container {
-    width: 100%;
-    height: auto;
-  }
-
   .mountain-name {
     font-size: 1.5em;
   }
@@ -392,9 +364,9 @@ created() {
   .p-tabview-tablist {
     font-size: 0.9rem;
   }
-  .comments-section{
+
+  .comments-section {
     max-width: 300px;
-    height: auto;
   }
 }
 </style>

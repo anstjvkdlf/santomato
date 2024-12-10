@@ -4,7 +4,7 @@
     <div class="radio-group">
       <RadioButton
         v-model="selectedMode"
-        name="들날 카풀"
+        name="들날 동행"
         value="companion"
         class="p-radiobutton-sm"
       />
@@ -23,13 +23,26 @@
       <label for="carpool" class="radio-label">등산 카풀</label>
       <div class="info-icon">
         <i class="pi pi-question-circle p-button-secondary"></i>
-        <span class="info-tooltip">소정의 금액을 받고 목적지까지 카풀 동행을 태워줍니다.</span>
+        <span class="info-tooltip">일정 금액을 받고 목적지까지 카풀 동행을 태워줍니다.</span>
       </div>
     </div>
     
     <div class="search-section">
+       <!-- 산 선택 -->
+       <div class="input-group" >
+        <Dropdown
+          id="mountain"
+          v-model="mountain" 
+          :options="mountainOptions"
+          optionLabel="name"
+          placeholder="산 선택"
+          class="p-dropdown-sm"
+          :disabled="true"
+        />
+      </div>
+
       <!-- 출발지 검색 -->
-      <div class="input-group">
+      <div class="input-group" v-if="selectedMode === 'carpool'">
         <InputText
           id="departure"
           v-model="departureInput"
@@ -38,7 +51,7 @@
           class="p-inputtext-sm"
         />
       </div>
-      <div class="input-group">
+      <div class="input-group" v-if="selectedMode === 'carpool'">
         <Button
           label="출발지 검색"
           icon="pi pi-search"
@@ -57,6 +70,7 @@
           placeholder="들머리 선택"
           class="p-dropdown-sm"
           @change="updateMarker('start')"
+          :showClear="false"
         />
       </div>
 
@@ -70,6 +84,7 @@
           placeholder="날머리 선택"
           class="p-dropdown-sm"
           @change="updateMarker('end')"
+          :showClear="false"
         />
       </div>
 
@@ -135,6 +150,7 @@ export default {
   },
   setup(props) { 
     const selectedMode = ref(props.type || "companion"); // default mode
+    const mountain = ref({ name: "설악산", id: 2 });
     const departureInput = ref("");
     const departureDate = ref(null);
     const startLocation = ref(null);
@@ -146,6 +162,12 @@ export default {
       entrance: null,
       exit: null,
     });
+
+    const mountainOptions =  ref([
+      { name: "소백산", id: 1 },
+      { name: "설악산", id: 2 },
+    ]);
+
 
     // 들머리와 날머리 옵션 및 주소 매핑
     const routeOptions = ref([
@@ -224,10 +246,12 @@ export default {
 
     return {
       selectedMode,
+      mountain,
       departureInput,
       departureDate,
       startLocation,
       endLocation,
+      mountainOptions,
       routeOptions,
       openPostcodePopup,
       updateMarker,

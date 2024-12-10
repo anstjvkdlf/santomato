@@ -25,7 +25,7 @@
             <div class="input-group-horizontal">
               <!-- 닉네임과 비밀번호를 가로로 나란히 배치 -->
               <InputText v-model="replyNickname" placeholder="닉네임"  />
-              <Password v-model="replyPassword" :feedback="false" toggleMask placeholder="비밀번호"/>
+              <Password v-model="replyPassword" :feedback="false" toggleMask fluid placeholder="비밀번호"/>
             </div>
 
             <!-- 대댓글 내용 입력 -->
@@ -66,7 +66,7 @@
       <div class="input-group-horizontal">
         <!-- 닉네임과 비밀번호를 가로로 나란히 배치 -->
         <InputText v-model="nickname" placeholder="닉네임"/>
-        <Password v-model="password" :feedback="false" toggleMask placeholder="비밀번호"/>
+        <Password v-model="password" :feedback="false" toggleMask fluid placeholder="비밀번호"/>
       </div>
 
       <!-- 댓글 내용 입력 -->
@@ -438,8 +438,9 @@ export default {
     gap: 5px; 
   }
 
-  .input-group-horizontal input{
-    width: 50%;
+  .p-inputtext, 
+  .p-password, .p-password-input { 
+    width: 50% 
   }
 }
 
