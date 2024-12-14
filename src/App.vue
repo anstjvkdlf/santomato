@@ -14,7 +14,7 @@ function updateSearchTerm(newTerm) {
 
 // 현재 경로가 /carpool 또는 /chat일 때만 CarpoolFooter를 렌더링하도록 설정
 const route = useRoute();
-const showCarpoolFooter = computed(() => route.path === '/carpool' || route.path === '/carpool-find' || route.path === '/chat' || route.path === '/carpool/carpool' || route.path === '/carpool/companion');
+const showCarpoolFooter = computed(() => route.path === '/carpool' || route.path === '/carpool_search' || route.path === '/chat' );
 
 </script>
 
