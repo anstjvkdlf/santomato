@@ -3,7 +3,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from './components/Home.vue';
 import MountainDetail from './components/MountainDetail.vue';
 import Carpool from './components/Carpool.vue';
-import CarpoolSearch from './components/CarpoolSearch.vue';
+import SearchCarpool from './components/SearchCarpool.vue';
+import SearchCompanion from './components/SearchCompanion.vue';
+import CarpoolSelect from './components/CarpoolSelect.vue';
 import LiveChat from './views/HomeView.vue';
 
 const routes = [
@@ -18,9 +20,19 @@ const routes = [
     component: Carpool,
   },
   {
-    path: '/carpool_search',
-    name: 'CarpoolSearch',
-    component: CarpoolSearch,
+    path: '/search_carpool',
+    name: 'CarpoolSelect',
+    component: CarpoolSelect,
+  },
+  {
+    path: '/search_carpool/carpool',
+    name: 'SearchCarpool',
+    component: SearchCarpool,
+  },
+  {
+    path: '/search_carpool/companion',
+    name: 'SearchCompanion',
+    component: SearchCompanion,
   },
   {
     path: "/chat",

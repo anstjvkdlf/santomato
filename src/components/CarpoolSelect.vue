@@ -1,7 +1,11 @@
 <template>
-  <h6 class = "carpool-title"> 생성할 서비스를 선택하세요. </h6>
+  <div>
+  <Stepper value="0" >
+  <StepPanels>
+  <StepPanel value="0" >
+    <h6 class = "carpool-title"> 이용할 서비스를 선택하세요. </h6>
 
-  <div class="carpool-container">
+    <div class="carpool-container">
     <!-- 들날 동행 버튼 -->
       <img 
         :src="imageSrcs['companion']" 
@@ -33,12 +37,24 @@
       <span class="info-tooltip">일정 금액을 받고 등산 목적지까지 카풀 동행을 태워줍니다.</span>
     </div>
   </div>
+</StepPanel>
+</StepPanels>
+</Stepper>
+</div>
 </template>
 
 <script>
 import { useRouter } from "vue-router";
+import Stepper from "primevue/stepper";
+import StepPanels from 'primevue/steppanels';
+import StepPanel from 'primevue/steppanel';
 
 export default {
+  components: {
+    Stepper,
+    StepPanels,
+    StepPanel,
+  },
   setup() {
     const router = useRouter();
     
@@ -48,9 +64,9 @@ export default {
     };
 
     const navigateToCarpool = (type) => {
-      router.push({ name: 'Carpool', params: { type } });
+      router.push({ path: `/search_carpool/${type}` });
     };
-
+    
     return {
       imageSrcs,
       navigateToCarpool,
@@ -64,7 +80,7 @@ export default {
   font-size: 18px;
   margin-top: 50px;
   margin-bottom: 10px;
-  text-align: left;
+  text-align: center;
 }
 
 .carpool-container {
@@ -75,7 +91,7 @@ export default {
   padding: 20px;
   box-sizing: border-box;
   width: 300px;
-  height: 450px; 
+  min-height: 420px; 
 }
 
 .button-with-tooltip {
