@@ -85,7 +85,7 @@
     </StepPanel>
 
     <StepPanel value="1">
-      <!-- Step 1 내용 -->
+      <!-- Step 1 -->
       <div class="title-container">
       <Button icon="pi pi-chevron-left" 
               class="back-button" 
@@ -110,6 +110,7 @@
     </StepPanel>
     
     <StepPanel value="2">
+      <!-- Step 2 -->
       <div class="title-container">
         <Button icon="pi pi-chevron-left" 
                 class="back-button" 
@@ -172,6 +173,7 @@
     </StepPanel>
 
     <StepPanel value="3">
+      <!-- Step 3 -->
       <div class="carpool-container">
       <div class="completion-message">
         <h3>요청완료!</h3>
