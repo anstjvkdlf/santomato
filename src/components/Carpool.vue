@@ -89,7 +89,7 @@
           <div class="input-group" v-if="selectedMode === 'carpool'">
             <InputText
               id="departure"
-              v-model="departureInput"
+              v-model="startPoint"
               placeholder="출발지를 검색하세요"
               readonly
               class="p-inputtext-sm"
@@ -107,8 +107,8 @@
           <!-- 들머리 선택 -->
           <div class="input-group" v-if="selectedMode === 'companion'">
             <Dropdown
-              id="start-location"
-              v-model="startLocation"
+              id="start-point"
+              v-model="startPoint"
               :options="routeOptions"
               optionLabel="name"
               placeholder="들머리 선택"
@@ -121,8 +121,8 @@
           <!-- 날머리 선택 -->
           <div class="input-group" v-if="selectedMode === 'companion'">
             <Dropdown
-              id="end-location"
-              v-model="endLocation"
+              id="end-point"
+              v-model="endPoint"
               :options="routeOptions"
               optionLabel="name"
               placeholder="날머리 선택"
@@ -135,8 +135,8 @@
           <!-- 목적지 선택 -->
           <div class="input-group" v-if="selectedMode === 'carpool'">
             <Dropdown
-              id="end-location"
-              v-model="endLocation"
+              id="end-point"
+              v-model="endPoint"
               :options="routeOptions"
               optionLabel="name"
               placeholder="목적지 선택"
@@ -196,6 +196,7 @@ import Stepper from "primevue/stepper";
 import StepPanels from 'primevue/steppanels';
 import StepPanel from 'primevue/steppanel';
 import InputNumber from 'primevue/inputnumber';
+import axios from 'axios';
 
 export default {
   components: {
@@ -212,11 +213,11 @@ export default {
   setup() { 
     const activeStep = ref(0);
     const selectedMode = ref("companion"); // Default value
-    const mountain = ref({ name: "설악산", id: 2 });
-    const departureInput = ref("");
+    const mountain = ref({ name: "설악산", id: 8 });
     const departureDate = ref(null);
-    const startLocation = ref(null);
-    const endLocation = ref(null);
+    const startPoint = ref(null);
+    const endPoint = ref(null);
+    const availableSeats = ref(null);
 
     const steps = ref([
       { label: 'Step 0' },
@@ -232,7 +233,7 @@ export default {
 
     const mountainOptions =  ref([
       { name: "소백산", id: 1 },
-      { name: "설악산", id: 2 },
+      { name: "설악산", id: 8 },
     ]);
 
     const imageSrcs = {
@@ -252,10 +253,10 @@ export default {
 
     // 들머리와 날머리 옵션 및 주소 매핑
     const routeOptions = ref([
-      { name: "소공원", address: "강원 속초시 설악산로 1055" },
-      { name: "한계령", address: "강원 양양군 설악로 1 중청봉대피소" },
-      { name: "오색", address: "강원 양양군 서면 대청봉길 95" },
-      { name: "백담사", address: "강원 인제군 북면 백담로 746" },
+      { name: "소공원", address: "강원 속초시 설악산로 1055", englishName: "sogongwon" },
+      { name: "한계령", address: "강원 양양군 설악로 1 중청봉대피소", englishName: "hangaeryoung" },
+      { name: "오색", address: "강원 양양군 서면 대청봉길 95", englishName: "osaek" },
+      { name: "백담사", address: "강원 인제군 북면 백담로 746", englishName: "baekdamsa" },
     ]);
 
     // 지도 초기화
@@ -278,7 +279,7 @@ export default {
       new daum.Postcode({
         oncomplete: function (data) {
           // 팝업에서 주소 선택 시 입력 필드에 채우기
-          departureInput.value = data.address;
+          startPoint.value = data.address;
 
           // 주소로 좌표 변환 후 지도에 마커 표시
           updateMarkerWithAddress("start", data.address);
@@ -288,7 +289,7 @@ export default {
 
     // 선택된 들머리 또는 날머리의 주소로 마커 업데이트
     const updateMarker = (type) => {
-      const selectedOption = type === "start" ? startLocation.value : endLocation.value;
+      const selectedOption = type === "start" ? startPoint.value : endPoint.value;
 
       if (!selectedOption) return;
 
@@ -327,9 +328,18 @@ export default {
 
     const createCarpool = async () => {
       try {
-        //await axios.post(`https://backend.santomato.com/api/carpool/`, {
-          // 필요한 데이터를 여기에 추가
-        //});
+        const response = await axios.post(`https://backend.santomato.com/api/carpool/create/`, {
+          departure_date: departureDate.value.toLocaleDateString('en-CA'), // YYYY-MM-DD 형식
+          departure_time: departureDate.value.toLocaleTimeString('en-GB', { hour12: false }).split(' ')[0], // HH:MM:SS 형식
+          max_participants: availableSeats.value,
+          start_point: selectedMode.value === 'carpool' ? startPoint.value : startPoint.value.englishName,
+          end_point: endPoint.value.englishName,
+          mountain_id: mountain.value.id,
+          service_type: selectedMode.value === 'carpool' ? 'original' : 'companion'
+        });
+
+        console.log('API Response:', response.data);
+
       } catch (error) {
         console.error('Failed to submit:', error);
       }
@@ -340,10 +350,10 @@ export default {
       activeStep,
       selectedMode,
       mountain,
-      departureInput,
       departureDate,
-      startLocation,
-      endLocation,
+      startPoint,
+      endPoint,
+      availableSeats,
       mountainOptions,
       routeOptions,
       openPostcodePopup,
