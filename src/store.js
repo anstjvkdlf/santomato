@@ -2,6 +2,10 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { insertUser as insertUserAsync } from '@/api'
 
+export const userStore = defineStore('user', {
+  state: () => ({
+    isLoggedIn: false,})})
+
 export default defineStore('main', () => {
   const name = ref(0)
   const user_location = ref('UA')

@@ -7,6 +7,9 @@ import SearchCarpool from './components/SearchCarpool.vue';
 import SearchCompanion from './components/SearchCompanion.vue';
 import CarpoolSelect from './components/CarpoolSelect.vue';
 import LiveChat from './views/HomeView.vue';
+import Login from './components/Login.vue';
+import SignUp from './components/SignUp.vue';
+import Profile from './components/Profile.vue';
 
 const routes = [
   {
@@ -44,6 +47,21 @@ const routes = [
     name: 'MountainDetail',
     component: MountainDetail,
     props: true
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login
+  },
+  {
+    path: "/signup",
+    name: "SignUp",
+    component: SignUp
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile
   }
 ];
 

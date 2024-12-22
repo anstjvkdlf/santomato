@@ -28,6 +28,8 @@
       <router-link to="/carpool" class="carpool">
         <img src="@/assets/카풀로고.png" class="carpool-logo">
       </router-link>
+      <button v-if="!isLoggedIn"><router-link to="/login">로그인</router-link></button>
+      <button v-if="isLoggedIn" @click="logout">로그아웃</button>
       <div v-if="isMobileView" class="search-icon" @click="openSearchModal">
         <font-awesome-icon icon="magnifying-glass" />
       </div>
@@ -37,7 +39,9 @@
 
 <script>
 import Rank from '@/components/Rank.vue';
-
+import { userStore } from '@/store';
+import axios from 'axios';
+import router from '@/router';
 export default {
   props: {
     searchTerm: String,
@@ -67,12 +71,42 @@ export default {
       this.isMobileView = window.innerWidth <= 767;
       console.log(this.isMobileView);
     },
+    kakaoLogout() {
+    axios.delete('http://localhost:8000/user/kakao/callback/', 
+        { access_token : this.$route.query.code })
+        .then(response => {
+          console.log('Django 서버로부터의 응답:', response.data);
+          // 이후의 로직 수행
+        })
+        .catch(error => {
+          console.error('오류 발생:', error);
+        });
+    },
+    logout() {
+      axios.delete('http://localhost:8000/user/auth/')
+      .then(response => {
+        console.log('Django 로 부터 응답:',response.data);
+        const store = userStore();
+        store.isLoggedIn = false;
+        router.push('/');
+      })
+      .catch(error => {
+        console.error('오류 발생:',error)
+      })
+    }
   },
   mounted() {
     window.addEventListener("resize", this.checkMobileView);
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkMobileView);
+  },
+  computed: {
+    isLoggedIn() {
+      const user = userStore();
+      console.log(user.isLoggedIn)
+      return user.isLoggedIn;
+    },
   },
 };
 </script>
