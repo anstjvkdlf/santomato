@@ -156,6 +156,7 @@ created() {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  overflow: hidden; 
 }
 
 .mountain-header {
@@ -299,11 +300,9 @@ created() {
 @media only screen and (max-width: 767px) {
   .mountain-container {
     width: 90%;
-    padding: 0 10px;
-  }
-
-  .image-wrapper {
-    width: 100%;
+    padding: 0; 
+    max-width: 100vw;
+    overflow-x: hidden; 
   }
 
   .mountain-name {

@@ -116,7 +116,7 @@ const weatherDescriptionMap = {
 
   .forecast-day {
     justify-content: center; 
-    gap: 10px; 
+    width: 95%;
   }
 }
 
@@ -127,7 +127,6 @@ const weatherDescriptionMap = {
   }
   .forecast-day {
     justify-content: center;
-    gap: 8px;
   }
   .forecast-day-details, .forecast-day-details * {
     font-size: 0.8em !important; 
