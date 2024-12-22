@@ -23,8 +23,8 @@
           <!-- 들머리 선택 -->
           <div class="input-group">
             <Dropdown
-              id="start-location"
-              v-model="startLocation"
+              id="start-point"
+              v-model="startPoint"
               :options="routeOptions"
               optionLabel="name"
               placeholder="들머리 선택"
@@ -36,9 +36,10 @@
 
           <!-- 날머리 선택 -->
           <div class="input-group">
+            <Toast position="bottom-center" />
             <Dropdown
-              id="end-location"
-              v-model="endLocation"
+              id="end-point"
+              v-model="endPoint"
               :options="routeOptions"
               optionLabel="name"
               placeholder="날머리 선택"
@@ -52,7 +53,7 @@
           <div class="input-group">
             <div class="seats-container">
               <span class="seats-label">탑승 인원 :</span>
-              <InputNumber v-model="availableSeats" showButtons buttonLayout="horizontal" fluid :min="0" :max="10" />
+              <InputNumber v-model="max_participants" showButtons buttonLayout="horizontal" fluid :min="0" :max="10" />
             </div>
           </div>
 
@@ -76,7 +77,7 @@
         <div class="input-group">
           <Button
             label="찾기"
-            @click="sarchCompanion"
+            @click="searchCompanion"
             icon="pi pi-check"
             class="p-button-sm">
           </Button>
@@ -97,11 +98,14 @@
         <div class="companion-list">
           <Card v-for="companion in companionList" :key="companion.id" class="companion-card" @click="handleCardClick(companion)">
             <template #title>
-              {{ companion.startpoint }} → {{ companion.end_point }}
+              {{ companion.start_point }} → {{ companion.end_point }}
             </template>
             <template #content>
               <p>날짜: {{ companion.departure_date }}</p>
-              <p>시간: {{ companion.departure_time }}</p>
+              <p>시간: {{ companion.departure_time.split(':').slice(0,2).reduce((acc, curr, index) => {
+                    if (index === 0) return parseInt(curr) + '시';
+                    return parseInt(curr) !== 0 ? acc + ' ' + parseInt(curr) + '분' : acc;
+                  }, '') }}</p>
               <p>가능 인원: {{ companion.max_participants }}명</p>
             </template>
           </Card>
@@ -125,16 +129,16 @@
                 return parseInt(curr) !== 0 ? acc + ' ' + parseInt(curr) + '분' : acc;
             }, '') }}, {{ selectedCompanion.departure_date }}</h5>
           <div class="carpool-detail">
-            <div class="location-slot">
-              <span class="location-text">들머리</span>
-              <div class="location-info">
-                <span class="location-name">{{ selectedCompanion.startpoint }}</span>
+            <div class="point-slot">
+              <span class="point-text">들머리</span>
+              <div class="point-info">
+                <span class="point-name">{{ selectedCompanion.start_point }}</span>
               </div>
             </div>
-            <div class="location-slot">
-              <span class="location-text">날머리</span>
-              <div class="location-info">
-                <span class="location-name">{{ selectedCompanion.end_point }}</span>
+            <div class="point-slot">
+              <span class="point-text">날머리</span>
+              <div class="point-info">
+                <span class="point-name">{{ selectedCompanion.end_point }}</span>
               </div>
            </div>
         </div>
@@ -199,6 +203,9 @@ import StepPanel from 'primevue/steppanel';
 import InputNumber from 'primevue/inputnumber';
 import Card from 'primevue/card';
 import Divider from 'primevue/divider';
+import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
+import axios from 'axios';
 
 export default {
   components: {
@@ -212,13 +219,16 @@ export default {
     InputNumber,
     Card,
     Divider,
+    Toast,
   },
   setup() { 
+    const toast = useToast();
     const activeStep = ref(0);
     const mountain = ref({ name: "설악산", id: 2 });
     const departureDate = ref(null);
-    const startLocation = ref(null);
-    const endLocation = ref(null);
+    const startPoint = ref(null);
+    const endPoint = ref(null);
+    const max_participants = ref(null);
     const selectedCompanion = ref({
       departure_date: "", departure_time: "", max_participants: null, startpoint: "", end_point: ""
     });
@@ -252,10 +262,8 @@ export default {
       { name: "설악산", id: 2 },
     ]);
 
-    const companionList = ref([
-      { id: 1, mountain_id: 1, departure_date: "2024-12-15", departure_time: "09:00:00", max_participants: 2, startpoint: "소공원", end_point: "한계령" },
-      { id: 2, mountain_id: 1, departure_date: "2024-12-25", departure_time: "08:00:00", max_participants: 4, startpoint: "오색", end_point: "소공원" },
-    ]);
+    const companionList = ref(
+      );
 
     const onStepChange = (index) => {
       activeStep.value = index;
@@ -264,10 +272,10 @@ export default {
 
     // 들머리와 날머리 옵션 및 주소 매핑
     const routeOptions = ref([
-      { name: "소공원", address: "강원 속초시 설악산로 1055" },
-      { name: "한계령", address: "강원 양양군 설악로 1 중청봉대피소" },
-      { name: "오색", address: "강원 양양군 서면 대청봉길 95" },
-      { name: "백담사", address: "강원 인제군 북면 백담로 746" },
+      { name: "소공원", address: "강원 속초시 설악산로 1055", englishName: "sogongwon" },
+      { name: "한계령", address: "강원 양양군 설악로 1 중청봉대피소", englishName: "hangaeryoung" },
+      { name: "오색", address: "강원 양양군 서면 대청봉길 95", englishName: "osaek" },
+      { name: "백담사", address: "강원 인제군 북면 백담로 746", englishName: "baekdamsa" },
     ]);
 
     // 지도 초기화
@@ -287,7 +295,7 @@ export default {
 
     // 선택된 들머리 또는 날머리의 주소로 마커 업데이트
     const updateMarker = (type) => {
-      const selectedOption = type === "start" ? startLocation.value : endLocation.value;
+      const selectedOption = type === "start" ? startPoint.value : endPoint.value;
 
       if (!selectedOption) return;
 
@@ -324,12 +332,45 @@ export default {
       );
     };
 
-    const sarchCompanion = async () => {
+    const searchCompanion = async () => {
+      if (startPoint.value && endPoint.value && startPoint.value.name === endPoint.value.name) {
+        toast.add({
+          severity: 'error',
+          summary: '오류',
+          detail: '들머리와 날머리를 다르게 선택해주세요.',
+          life: 3000
+        });
+        endPoint.value = null; 
+        return;
+      }
       try {
-        // API 구현 후 companionListd에 실제 데이터를 가져오는 로직으로 변경 필요
-        //await axios.post(`https://backend.santomato.com/api/carpool/`, {
-      //  });
+        const formattedDate = departureDate.value ? departureDate.value.toISOString().split('T')[0] : '';
+        const formattedTime = departureDate.value ? departureDate.value.toTimeString().split(' ')[0].slice(0, 5) : '';
 
+        // API 구현 후 companionListd에 실제 데이터를 가져오는 로직으로 변경 필요
+        const response = await axios.get(`http://127.0.0.1:8000/api/search/carpool/companion/${formattedDate}/${formattedTime}/`, {
+         // start_point: startPoint.value.englishName,
+         // end_point: endPoint.value.englishName,
+        });
+
+        // 선택된 start_point와 end_point와 일치하고 max_participants가 max_participants 이하인 항목만 필터링
+        companionList.value = response.data.filter(companion => 
+          companion.start_point === startPoint.value.englishName && 
+          companion.end_point === endPoint.value.englishName &&
+          companion.max_participants >= max_participants.value
+        );
+        
+        // 필터링된 데이터 이름을 한글로 변경
+        companionList.value = companionList.value.map(companion => ({
+          ...companion,
+          start_point: startPoint.value.name,
+          end_point: endPoint.value.name
+        }));
+
+        console.log(startPoint.value.name.toLowerCase());
+        console.log(endPoint.value.name.toLowerCase());
+        console.log(response.data);
+        console.log(companionList);
         activeStep.value = 1;
 
       } catch (error) {
@@ -341,8 +382,7 @@ export default {
       try {
         // API 구현 후 실제 데이터를 가져오는 로직으로 변경 필요
         //await axios.post(`https://backend.santomato.com/api/carpool/`, {
-      //  });
-
+        //});
         activeStep.value = 3;
 
       } catch (error) {
@@ -355,13 +395,14 @@ export default {
       activeStep,
       mountain,
       departureDate,
-      startLocation,
-      endLocation,
+      startPoint,
+      endPoint,
+      max_participants,
       mountainOptions,
       routeOptions,
       updateMarker,
       onStepChange,
-      sarchCompanion,
+      searchCompanion,
       submitCompanion,
       companionList,
       selectedCompanion,
@@ -496,17 +537,17 @@ export default {
   gap: 15px;
 }
 
-.location-slot {
+.point-slot {
   display: flex;
   gap: 15px;
 }
 
-.location-info {
+.point-info {
   display: flex;
   flex-direction: column;
 }
 
-.location-name {
+.point-name {
   font-weight: bold;
 }
 

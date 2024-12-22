@@ -120,6 +120,7 @@
 
           <!-- 날머리 선택 -->
           <div class="input-group" v-if="selectedMode === 'companion'">
+            <Toast position="bottom-center" />
             <Dropdown
               id="end-point"
               v-model="endPoint"
@@ -127,7 +128,7 @@
               optionLabel="name"
               placeholder="날머리 선택"
               class="p-dropdown-sm"
-              @change="updateMarker('end')"
+               @change="updateMarker('end')"
               :showClear="false"
             />
           </div>
@@ -180,6 +181,16 @@
         </div>
       </div> 
     </StepPanel>
+
+    <StepPanel value="2">
+      <!-- Step 2 -->
+      <div class="carpool-container">
+      <div class="completion-message">
+        <h3>생성 완료!</h3>
+        <p>누군가 동행 요청 시 알림이 전송됩니다.</p>
+      </div>
+    </div>
+    </StepPanel>
   </StepPanels>
   </Stepper>
   </div>
@@ -196,6 +207,8 @@ import Stepper from "primevue/stepper";
 import StepPanels from 'primevue/steppanels';
 import StepPanel from 'primevue/steppanel';
 import InputNumber from 'primevue/inputnumber';
+import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
 import axios from 'axios';
 
 export default {
@@ -209,8 +222,10 @@ export default {
     Dropdown,
     DatePicker,
     InputNumber,
+    Toast,
   },
   setup() { 
+    const toast = useToast();
     const activeStep = ref(0);
     const selectedMode = ref("companion"); // Default value
     const mountain = ref({ name: "설악산", id: 8 });
@@ -327,8 +342,18 @@ export default {
     };
 
     const createCarpool = async () => {
+      if (startPoint.value && endPoint.value && startPoint.value.name === endPoint.value.name) {
+        toast.add({
+          severity: 'error',
+          summary: '오류',
+          detail: '들머리와 날머리를 다르게 선택해주세요.',
+          life: 3000
+        });
+        endPoint.value = null; 
+        return;
+      }
       try {
-        const response = await axios.post(`https://backend.santomato.com/api/carpool/create/`, {
+        const response = await axios.post(`http://127.0.0.1:8000/api/carpool/create/`, {
           departure_date: departureDate.value.toLocaleDateString('en-CA'), // YYYY-MM-DD 형식
           departure_time: departureDate.value.toLocaleTimeString('en-GB', { hour12: false }).split(' ')[0], // HH:MM:SS 형식
           max_participants: availableSeats.value,
@@ -337,13 +362,14 @@ export default {
           mountain_id: mountain.value.id,
           service_type: selectedMode.value === 'carpool' ? 'original' : 'companion'
         });
-
+        activeStep.value = 2;
         console.log('API Response:', response.data);
 
       } catch (error) {
         console.error('Failed to submit:', error);
       }
     };
+
 
     return {
       steps,
@@ -362,6 +388,7 @@ export default {
       onStepChange,
       selectService,
       createCarpool,
+      toast,
     };
   },
 };
@@ -510,4 +537,14 @@ export default {
   min-width: fit-content;
 }
 
+.completion-message {
+  text-align: center;
+  justify-content: center;
+  padding: 100px 20px;
+}
+
+.completion-message h3 {
+  color: #2AAA8A;
+  margin-bottom: 15px;
+}
 </style>

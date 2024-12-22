@@ -25,7 +25,7 @@
           <div class="input-group">
             <InputText
               id="departure"
-              v-model="departureInput"
+              v-model="startPoint"
               placeholder="출발지를 검색하세요"
               readonly
               class="p-inputtext-sm"
@@ -43,8 +43,8 @@
           <!-- 목적지 선택 -->
           <div class="input-group">
             <Dropdown
-              id="end-location"
-              v-model="endLocation"
+              id="end-point"
+              v-model="endPoint"
               :options="routeOptions"
               optionLabel="name"
               placeholder="목적지 선택"
@@ -57,7 +57,7 @@
           <div class="input-group">
             <div class="seats-container">
               <span class="seats-label">탑승 인원 :</span>
-              <InputNumber v-model="availableSeats" showButtons buttonLayout="horizontal" fluid :min="0" :max="10" />
+              <InputNumber v-model="max_participants" showButtons buttonLayout="horizontal" fluid :min="0" :max="10" />
             </div>
           </div>
 
@@ -103,6 +103,7 @@ import Stepper from "primevue/stepper";
 import StepPanels from 'primevue/steppanels';
 import StepPanel from 'primevue/steppanel';
 import InputNumber from 'primevue/inputnumber';
+import axios from 'axios';
 
 export default {
   components: {
@@ -118,9 +119,10 @@ export default {
   setup() { 
     const activeStep = ref(0);
     const mountain = ref({ name: "설악산", id: 2 });
-    const departureInput = ref("");
-    const endLocation = ref(null);
+    const startPoint = ref(null);
+    const endPoint = ref(null);
     const departureDate = ref(null);
+    const max_participants = ref(null);
 
     const steps = ref([
       { label: 'Step 0' },
@@ -145,10 +147,10 @@ export default {
 
     // 들머리와 날머리 옵션 및 주소 매핑
     const routeOptions = ref([
-      { name: "소공원", address: "강원 속초시 설악산로 1055" },
-      { name: "한계령", address: "강원 양양군 설악로 1 중청봉대피소" },
-      { name: "오색", address: "강원 양양군 서면 대청봉길 95" },
-      { name: "백담사", address: "강원 인제군 북면 백담로 746" },
+      { name: "소공원", address: "강원 속초시 설악산로 1055", englishName: "sogongwon" },
+      { name: "한계령", address: "강원 양양군 설악로 1 중청봉대피소", englishName: "hangaeryoung" },
+      { name: "오색", address: "강원 양양군 서면 대청봉길 95", englishName: "osaek" },
+      { name: "백담사", address: "강원 인제군 북면 백담로 746", englishName: "baekdamsa" },
     ]);
 
     // 지도 초기화
@@ -171,7 +173,7 @@ export default {
       new daum.Postcode({
         oncomplete: function (data) {
           // 팝업에서 주소 선택 시 입력 필드에 채우기
-          departureInput.value = data.address;
+          startPoint.value = data.address;
 
           // 주소로 좌표 변환 후 지도에 마커 표시
           updateMarkerWithAddress("start", data.address);
@@ -181,7 +183,7 @@ export default {
 
     // 선택된 목적지 주소로 마커 업데이트
     const updateMarker = (type) => {
-      const selectedOption = type === "start" ? startLocation.value : endLocation.value;
+      const selectedOption = type === "start" ? startPoint.value : endPoint.value;
 
       if (!selectedOption) return;
 
@@ -220,7 +222,7 @@ export default {
 
     const searchCarpool = async () => {
       try {
-        await axios.post(`https://backend.santomato.com/api/carpool/`, {
+        const response = await axios.post(`https://backend.santomato.com/api/carpool/`, {
           // 필요한 데이터를 여기에 추가
         });
       } catch (error) {
@@ -232,8 +234,9 @@ export default {
       steps,
       activeStep,
       mountain,
-      departureInput,
-      endLocation,
+      startPoint,
+      endPoint,
+      max_participants,
       departureDate,
       mountainOptions,
       routeOptions,

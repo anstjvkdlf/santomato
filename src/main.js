@@ -14,6 +14,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlass, faCar, faComments } from '@fortawesome/free-solid-svg-icons';
 import 'primeicons/primeicons.css'; // PrimeIcons
 import 'primeflex/primeflex.css'; // PrimeFlex
+import ToastService from 'primevue/toastservice';
 
 import App from './App.vue';
 import router from './router';
@@ -25,6 +26,7 @@ app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(createPinia())
 app.use(router);
 app.use(Chart);
+app.use(ToastService);
 // app.use(PrimeVue);
 app.use(PrimeVue, {
   theme: {
