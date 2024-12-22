@@ -353,7 +353,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.post(`http://127.0.0.1:8000/api/carpool/create/`, {
+        const response = await axios.post(`https://backend.santomato.com/api/carpool/create/`, {
           departure_date: departureDate.value.toLocaleDateString('en-CA'), // YYYY-MM-DD 형식
           departure_time: departureDate.value.toLocaleTimeString('en-GB', { hour12: false }).split(' ')[0], // HH:MM:SS 형식
           max_participants: availableSeats.value,

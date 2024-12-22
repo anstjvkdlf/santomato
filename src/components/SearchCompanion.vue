@@ -366,11 +366,6 @@ export default {
           start_point: startPoint.value.name,
           end_point: endPoint.value.name
         }));
-
-        console.log(startPoint.value.name.toLowerCase());
-        console.log(endPoint.value.name.toLowerCase());
-        console.log(response.data);
-        console.log(companionList);
         activeStep.value = 1;
 
       } catch (error) {
