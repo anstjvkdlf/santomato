@@ -62,8 +62,8 @@
             console.log('Login successful:', response.data);
             router.push('/'); // 로그인 성공 시 리다이렉트할 페이지
   
-            const store = userStore();
-            store.isLoggedIn = true; // 스토어에 로그인 상태 업데이트
+            const user = userStore();
+            user.isLoggedIn = true; // 스토어에 로그인 상태 업데이트
             // 기타 로그인 후 처리 코드...
             // Handle successful login, e.g., store tokens and redirect to dashboard
           } catch (error) {

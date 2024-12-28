@@ -224,6 +224,13 @@ export default {
     InputNumber,
     Toast,
   },
+  computed: {
+    isLoggedIn() {
+      const user = userStore();
+      console.log(user.isLoggedIn)
+      return user.isLoggedIn;
+    },
+  },
   setup() { 
     const toast = useToast();
     const activeStep = ref(0);
@@ -340,8 +347,20 @@ export default {
         }
       );
     };
-
+    const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+    };
     const createCarpool = async () => {
+      const token = getCookie("access"); // 저장된 토큰 가져오기
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        this.$router.push("/login");
+        return;
+      }
+      console.log(token);
       if (startPoint.value && endPoint.value && startPoint.value.name === endPoint.value.name) {
         toast.add({
           severity: 'error',
@@ -353,15 +372,21 @@ export default {
         return;
       }
       try {
-        const response = await axios.post(`https://backend.santomato.com/api/carpool/create/`, {
+        const response = await axios.post(`http://127.0.0.1:8000/api/carpool/create/`, {
           departure_date: departureDate.value.toLocaleDateString('en-CA'), // YYYY-MM-DD 형식
           departure_time: departureDate.value.toLocaleTimeString('en-GB', { hour12: false }).split(' ')[0], // HH:MM:SS 형식
           max_participants: availableSeats.value,
-          start_point: selectedMode.value === 'carpool' ? startPoint.value : startPoint.value.englishName,
-          end_point: endPoint.value.englishName,
+          start_point: selectedMode.value === 'carpool' ? startPoint.value : startPoint.value.name,
+          end_point: endPoint.value.name,
           mountain_id: mountain.value.id,
           service_type: selectedMode.value === 'carpool' ? 'original' : 'companion'
-        });
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+          }
+        },
+        );
         activeStep.value = 2;
         console.log('API Response:', response.data);
 
