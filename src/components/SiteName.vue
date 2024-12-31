@@ -28,8 +28,10 @@
       <router-link to="/carpool" class="carpool">
         <img src="@/assets/카풀로고.png" class="carpool-logo">
       </router-link>
-      <button v-if="!isLoggedIn"><router-link to="/login">로그인</router-link></button>
-      <button v-if="isLoggedIn" @click="logout">로그아웃</button>
+      <div class="auth-container">
+        <Button v-if="!isLoggedIn" class="auth-button login-button"><router-link to="/login">로그인</router-link></Button>
+        <Button v-if="isLoggedIn" class="auth-button logout-button" @click="logout">로그아웃</Button>
+      </div>
       <div v-if="isMobileView" class="search-icon" @click="openSearchModal">
         <font-awesome-icon icon="magnifying-glass" />
       </div>
@@ -42,12 +44,14 @@ import Rank from '@/components/Rank.vue';
 import { userStore } from '@/store';
 import axios from 'axios';
 import router from '@/router';
+import Button from 'primevue/button';
 export default {
   props: {
     searchTerm: String,
   },
   components: {
     Rank,
+    Button,
   },
   data() {
     return {
@@ -199,10 +203,11 @@ export default {
 
 .header-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   width: 100%;
   padding: 0 20px;
+  position: relative;
+  justify-content: flex-start;
 }
 
 .title-container {
@@ -214,6 +219,7 @@ export default {
 .carpool {
   display: flex;
   align-items: center;
+  margin-right: 100px;
 }
 
 .rank {
@@ -267,6 +273,46 @@ input:focus::placeholder {
   opacity: 0; /* 포커스 시 플레이스홀더 숨기기 */
 }
 
+.auth-container {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  margin-right: 10px;
+}
+
+.auth-button {
+  transition: background-color 0.3s;
+  width: 100px;
+  font-size: 12px;
+}
+
+.login-button {
+  background-color: #4CAF50 !important; /* 초록색 */
+  border-color: #4CAF50 !important;
+  color: white !important;
+}
+
+.login-button:hover {
+  background-color: #45a049 !important; /* 약간 더 어두운 초록색 */
+  border-color: #45a049 !important;
+}
+
+.login-button :deep(a) {
+  color: white !important;
+  text-decoration: none;
+}
+
+.logout-button {
+  background-color: #808080 !important; /* 회색 */
+  border-color: #808080 !important;
+  color: white !important;
+}
+
+.logout-button:hover {
+  background-color: #707070 !important; /* 약간 더 어두운 회색 */
+  border-color: #707070 !important;
+}
 
 /* Adjustments for mobile screens */
 @media only screen and (max-width: 767px) {
@@ -286,15 +332,29 @@ input:focus::placeholder {
     width: 100%;
     margin: 0; /* Remove excess margins */
   }
+  .carpool {
+    margin-right: 5px;
+  }
+
   .logo,
   .carpool-logo {
-    width: 100px; /* Reduce size of logos for a tighter fit */
+    width: 80px; /* Reduce size of logos for a tighter fit */
   }
   .ranking-container {
     width: 100px;
+    margin: 0px;
   }
   .rank {
     transform: scale(0.5); /* Scale down rank further */
+    margin: -5px -15px;
+  }
+  .auth-container{
+    margin-right: 5px;
+  }
+  .auth-button {
+    font-size: 10px;
+    width: 60px;
+    padding: 0.2rem 0.4rem;
   }
 }
 </style>
