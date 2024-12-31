@@ -36,7 +36,7 @@
 
           <!-- 날머리 선택 -->
           <div class="input-group">
-            <Toast position="bottom-center" />
+            <Toast position="top-center" />
             <Dropdown
               id="end-point"
               v-model="endPoint"
@@ -95,6 +95,9 @@
       <h6 class="service-title">동행 목록</h6>
       </div>
       <div class="carpool-container">
+        <div v-if="companionList.length === 0" class="no-results-message">
+          검색된 항목이 없습니다.
+        </div>
         <div class="companion-list">
           <Card v-for="companion in companionList" :key="companion.id" class="companion-card" @click="handleCardClick(companion)">
             <template #title>
@@ -256,8 +259,7 @@ export default {
       { name: "설악산", id: 2 },
     ]);
 
-    const companionList = ref(
-      );
+    const companionList = ref([]);
 
     const onStepChange = (index) => {
       activeStep.value = index;
@@ -344,6 +346,17 @@ export default {
           life: 3000
         });
         endPoint.value = null; 
+        return;
+      }
+      // 필수 필드 검사
+      if (!mountain.value || !departureDate.value || !max_participants.value || 
+          !startPoint.value || !endPoint.value) {
+        toast.add({
+          severity: 'error',
+          summary: '입력 오류',
+          detail: '모든 필드를 입력해주세요.',
+          life: 3000
+        });
         return;
       }
       try {
@@ -599,5 +612,14 @@ export default {
 
 .user-actions {
   margin-left: auto;
+}
+
+.no-results-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2em;
+  color: #666;
 }
 </style>

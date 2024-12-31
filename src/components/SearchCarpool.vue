@@ -5,6 +5,7 @@
         <StepPanel value="0">
           <!-- Step 0 -->
           <h6 class="service-title">등산 카풀 찾기</h6>
+          <Toast position="top-center" />
           <div class="carpool-container">
             <div class="search-section">
               <!-- 산 선택 -->
@@ -64,6 +65,9 @@
             </div>
           </div>
           <div class="carpool-container">
+            <div v-if="carpoolList.length === 0" class="no-results-message">
+              검색된 항목이 없습니다.
+            </div>
             <div class="carpool-list">
               <Card v-for="carpool in carpoolList" :key="carpool.room_id" class="carpool-card" 
                 @click="handleCardClick(carpool)">
@@ -294,6 +298,17 @@ export default {
     };
 
     const searchCarpool = async () => {
+      // 필수 필드 검사
+      if (!mountain.value || !departureDate.value || !max_participants.value || 
+          !startPoint.value || !endPoint.value) {
+        toast.add({
+          severity: 'error',
+          summary: '입력 오류',
+          detail: '모든 필드를 입력해주세요.',
+          life: 3000
+        });
+        return;
+      }
       const formattedDate = departureDate.value ? departureDate.value.toISOString().split('T')[0] : '';
       const formattedTime = departureDate.value ? departureDate.value.toTimeString().split(' ')[0].slice(0, 5) : '';
   
@@ -592,5 +607,14 @@ export default {
   cursor: pointer;
   color: #666;
   white-space: nowrap;
+}
+
+.no-results-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2em;
+  color: #666;
 }
 </style>

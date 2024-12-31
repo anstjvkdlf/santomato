@@ -120,7 +120,7 @@
 
           <!-- 날머리 선택 -->
           <div class="input-group" v-if="selectedMode === 'companion'">
-            <Toast position="bottom-center" />
+            <Toast position="top-center" />
             <Dropdown
               id="end-point"
               v-model="endPoint"
@@ -369,6 +369,17 @@ export default {
           life: 3000
         });
         endPoint.value = null; 
+        return;
+      }
+      // 필수 필드 검사
+      if (!mountain.value || !departureDate.value || !availableSeats.value || 
+          !startPoint.value || !endPoint.value) {
+        toast.add({
+          severity: 'error',
+          summary: '입력 오류',
+          detail: '모든 필드를 입력해주세요.',
+          life: 3000
+        });
         return;
       }
       try {
