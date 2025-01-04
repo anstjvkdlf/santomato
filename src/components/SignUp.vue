@@ -5,7 +5,7 @@
       <button class="kakao-btn" @click="loginWithKakao">
           <img src="@/assets/btn_kakao.png" alt="" />
         </button>     -->
-        <div class="form-group">
+        <div class="form-group-email">
           <label for="email">이메일</label>
           <input type="email" id="email" name="email" v-model="email" class="form-control input-email" placeholder="이메일" required>
           <button type="btn btn-secondary" class="btn btn-primary btn-block" @click="sendAuthNumber" :disabled="!isEmailFilled">
@@ -14,7 +14,7 @@
         </div>
         <!-- If emailVerificationRequested is true, show the verification container -->
         <div v-if="showAuthForm">
-          <div class="form-group verificationCode-form">
+          <div class="form-group-email verificationCode-form">
           <label for="verificationCode">인증번호</label>
           <div class="verificationCode-input">
           <input type="text" id="verificationCode" v-model="auth_number" class="form-control" placeholder="인증번호" required>
@@ -183,6 +183,7 @@
           }
         })
         .catch(error => {
+          alert('인증번호가 일치하지 않습니다.');
           console.error('API 호출 실패:', error);
         });
 
@@ -203,8 +204,8 @@
   /* You don't need 'scoped' since Bootstrap classes are global */
   
   .container {
-    max-width: 30%;
-    width: 30% !important;
+    width: 100%;
+    max-width: 400px;
     margin: 100px auto;
     padding: 20px;
     background-color: #fff;
@@ -237,17 +238,39 @@
     width: 100%; 
     height: 100%; 
   }
-  
+
   .form-group {
+    width: 100%;
     margin-bottom: 20px;
   }
-  
-  .verificationCode-form{
-    background-color: whitesmoke;
-    border-radius: 3px;
+
+  .form-group input {
+    width: 100%;
+    margin-bottom: 10px; 
   }
+
+  .form-group-email {
+    width: 60%;
+    margin-bottom: 20px;
+  }
+
+  .input-email {
+    margin-bottom: 10px; 
+  }
+
+  .verificationCode-form {
+    background-color: whitesmoke;
+    border-radius: 8px;
+    padding: 15px;
+    width: 100%;
+  }
+
   .verificationCode-input {
     position: relative;
+  }
+
+  .verificationCode-input input {
+    width: calc(100% - 90px);  /* 확인 버튼 공간 확보 */
   }
   
   .verificationCode-form label {
@@ -263,11 +286,11 @@
     right: 10px;
     margin: auto 0;
     border-radius: 3px;
-    font-size: 95%;
-  }
-  
-  .input-email {
-    margin-bottom: 10px; 
+    font-size: 80%;
+    display: flex;   
+    justify-content: center; 
+    align-items: center;    
+    padding: 0;    
   }
   
   label {
@@ -283,6 +306,7 @@
   
   button {
     width: 100%;
+    box-sizing: border-box; 
   }
   </style>
   
