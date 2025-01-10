@@ -1,40 +1,59 @@
 <template>
   <div class="site-name">
     <div class="header-container">
-      <div class="title-container">
-        <router-link to="/">
-          <img src="@/assets/logo.png" class="logo">
-        </router-link>
-      </div>
-      <input v-if="!isMobileView" class="searchTab" type="text" :value="searchTerm" placeholder="산 이름으로 검색하기" @input="updateTerm">
-      <div v-if="showModal" class="modal">
-        <div class="modal-content">
-          <input
-            class="searchTab"
-            type="text"
-            :value="searchTerm"
-            placeholder="산 이름으로 검색하기"
-            @input="updateTerm"
-          />
-          <div class="button-container">
-            <button @click="closeSearchModal">검색</button>
+      <div class="left-container">
+        <div class="title-container">
+          <router-link to="/">
+            <img src="@/assets/logo.png" class="logo">
+          </router-link>
+        </div>
+        <input v-if="!isMobileView" class="searchTab" type="text" :value="searchTerm" placeholder="산 이름으로 검색하기" @input="updateTerm">
+        <div v-if="showModal" class="modal">
+          <div class="modal-content">
+            <input
+              class="searchTab"
+              type="text"
+              :value="searchTerm"
+              placeholder="산 이름으로 검색하기"
+              @input="updateTerm"
+            />
+            <div class="button-container">
+              <button @click="closeSearchModal">검색</button>
+            </div>
           </div>
         </div>
+        <div class="rank">
+          <Rank/>
+        </div>
+        <router-link to="/carpool" class="carpool">
+          <img src="@/assets/카풀로고.png" class="carpool-logo">
+        </router-link>
       </div>
 
-      <div class="rank">
-        <Rank/>
-      </div>
-      <router-link to="/carpool" class="carpool">
-        <img src="@/assets/카풀로고.png" class="carpool-logo">
-      </router-link>
-      <div class="auth-container">
-        <Button v-if="!isLoggedIn" class="auth-button login-button"><router-link to="/login">로그인</router-link></Button>
-        <Button v-if="isLoggedIn" class="auth-button logout-button" @click="logout">로그아웃</Button>
-      </div>
-      <div v-if="isMobileView" class="search-icon" @click="openSearchModal">
-        <font-awesome-icon icon="magnifying-glass" />
-      </div>
+      <div class="right-container">
+        <div v-if="isMobileView" class="search-icon" @click="openSearchModal">
+          <font-awesome-icon icon="magnifying-glass" />
+        </div>
+        <div class="auth-container">
+          <Button v-if="!isLoggedIn" class="auth-button login-button">
+            <router-link to="/login">로그인</router-link>
+          </Button>
+          <template v-if="isLoggedIn">
+            <div class="user-dropdown">
+              <font-awesome-icon 
+                icon="fa-solid fa-user" 
+                class="user-icon"
+                @click="toggleDropdown"
+              />
+              <div v-show="showDropdown" class="dropdown-menu">
+                <router-link to="/profile" class="dropdown-item">마이페이지</router-link>
+                <router-link to="/my-carpool" class="dropdown-item">나의 카풀</router-link>
+                <div class="dropdown-item" @click="logout">로그아웃</div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div> 
     </div>
   </div>
 </template>
@@ -57,6 +76,7 @@ export default {
     return {
       isMobileView: window.innerWidth <= 767,
       showModal: false,
+      showDropdown: false,
     };
   },
   methods: {
@@ -92,18 +112,27 @@ export default {
         console.log('Django 로 부터 응답:',response.data);
         const store = userStore();
         store.isLoggedIn = false;
-        router.push('/');
+        return this.$router.push({ path: '/', replace: true })
       })
       .catch(error => {
         console.error('오류 발생:',error)
       })
-    }
+    },
+    toggleDropdown(event) {
+      event.stopPropagation(); // 이벤트 버블링 방지
+      this.showDropdown = !this.showDropdown;
+    },
+    closeDropdown() {
+      this.showDropdown = false;
+    },
   },
   mounted() {
     window.addEventListener("resize", this.checkMobileView);
+    window.addEventListener('click', this.closeDropdown);
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkMobileView);
+    window.removeEventListener('click', this.closeDropdown);
   },
   computed: {
     isLoggedIn() {
@@ -118,12 +147,9 @@ export default {
 <style scoped>
 
 .search-icon {
-  font-size: 24px;
   cursor: pointer;
-  margin-right: 1rem;
+  margin-right: 10px;
 }
-
-
 /* 모달 스타일 */
 .modal {
   position: fixed;
@@ -207,13 +233,25 @@ export default {
   width: 100%;
   padding: 0 20px;
   position: relative;
-  justify-content: flex-start;
+}
+
+.left-container {
+  display: flex;
+  align-items: center;
+  gap: 5px; 
+  flex: 1;
+}
+
+.right-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
 }
 
 .title-container {
-  display: flex;
-  align-items: center;
-  margin-right: auto; /* Pushes other elements to the right */
+  flex-shrink: 0;
+  width: 200px;
 }
 
 .carpool {
@@ -229,7 +267,7 @@ export default {
 }
 
 .logo {
-  width: 200px;
+  width: 200px; 
 }
 
 .carpool-logo {
@@ -245,6 +283,11 @@ input{
   margin: 2%;
   outline: none;
   transition: border-color 0.3s;
+}
+
+input.searchTab {
+  width: 300px; 
+  margin: 0 20px;
 }
 
 /* input {
@@ -274,21 +317,21 @@ input:focus::placeholder {
 }
 
 .auth-container {
-  margin-left: auto;
   display: flex;
   align-items: center;
-  margin-top: 5px;
-  margin-right: 10px;
+  justify-content: center;
+  width: 100px; 
+  flex-shrink: 0; 
 }
 
 .auth-button {
   transition: background-color 0.3s;
-  width: 100px;
   font-size: 12px;
+  width: 100%; 
 }
 
 .login-button {
-  background-color: #4CAF50 !important; /* 초록색 */
+  background-color: #4CAF50 !important; 
   border-color: #4CAF50 !important;
   color: white !important;
 }
@@ -303,29 +346,59 @@ input:focus::placeholder {
   text-decoration: none;
 }
 
-.logout-button {
-  background-color: #808080 !important; /* 회색 */
-  border-color: #808080 !important;
-  color: white !important;
+.user-dropdown {
+  position: relative;
+  cursor: pointer;
 }
 
-.logout-button:hover {
-  background-color: #707070 !important; /* 약간 더 어두운 회색 */
-  border-color: #707070 !important;
+.user-icon {
+  font-size: 20px;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.user-icon:hover {
+  color: #007BFF;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  min-width: 120px;
+  z-index: 1000;
+  display: block;
+  transform: translateX(-40%);
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+  color: #007BFF;
 }
 
 /* Adjustments for mobile screens */
 @media only screen and (max-width: 767px) {
   .header-container {
-    padding: 0 5px; /* Minimize padding */
-    justify-content: space-between; /* Center elements closely */
+    padding: 0 10px; 
   }
-
-  .searchTab {
-    width: 100%; /* Make searchTab take full width */
-    margin-top: 1rem;
+  .title-container {
+    width: 80px !important; 
   }
-
+  .modal-content .searchTab {
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+  }
   .title-container,
   .rank
   .carpool {
@@ -335,7 +408,6 @@ input:focus::placeholder {
   .carpool {
     margin-right: 5px;
   }
-
   .logo,
   .carpool-logo {
     width: 80px; /* Reduce size of logos for a tighter fit */
@@ -349,12 +421,27 @@ input:focus::placeholder {
     margin: -5px -15px;
   }
   .auth-container{
-    margin-right: 5px;
+    width: 50px;
   }
   .auth-button {
     font-size: 10px;
-    width: 60px;
     padding: 0.2rem 0.4rem;
+  }
+  .search-icon{
+    margin-left: 40px;
+  }
+  .user-icon {
+    font-size: 16px;
+    margin-right: 30px;
+  }
+  
+  .dropdown-menu {
+    min-width: 100px;
+  }
+  
+  .dropdown-item {
+    padding: 8px 12px;
+    font-size: 14px;
   }
 }
 </style>
