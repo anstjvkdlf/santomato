@@ -2,12 +2,12 @@
     <footer class="carpool-footer">
       <section class="carpool-footer-links d-flex justify-content-center">
         <!-- 카풀 생성 링크 -->
-        <router-link to="/carpool" class="footer-link" :class="{ active: isActive('/carpool') }">
+        <router-link to="/carpool?step=0" class="footer-link" :class="{ active: isActive('/carpool') }">
           <font-awesome-icon icon="car" style="color: grey;" />
           <span class="link-text">동행 생성</span>
         </router-link>
         <!-- 카풀 찾기 링크 -->
-        <router-link to="/search_carpool" class="footer-link" :class="{ active: isActive('/search_carpool') }">
+        <router-link to="/carpool/search" class="footer-link" :class="{ active: isActive('/carpool/search') }">
           <font-awesome-icon icon="magnifying-glass" style="color: grey;"/>
           <span class="link-text">동행 찾기</span>
         </router-link>

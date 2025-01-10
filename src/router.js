@@ -23,19 +23,24 @@ const routes = [
     component: Carpool,
   },
   {
-    path: '/search_carpool',
+    path: '/carpool/search',
     name: 'CarpoolSelect',
     component: CarpoolSelect,
   },
   {
-    path: '/search_carpool/carpool',
+    path: '/carpool/search/carpool',
     name: 'SearchCarpool',
     component: SearchCarpool,
   },
   {
-    path: '/search_carpool/companion',
+    path: '/carpool/search/companion',
     name: 'SearchCompanion',
     component: SearchCompanion,
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
   },
   {
     path: "/chat",

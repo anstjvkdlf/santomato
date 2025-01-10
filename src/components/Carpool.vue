@@ -197,7 +197,8 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from 'vue-router';
 import RadioButton from "primevue/radiobutton";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -233,13 +234,15 @@ export default {
   },
   setup() { 
     const toast = useToast();
-    const activeStep = ref(0);
     const selectedMode = ref("companion"); // Default value
     const mountain = ref({ name: "설악산", id: 8 });
     const departureDate = ref(null);
     const startPoint = ref(null);
     const endPoint = ref(null);
     const availableSeats = ref(null);
+    const route = useRoute();
+    const router = useRouter();
+    const activeStep = ref(0);
 
     const steps = ref([
       { label: 'Step 0' },
@@ -272,7 +275,6 @@ export default {
       activeStep.value = index;
     };
 
-
     // 들머리와 날머리 옵션 및 주소 매핑
     const routeOptions = ref([
       { name: "소공원", address: "강원 속초시 설악산로 1055"},
@@ -280,6 +282,27 @@ export default {
       { name: "오색", address: "강원 양양군 서면 대청봉길 95"},
       { name: "백담사", address: "강원 인제군 북면 백담로 746"},
     ]);
+
+    // URL의 query parameter
+    watch(
+      () => route.query.step,
+      (newStep) => {
+        if (newStep !== undefined) {
+          activeStep.value = parseInt(newStep);
+        }
+      },
+      { immediate: true }
+    );
+
+    // activeStep이 변경될 때마다 URL 업데이트
+    watch(
+      () => activeStep.value,
+      (newStep) => {
+        router.replace({
+          query: { step: newStep.toString() }
+        });
+      }
+    );
 
     // 지도 초기화
     onMounted(() => {

@@ -64,7 +64,7 @@ export default {
     };
 
     const navigateToCarpool = (type) => {
-      router.push({ path: `/search_carpool/${type}` });
+      router.push({ path: `/carpool/search/${type}` });
     };
     
     return {
