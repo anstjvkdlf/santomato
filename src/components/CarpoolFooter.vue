@@ -1,89 +1,114 @@
 <template>
-    <footer class="carpool-footer">
-      <section class="carpool-footer-links d-flex justify-content-center">
-        <!-- 카풀 생성 링크 -->
-        <router-link to="/carpool?step=0" class="footer-link" :class="{ active: isActive('/carpool') }">
-          <font-awesome-icon icon="car" style="color: grey;" />
-          <span class="link-text">동행 생성</span>
-        </router-link>
-        <!-- 카풀 찾기 링크 -->
-        <router-link to="/carpool/search" class="footer-link" :class="{ active: isActive('/carpool/search') }">
-          <font-awesome-icon icon="magnifying-glass" style="color: grey;"/>
-          <span class="link-text">동행 찾기</span>
-        </router-link>
-        <!-- 채팅 링크 -->
-        <router-link to="/chat" class="footer-link" :class="{ active: isActive('/chat') }">
-          <font-awesome-icon icon="comments" style="color: grey;"/>
-          <span class="link-text">채팅</span>
-        </router-link>
-      </section>
-    </footer>
-  </template>
+  <footer class="carpool-footer">
+    <section class="carpool-footer-links d-flex justify-content-center">
+      <router-link to="/carpool?step=0" class="footer-link" :class="{ active: selectedMenu === 'carpool' }"
+      @click="updateSelectedMenu('carpool')">
+        <div class="icon-wrapper">
+          <font-awesome-icon icon="car" />
+        </div>
+        <span class="link-text">동행 생성</span>
+      </router-link>
+      <router-link to="/carpool/search" class="footer-link" :class="{ active: selectedMenu === 'search' }"
+      @click="updateSelectedMenu('search')">
+        <div class="icon-wrapper">
+          <font-awesome-icon icon="magnifying-glass" />
+        </div>
+        <span class="link-text">동행 찾기</span>
+      </router-link>
+      <router-link to="/chat" class="footer-link" :class="{ active: selectedMenu === 'chat' }"
+      @click="updateSelectedMenu('chat')">
+        <div class="icon-wrapper">
+          <font-awesome-icon icon="comments" />
+        </div>
+        <span class="link-text">채팅</span>
+      </router-link>
+    </section>
+  </footer>
+</template>
   
-  <script>
-  
+<script>
+import { ref } from 'vue';
+    
   export default {
     setup() {
-      const isActive = (path) => window.location.pathname === path;
+      const selectedMenu = ref('carpool');
+
+      const isActive = (menu) => {
+        return selectedMenu.value === menu;
+      };
+
+      const updateSelectedMenu = (menu) => {
+        selectedMenu.value = menu;
+      };
   
       return {
         isActive,
+        selectedMenu,
+        updateSelectedMenu,
       };
     },
   };
   </script>
   
-  <style scoped>
-  .carpool-footer {
-    background-color: #f8f9fa; /* 전체 페이지 Footer와 동일한 색상 */
-    padding: 15px 0;
-    border-top: 1px solid #ddd;
-    max-width: 500px;
-    width: 100%;
-  }
-  
-  .carpool-footer-links {
-    display: flex;
-    gap: 40px; /* 링크 간 간격 설정 */
-    justify-content: center;
-  }
-  
-  .footer-link {
-    font-size: 1.5rem; /* 아이콘의 크기를 키움 */
-    text-decoration: none;
-    color: #6c757d; /* 링크 텍스트를 회색으로 설정 */
-    font-weight: 500;
-    transition: color 0.3s ease-in-out, transform 0.2s ease-in-out;
-    display: flex;
-    flex-direction: column; /* 아이콘과 텍스트를 세로로 배치 */
-    align-items: center;
-    margin: 0 10px;
-  }
-  
-  .footer-link i {
-    font-size: 2rem; /* 아이콘 크기 설정 */
-    color: #6c757d; /* 아이콘 색상을 회색으로 설정 */
-  }
-  
-  .link-text {
-    font-size: 0.8rem; /* 아이콘 아래에 표시되는 텍스트의 크기 */
-    margin-top: 5px; /* 아이콘과 텍스트 사이의 간격 */
-    color: #6c757d; /* 텍스트 색상 */
-  }
-  
-  .footer-link.active {
-    font-weight: bold;
-    color: #0056b3;
-  }
-  
-  .footer-link:hover {
-    color: #0056b3;
-    transform: scale(1.05); /* 호버 시 살짝 확대 */
-  }
-
-.material-icons {
-  font-size: 30px;
-  color: gray; 
+<style scoped>
+.carpool-footer {
+  background-color: #f8f9fa;
+  padding: 15px 0;
+  border-top: 1px solid #ddd;
+  max-width: 500px;
+  width: 100%;
 }
-  </style>
-  
+
+.carpool-footer-links {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+}
+
+.footer-link .svg-inline--fa {
+  width: 20px; 
+  height: 20px;
+}
+
+.icon-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  transition: all 0.3s ease-in-out;
+  background-color: transparent;
+}
+
+.footer-link {
+  position: relative;  
+  text-decoration: none;
+  color: #6c757d;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.footer-link.active .icon-wrapper {
+  background-color: rgba(42, 170, 138, 0.2);
+}
+
+.footer-link.active .svg-inline--fa {
+  color: #2AAA8A;
+}
+
+.footer-link:hover .icon-wrapper {
+  background-color: #E6FFE6;
+}
+
+.link-text {
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+</style>
