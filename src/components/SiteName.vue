@@ -62,8 +62,9 @@
 import Rank from '@/components/Rank.vue';
 import { userStore } from '@/store';
 import axios from 'axios';
-import router from '@/router';
 import Button from 'primevue/button';
+import router from '@/router';
+
 export default {
   props: {
     searchTerm: String,
@@ -80,6 +81,9 @@ export default {
     };
   },
   methods: {
+    forceRender() {
+      this.componentKey += 1;
+    },
     updateTerm(event) {
       this.$emit('update-search-term', event.target.value);
     },
@@ -96,8 +100,8 @@ export default {
       console.log(this.isMobileView);
     },
     kakaoLogout() {
-    axios.delete('http://localhost:8000/user/kakao/callback/', 
-        { access_token : this.$route.query.code })
+      axios.delete('http://localhost:8000/user/kakao/callback/', 
+        { access_token: this.$route.query.code })
         .then(response => {
           console.log('Django 서버로부터의 응답:', response.data);
           // 이후의 로직 수행
@@ -109,14 +113,15 @@ export default {
     logout() {
       axios.delete('http://localhost:8000/user/auth/')
       .then(response => {
-        console.log('Django 로 부터 응답:',response.data);
-        const store = userStore();
-        store.isLoggedIn = false;
-        return this.$router.push({ path: '/', replace: true })
+        const user = userStore(); 
+        console.log('Django 로 부터 응답:', response.data);
+        user.deleteCookie(); // 쿠키 삭제
       })
       .catch(error => {
-        console.error('오류 발생:',error)
-      })
+        console.error('오류 발생:', error);
+      });
+      return this.$router.push({ path: '/', replace: true })
+
     },
     toggleDropdown(event) {
       event.stopPropagation(); // 이벤트 버블링 방지
@@ -136,13 +141,13 @@ export default {
   },
   computed: {
     isLoggedIn() {
-      const user = userStore();
-      console.log(user.isLoggedIn)
-      return user.isLoggedIn;
+      const user = userStore(); 
+      return user.isLoggedIn; // 쿠키가 없더라도 userStore에서 상태를 확인
     },
   },
 };
 </script>
+
 
 <style scoped>
 

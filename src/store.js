@@ -4,7 +4,33 @@ import { insertUser as insertUserAsync } from '@/api'
 
 export const userStore = defineStore('user', {
   state: () => ({
-    isLoggedIn: false,})})
+    isLoggedIn: false,
+  }),
+  actions: {
+    updateLoginState() {
+      const accessToken = this.getCookie('access');
+      if (accessToken) {
+        this.isLoggedIn = true;
+      }
+      else {
+        this.isLoggedIn = false;
+      }
+      // this.isLoggedIn = !!accessToken; // 토큰이 있으면 true, 없으면 false
+    },
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    },
+    deleteCookie() {
+      // 쿠키 삭제 로직
+      document.cookie = `access=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      this.isLoggedIn = false; // 상태 갱신
+    },
+  },
+});
 
 export default defineStore('main', () => {
   const name = ref(0)

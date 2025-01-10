@@ -211,6 +211,7 @@ import InputNumber from 'primevue/inputnumber';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import axios from 'axios';
+import { userStore } from '@/store';
 
 export default {
   components: {
@@ -227,9 +228,8 @@ export default {
   },
   computed: {
     isLoggedIn() {
-      const user = userStore();
-      console.log(user.isLoggedIn)
-      return user.isLoggedIn;
+      const user = userStore(); 
+      return user.isLoggedIn; // 쿠키가 없더라도 userStore에서 상태를 확인
     },
   },
   setup() { 
@@ -370,14 +370,9 @@ export default {
         }
       );
     };
-    const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-    };
     const createCarpool = async () => {
-      const token = getCookie("access"); // 저장된 토큰 가져오기
+      const user = userStore(); 
+      const token = user.getCookie("access"); // 저장된 토큰 가져오기
       if (!token) {
         alert("로그인이 필요합니다.");
         this.$router.push("/login");
