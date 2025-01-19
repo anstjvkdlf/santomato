@@ -20,7 +20,7 @@
               </div>
               <div class="input-group">
                 <Button label="출발지 검색" icon="pi pi-search" @click="openPostcodePopup" 
-                  class="p-button-sm" />
+                  class="p-button-sm" ></Button>
               </div>
               <!-- 목적지 선택 -->
               <div class="input-group">
@@ -45,7 +45,7 @@
             <div id="map" class="map-container"></div>
             <!-- 찾기 버튼 -->
             <div class="input-group">
-              <Button label="찾기" @click="searchCarpool" icon="pi pi-check" class="p-button-sm" />
+              <Button label="찾기" @click="searchCarpool" icon="pi pi-check" class="p-button-sm"></Button>
             </div>
           </div>
         </StepPanel>
@@ -53,7 +53,7 @@
         <StepPanel value="1">
           <!-- Step 1 -->
           <div class="title-container">
-            <Button icon="pi pi-chevron-left" class="back-button" @click="activeStep = 0" text />
+            <Button icon="pi pi-chevron-left" class="back-button" @click="activeStep = 0" text></Button>
             <h6 class="service-title">카풀 목록</h6>
           </div>
           <div class="sort-container">
@@ -90,7 +90,7 @@
         <StepPanel value="2">
           <!-- Step 2 -->
           <div class="title-container">
-            <Button icon="pi pi-chevron-left" class="back-button" @click="activeStep = 1" text />
+            <Button icon="pi pi-chevron-left" class="back-button" @click="activeStep = 1" text></Button>
             <h6 class="service-title">카풀 상세</h6>
           </div>
           <div class="carpool-container">
@@ -118,18 +118,18 @@
               <div class="user-details">
                 <h3>{{ user.name }}</h3>
                 <div class="user-rating">
-                  <i class="pi pi-star-fill" style="color: gold;" />
+                  <i class="pi pi-star-fill" style="color: gold;"></i>
                   <span>{{ user.rate }}</span>
                 </div>
                 <p>{{ user.car }}</p>
               </div>
               <div class="user-actions">
-                <Button icon="pi pi-chevron-right" text />
+                <Button icon="pi pi-chevron-right" text ></Button>
               </div>
             </div>
             <!-- 동행 요청 버튼 -->
             <div class="input-group">
-              <Button label="카풀 요청" @click="submitCarpool" icon="pi pi-check" class="p-button-sm" />
+              <Button label="카풀 요청" @click="submitCarpool" icon="pi pi-check" class="p-button-sm"></Button>
             </div>
           </div>
         </StepPanel>
