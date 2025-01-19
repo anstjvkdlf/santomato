@@ -8,15 +8,15 @@
         <div class="user-info">
           <div class="user-name">{{ nickname }} <span class="rating">{{ rating }}★</span></div>
           <div class="stats">
-            <div class="stat-item">
+            <div class="stat-item" @click="navigateToPlans">
               <div class="stat-value">{{ stats.plans }}</div>
               <div class="stat-label">일정</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item" @click="navigateToRequests">
               <div class="stat-value">{{ stats.requests }}</div>
               <div class="stat-label">받은 요청</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item" @click="navigateToReviews">
               <div class="stat-value">{{ stats.reviews }}</div>
               <div class="stat-label">리뷰</div>
             </div>
@@ -126,6 +126,15 @@ export default {
     switchTab(tab) {
       this.activeTab = tab;
     },
+    navigateToPlans() {
+      this.$router.push('/profile/carpoolList');
+    },
+    navigateToRequests() {
+      this.$router.push('/profile/carpoolAlarm');
+    },
+    navigateToReviews() {
+      this.$router.push('/profile/reviews');
+    },
     async fetchUserInfo() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/user/auth');
@@ -150,13 +159,6 @@ export default {
 </script>
 
 <style scoped>
-.carpool-title {
-  font-size: 18px;
-  margin-top: 50px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
 .carpool-container {
   display: flex;
   flex-direction: column;
@@ -241,11 +243,13 @@ export default {
 
 .stat-item {
   text-align: center;
+  cursor: pointer;
 }
 
 .stat-value {
   font-weight: bold;
   margin-bottom: 5px;
+  cursor: pointer;
 }
 
 .stat-label {
