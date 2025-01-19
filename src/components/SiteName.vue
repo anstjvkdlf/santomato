@@ -47,7 +47,7 @@
               />
               <div v-show="showDropdown" class="dropdown-menu">
                 <router-link to="/profile" class="dropdown-item">마이페이지</router-link>
-                <router-link to="/my-carpool" class="dropdown-item">나의 카풀</router-link>
+                <router-link to="/profile/carpoolList" class="dropdown-item">나의 카풀</router-link>
                 <div class="dropdown-item" @click="logout">로그아웃</div>
               </div>
             </div>
