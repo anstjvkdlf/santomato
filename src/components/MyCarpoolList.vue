@@ -29,28 +29,47 @@
         </div>
       </template>
     </Calendar>
-    
+
     <!-- 팝업 다이얼로그 -->
-    <Dialog v-model:visible="showDialog" modal>
-      <div :class="['carpool-item', selectedRequest?.service_type === 'companion' ? 'sky-bg' : 'yellow-bg']">
-        <div class="user-info">
-          <strong>{{ selectedRequest.user.nickname }}</strong>
-          <span class="rating">{{ selectedRequest.user.rating }}★</span>
+    <Dialog 
+        v-model:visible="showDialog" 
+        modal 
+        :style="{ width: '300px' }"
+        :breakpoints="{
+          '960px': '75vw',
+          '640px': '90vw'
+        }"
+      >
+      <template #header>
+        <div class="dialog-header">
+          <span :class="['service-type', selectedRequest?.service_type === 'companion' ? 'companion-tag' : 'carpool-tag']">
+            {{ selectedRequest?.service_type === 'companion' ? '들날동행' : '등산카풀' }}
+          </span>
         </div>
-        <div class="additional-info">
-          <span>참가자: {{ selectedRequest.participants }}명</span>
-          <span>{{ selectedRequest.user.gender }}</span>
-          <span>{{ selectedRequest.user.carInfo }}</span>
-        </div>
+      </template>
+      <div class="dialog-content">
         <div class="trip-info">
           <div>
-            <span class="service-type">{{ selectedRequest.service_type === 'companion' ? '들날동행' : '등산카풀' }}</span>
             <span>{{ formatDateTime(selectedRequest.departure_date, selectedRequest.departure_time) }}</span>
           </div>
           <div>
-            {{ selectedRequest.start_point }}
-            <span v-if="selectedRequest.service_type === 'original'" class="distance">({{ selectedRequest.distance }}m)</span>
-            → {{ selectedRequest.end_point }}
+            {{ selectedRequest.start_point }} → {{ selectedRequest.end_point }}
+          </div>
+        </div>
+
+        <div class="additional-info">
+          <span>참가자: {{ getTotalParticipants(selectedRequest.participants) }}명</span>
+        </div>
+
+        <div v-for="participant in selectedRequest.participants" :key="participant.nickname" class="participant-info">
+          <div class="participant-details">
+            <strong>{{ participant.nickname }} ({{ participant.participants }}명)</strong>
+            <span class="rating">{{ participant.rating }}★</span>
+          </div>
+          <div class="participant-extra-info">
+            <span>{{ participant.gender }} </span>
+            <span v-if="participant.carInfo">{{ participant.carInfo }}</span>
+            <div v-if="selectedRequest.service_type === 'original'" class="distance">{{ participant.start_point }} ({{ participant.distance }}m)</div>
           </div>
         </div>
       </div>
@@ -86,7 +105,9 @@ export default {
       monthNames: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
       monthNamesShort: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
       today: '오늘',
-      clear: '초기화'
+      clear: '초기화',
+      dateFormat: 'yy.mm.dd',
+      weekHeader: '주'
     };
   
     const carpoolRequests = ref([
@@ -96,28 +117,38 @@ export default {
         end_point: "오색",
         departure_date: "2025-01-26",
         departure_time: "10:00",
-        participants: 1,
-        user: {
+        participants: [{
           nickname: '멋쟁이토마토',
           rating: 4.5,
           carInfo: '12가1234',
           gender: '여자',
-        }
+          participants: 2,
+        }]
       },
       {
         service_type: "original",
-        start_point: "광교중앙로 145",
+        start_point: "덕영대로 1732",
         end_point: "소공원",
         departure_date: "2025-01-25",
         departure_time: "09:00",
-        participants: 2,
-        distance: 500,
-        user: {
+        participants:[{
           nickname: '산토마토',
           rating: 5.0,
-          carInfo: '12가1234',
+          carInfo: null,
           gender: '여자',
-        }
+          participants: 2,
+          start_point: "덕영대로 123",
+          distance: 500,
+        },
+        {
+          nickname: '산방울',
+          rating: 4.0,
+          carInfo: '12가1234',
+          gender: '남자',
+          participants: 1,
+          start_point: "덕영대로 456",
+          distance: 1000,
+        }]
       },
       
     ]);
@@ -157,6 +188,9 @@ export default {
   methods: {
     goToProfile() {
       this.router.push('/profile');
+    },
+    getTotalParticipants(participants) {
+      return participants.reduce((sum, participant) => sum + participant.participants, 0);
     },
     async fetchCarpoolAlarm() {
       //try {
@@ -231,42 +265,99 @@ export default {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.sky-bg {
-  background-color: #e6f3ff;
+.dialog-content {
+  padding: 15px;
 }
 
-.yellow-bg {
-  background-color: #fff9e6;
+
+:deep(.p-dialog) {
+  width: 100% !important;  
 }
 
-.user-info {
+:deep(.p-dialog-header-close) {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  padding-right: 2rem;
+}
+
+:deep(.p-dialog-header-icons) {
+  padding: 0;
+  margin: 0;
+}
+
+.trip-info {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #eee;
+}
+
+.trip-info div:first-child {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.trip-info div:last-child {
+  color: #555;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.additional-info {
+  display: flex;
+  justify-content: flex-start;
+  font-size: 0.75em;
+  color: #999;
+  margin-bottom: 10px;
+}
+
+.participant-info {
+  margin: 12px 0;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.participant-info:last-child {
+  margin-bottom: 0;
+  border-bottom: 1px solid #eee;
+}
+
+.participant-details {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.participant-extra-info {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.participant-extra-info span {
+  margin-right: 10px;
 }
 
 .rating {
   color: #FFD700;
 }
 
-.trip-info {
-  margin-bottom: 10px;
-}
-
-.additional-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9em;
-  color: #666;
-  margin-bottom: 10px;
-}
-
 .service-type {
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 4px;
-  margin-right: 5px;
   font-size: 0.9em;
-  display: inline-block;
 }
 
 .sky-bg .service-type {
@@ -282,7 +373,22 @@ export default {
 .distance {
   color: #666;
   font-size: 0.9em;
-  margin-left: 5px;
+}
+
+.trip-info div:first-child {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.trip-info div:last-child {
+  color: #555;
+  font-size: 1em;
+}
+
+.carpool-item {
+  padding: 15px;
 }
 
 /* Calendar 관련 스타일 */
