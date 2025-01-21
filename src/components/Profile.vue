@@ -84,6 +84,7 @@
 
 <script>
 import axios from 'axios';
+import { userStore } from '@/store';
 
 export default {
   data() {
@@ -137,15 +138,22 @@ export default {
     },
     async fetchUserInfo() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/user/auth');
-        this.userInfo = response.data;
-        this.nickname = this.userInfo.nickname;
-        this.username = this.userInfo.username; //id
-        this.email = this.userInfo.email;
-        this.birthDate = this.userInfo.birthDate;
-        this.phoneNumber = this.userInfo.phone;
-        this.carInfo = this.userInfo.car_number;
-        this.gender = this.userInfo.gender;
+        const response = await axios.get('http://localhost:8000/user/auth/', {
+          withCredentials: true,
+        });
+
+        console.log("Response:", response);
+        this.userInfo = response.data.user;
+        console.log(this.userInfo);
+        // this.nickname = this.userInfo.user.nickname;
+        this.username = this.userInfo.user.username; //id
+        this.requested_carpool_rooms = this.userInfo.requested_carpool_rooms;
+        // this.email = this.userInfo.email;
+        // this.birthDate = this.userInfo.birthDate;
+        // this.phoneNumber = this.userInfo.phone;
+        // this.carInfo = this.userInfo.car_number;
+        // this.gender = this.userInfo.gender;
+        
       } catch (error) {
         console.error('사용자 정보를 가져오는데 실패했습니다:', error);
       }
@@ -153,6 +161,7 @@ export default {
   },
  
   mounted() {
+    console.log("Cooook");
     this.fetchUserInfo();
   }
 }

@@ -203,6 +203,7 @@ import Divider from 'primevue/divider';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import axios from 'axios';
+import { userStore } from '@/store';
 
 export default {
   components: {
@@ -227,7 +228,7 @@ export default {
     const endPoint = ref(null);
     const max_participants = ref(null);
     const selectedCompanion = ref({
-      departure_date: "", departure_time: "", max_participants: null, startpoint: "", end_point: ""
+      departure_date: "", departure_time: "", max_participants: null, startpoint: "", end_point: "", room_id: ""
     });
     const user = ref({
       name: "백지현",
@@ -368,7 +369,7 @@ export default {
          // start_point: startPoint.value.name,
          // end_point: endPoint.value.name,
         });
-
+        console.log(response);
         // 선택된 start_point와 end_point와 일치하고 max_participants가 max_participants 이하인 항목만 필터링
         companionList.value = response.data.filter(companion => 
           companion.start_point === startPoint.value.name && 
@@ -394,6 +395,17 @@ export default {
         // API 구현 후 실제 데이터를 가져오는 로직으로 변경 필요
         //await axios.post(`https://backend.santomato.com/api/carpool/`, {
         //});
+        const user = userStore(); 
+        const token = user.getCookie("access"); // 저장된 토큰 가져오기
+        await axios.post(
+          `http://127.0.0.1:8000/api/join/${selectedCompanion.value.room_id}/`, // 올바른 URL로 수정
+          {}, // 본문 내용이 없으므로 빈 객체를 보냄
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+            },
+          }
+        );
         activeStep.value = 3;
 
       } catch (error) {

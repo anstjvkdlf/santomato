@@ -51,19 +51,22 @@
             const response = await axios.post('http://localhost:8000/user/auth/', {
               username: this.username,
               password: this.password,
+            },
+            {
+              withCredentials: true
             });
             console.log('Login successful:', response.data);
             // 로그인 성공 시 서버에서 반환한 토큰 값
-            const accessToken = response.data.token.access;
   
             // 쿠키에 토큰 값을 저장
-            this.setCookie('access', accessToken);
+            // this.setCookie('access', accessToken);
   
-            console.log('Login successful:', response.data);
+            // console.log('Login successful:', response.data);
             const user = userStore();
             user.isLoggedIn = true; // 스토어에 로그인 상태 업데이트
-            console.log("fsadfasdff");
+            console.log("isLoggedIn");
             console.log(user.isLoggedIn);
+            localStorage.setItem('isLoggedIn', true);
             router.push('/'); // 로그인 성공 시 리다이렉트할 페이지
             // 기타 로그인 후 처리 코드...
             // Handle successful login, e.g., store tokens and redirect to dashboard

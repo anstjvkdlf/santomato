@@ -164,6 +164,7 @@ import RadioButton from 'primevue/radiobutton';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import axios from 'axios';
+import { userStore } from '@/store';
 
 export default {
   components: {
@@ -357,6 +358,17 @@ export default {
 
     const submitCarpool = async () => {
       try {
+        const user = userStore(); 
+        const token = user.getCookie("access"); // 저장된 토큰 가져오기
+        await axios.post(
+          `http://127.0.0.1:8000/api/join/${selectedCompanion.value.room_id}/`, // 올바른 URL로 수정
+          {}, // 본문 내용이 없으므로 빈 객체를 보냄
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+            },
+          }
+        );
         activeStep.value = 3;
       } catch (error) {
         console.error('Failed to submit:', error);

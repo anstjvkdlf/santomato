@@ -229,6 +229,9 @@ export default {
   computed: {
     isLoggedIn() {
       const user = userStore(); 
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+      user.isLoggedIn = true;
+      }
       return user.isLoggedIn; // 쿠키가 없더라도 userStore에서 상태를 확인
     },
   },
