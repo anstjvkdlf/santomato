@@ -97,8 +97,8 @@ export default {
         requests: 0,
         reviews: 0,
       },
-      username: 'test1234', //id
-      email: 'ghkdud458213@naver.com',
+      //username: 'test1234', //id
+      //email: 'ghkdud458213@naver.com',
       birthDate: '1996.12.03',
       phoneNumber: '010-9999-9999',
       carInfo: '12가1234',
@@ -143,12 +143,12 @@ export default {
         });
 
         console.log("Response:", response);
-        this.userInfo = response.data.user;
-        console.log(this.userInfo);
+        const userInfo = response.data.user;
+        console.log(userInfo);
         // this.nickname = this.userInfo.user.nickname;
-        this.username = this.userInfo.user.username; //id
-        this.requested_carpool_rooms = this.userInfo.requested_carpool_rooms;
-        // this.email = this.userInfo.email;
+        this.username = response.data?.user?.username; //id
+        this.requested_carpool_rooms = userInfo.requested_carpool_rooms;
+        this.email = userInfo.email;
         // this.birthDate = this.userInfo.birthDate;
         // this.phoneNumber = this.userInfo.phone;
         // this.carInfo = this.userInfo.car_number;
