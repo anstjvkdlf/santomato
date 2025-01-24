@@ -20,9 +20,11 @@
             <span 
               v-for="request in getRequestsForDate(slotProps.date)" 
               :key="request.service_type"
-              :class="['request-tag', request.service_type === 'companion' ? 'companion-tag' : 'carpool-tag']"
-              @click.stop="showPopup(request)"
-            >
+              :class="['request-tag', 
+                  request.service_type === 'companion' ? 'companion-tag' : 'carpool-tag',
+                  request.status === 'pending' ? 'pending-tag' : '']"
+                @click.stop="showPopup(request)"
+              >
               {{ request.service_type === 'companion' ? '동행' : '카풀' }}
             </span>
           </div>
@@ -42,10 +44,17 @@
       >
       <template #header>
         <div class="dialog-header">
-          <span :class="['service-type', selectedRequest?.service_type === 'companion' ? 'companion-tag' : 'carpool-tag']">
-            {{ selectedRequest?.service_type === 'companion' ? '들날동행' : '등산카풀' }}
-          </span>
-        </div>
+        <span :class="['service-type', 
+          selectedRequest?.service_type === 'companion' ? 'companion-tag' : 'carpool-tag',
+          selectedRequest?.status === 'pending' ? 'pending-tag' : '']">
+          {{ selectedRequest?.service_type === 'companion' ? '들날동행' : '등산카풀' }}
+        </span>
+        <span v-if="selectedRequest?.status === 'pending'" 
+              :class="['pending-text', 
+                      selectedRequest?.service_type === 'companion' ? 'companion-pending' : 'carpool-pending']">
+              응답 대기중
+        </span>
+      </div>
       </template>
       <div class="dialog-content">
         <div class="trip-info">
@@ -63,13 +72,16 @@
 
         <div v-for="participant in selectedRequest.participants" :key="participant.nickname" class="participant-info">
           <div class="participant-details">
-            <strong>{{ participant.nickname }} ({{ participant.participants }}명)</strong>
+            <strong>{{ participant.nickname }} 
+              {{ participant.isowner ? `(방장)` : `(${participant.participants}명)` }}
+            </strong>
             <span class="rating">{{ participant.rating }}★</span>
           </div>
           <div class="participant-extra-info">
             <span>{{ participant.gender }} </span>
-            <span v-if="participant.carInfo">{{ participant.carInfo }}</span>
-            <div v-if="selectedRequest.service_type === 'original'" class="distance">{{ participant.start_point }} ({{ participant.distance }}m)</div>
+            <span v-if="selectedRequest.service_type === 'companion' || 
+              (selectedRequest.service_type === 'original' && participant.isowner)">{{ participant.carInfo }}</span>
+            <div v-if="selectedRequest.service_type === 'original' && participant.isowner === false" class="distance">{{ participant.start_point }} ({{ participant.distance }}m)</div>
           </div>
         </div>
       </div>
@@ -117,13 +129,24 @@ export default {
         end_point: "오색",
         departure_date: "2025-01-26",
         departure_time: "10:00",
+        status: "accepted",
         participants: [{
           nickname: '멋쟁이토마토',
           rating: 4.5,
           carInfo: '12가1234',
           gender: '여자',
           participants: 2,
-        }]
+          isowner: false,
+        },
+        {
+          nickname: '멋쟁이곰',
+          rating: 4.5,
+          carInfo: '10가3334',
+          gender: '남자',
+          participants: 1,
+          isowner: true,
+        },
+        ]
       },
       {
         service_type: "original",
@@ -131,6 +154,7 @@ export default {
         end_point: "소공원",
         departure_date: "2025-01-25",
         departure_time: "09:00",
+        status: "accepted",
         participants:[{
           nickname: '산토마토',
           rating: 5.0,
@@ -139,6 +163,17 @@ export default {
           participants: 2,
           start_point: "덕영대로 123",
           distance: 500,
+          isowner: false,
+        },
+        {
+          nickname: '산다람쥐',
+          rating: 5.0,
+          carInfo: null,
+          gender: '여자',
+          participants: 1,
+          start_point: "덕영대로 1456",
+          distance: 1200,
+          isowner: false,
         },
         {
           nickname: '산방울',
@@ -146,11 +181,28 @@ export default {
           carInfo: '12가1234',
           gender: '남자',
           participants: 1,
-          start_point: "덕영대로 456",
-          distance: 1000,
+          start_point: "덕영대로 1732",
+          distance: 0,
+          isowner: true,
         }]
       },
-      
+      {
+        service_type: "companion",
+        start_point: "소공원",
+        end_point: "오색",
+        departure_date: "2025-01-30",
+        departure_time: "10:00",
+        status: "pending",
+        participants: [{
+          nickname: '멋쟁이곰',
+          rating: 4.5,
+          carInfo: '10가3334',
+          gender: '남자',
+          participants: 1,
+          isowner: true,
+        },
+        ]
+      },
     ]);
 
     const hasRequests = (date) => {
@@ -431,6 +483,34 @@ export default {
 .carpool-tag {
   background-color: #ffc107;
   color: black;
+}
+
+.pending-tag {
+  background-color: #808080 !important; 
+  color: white !important;
+  border: none; 
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 2rem;
+  width: 100%;
+}
+
+.pending-text {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.companion-pending {
+  color: #007bff; 
+}
+
+.carpool-pending {
+  color: #ffc107;
 }
 
 /* PrimeVue Calendar 커스텀 스타일 */
