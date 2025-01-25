@@ -402,7 +402,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.post(
+          const response = await axios.post(
           `http://localhost:8000/api/carpool/create/`, 
           {
             departure_date: departureDate.value.toLocaleDateString('en-CA'), // YYYY-MM-DD 형식
