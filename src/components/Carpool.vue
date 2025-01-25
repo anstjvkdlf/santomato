@@ -374,14 +374,12 @@ export default {
       );
     };
     const createCarpool = async () => {
-      const user = userStore(); 
-      const token = user.getCookie("access"); // 저장된 토큰 가져오기
-      if (!token) {
+      const user = userStore();
+      if (!user.isLoggedIn) {
         alert("로그인이 필요합니다.");
         this.$router.push("/login");
         return;
       }
-      console.log(token);
       if (startPoint.value && endPoint.value && startPoint.value.name === endPoint.value.name) {
         toast.add({
           severity: 'error',
@@ -404,21 +402,21 @@ export default {
         return;
       }
       try {
-        const response = await axios.post(`http://127.0.0.1:8000/api/carpool/create/`, {
-          departure_date: departureDate.value.toLocaleDateString('en-CA'), // YYYY-MM-DD 형식
-          departure_time: departureDate.value.toLocaleTimeString('en-GB', { hour12: false }).split(' ')[0], // HH:MM:SS 형식
-          max_participants: availableSeats.value,
-          start_point: selectedMode.value === 'carpool' ? startPoint.value : startPoint.value.name,
-          end_point: endPoint.value.name,
-          mountain_id: mountain.value.id,
-          service_type: selectedMode.value === 'carpool' ? 'original' : 'companion'
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Authorization 헤더 추가
-          }
-        },
-        );
+        const response = await axios.post(
+          `http://localhost:8000/api/carpool/create/`, 
+          {
+            departure_date: departureDate.value.toLocaleDateString('en-CA'), // YYYY-MM-DD 형식
+            departure_time: departureDate.value.toLocaleTimeString('en-GB', { hour12: false }).split(' ')[0], // HH:MM:SS 형식
+            max_participants: availableSeats.value,
+            start_point: selectedMode.value === 'carpool' ? startPoint.value : startPoint.value.name,
+            end_point: endPoint.value.name,
+            mountain_id: mountain.value.id,
+            service_type: selectedMode.value === 'carpool' ? 'original' : 'companion'
+          },
+          {
+            withCredentials: true
+          });
+
         activeStep.value = 2;
         console.log('API Response:', response.data);
 
