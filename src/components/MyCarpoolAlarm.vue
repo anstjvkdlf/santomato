@@ -13,9 +13,9 @@
           <span class="rating">{{ request.user.rating }}★</span>
         </div>
         <div class="additional-info">
-          <span>참가자: {{ request.participants }}명</span>
           <span>{{ request.user.gender }}</span>
-          <span>{{ request.user.carInfo }}</span>
+          <span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span>
+          <span>참가자: {{ request.participants }}명</span>
         </div>
         <div class="trip-info">
         <div>
@@ -51,12 +51,12 @@
         <div class="button-container">
           <Button 
             label="수락" 
-            @click="respondToRequest('accept')" 
+            @click="respondToRequest('accepted')" 
             class="p-button-success accept-button"
           ></Button>
           <Button 
             label="거절" 
-            @click="respondToRequest('reject')" 
+            @click="respondToRequest('rejected')" 
             class="p-button-danger reject-button"
           ></Button>
         </div>
@@ -134,13 +134,13 @@ export default {
       this.router.push('/profile');
     },
     async fetchCarpoolAlarm() {
-      //try {
-       // const response = await axios.get(`http://127.0.0.1:8000/api/carpool-requests/`);
-       // console.log(response.data);
-       // this.carpoolRequests = response.data;
-      //} catch (error) {
-      //  console.error('카풀 알람을 가져오는데 실패했습니다:', error);
-      //}
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/requestmanager/carpoolRequests/view/`);
+        console.log(response.data);
+        this.carpoolRequests = response.data;
+      } catch (error) {
+        console.error('카풀 알람을 가져오는데 실패했습니다:', error);
+      }
     },
     formatDateTime(date, time) {
       const [year, month, day] = date.split('-');
@@ -152,7 +152,7 @@ export default {
     },
     async respondToRequest(status) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/carpool-request/status/', {
+        const response = await axios.post('http://127.0.0.1:8000/requestmanager/carpoolRequests/status/', {
           status: status
         });
         console.log(response.data);
