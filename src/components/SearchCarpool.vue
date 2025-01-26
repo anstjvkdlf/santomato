@@ -94,7 +94,7 @@
             <h6 class="service-title">카풀 상세</h6>
           </div>
           <div class="carpool-container">
-            <h5>{{ formatTime(selectedCarpool.departure_time) }}, {{ selectedCarpool.departure_date }}</h5>
+            <h5>{{ formatTime(selectedCarpool.departure_time) }}, {{formatDate(selectedCarpool.departure_date) }}</h5>
             <div class="carpool-detail">
               <div class="point-slot">
                 <span class="point-text">출발지</span>
@@ -247,6 +247,15 @@ export default {
       return `${ampm} ${formattedHour}시${minutes !== '00' ? ` ${parseInt(minutes)}분` : ''}`;
     };
 
+    const formatDate = (date) => {
+      const dateObj = new Date(date);
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayOfWeek = days[dateObj.getDay()];
+      
+      const [year, month, day] = date.split('-');
+      return `${year.slice(2)}.${month}.${day} (${dayOfWeek})`;
+    };
+
     onMounted(() => {
       if (!window.naver || !window.naver.maps) {
         console.error("네이버 지도 API가 로드되지 않았습니다.");
@@ -395,6 +404,7 @@ export default {
       submitCarpool,
       sortOption,
       formatTime,
+      formatDate,
     };
   },
 };

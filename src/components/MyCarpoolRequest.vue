@@ -28,10 +28,10 @@
             <span class="service-type">{{ request.service_type === 'companion' ? '들날동행' : '등산카풀' }}</span>
             <span>{{ formatDateTime(request.departure_date, request.departure_time) }}</span>
           </div>
-          <div>{{ request.start_point }}
+          <span class="point-info">{{ request.start_point }}
             <span v-if="request.service_type === 'original'" class="distance">({{ request.distance }}m)</span>
             → {{ request.end_point }}
-          </div>
+          </span>
           <div>참가자: {{ request.participants }}명 </div>
         </div>
         <div class="status-container">
@@ -98,7 +98,7 @@ export default {
       },
       {
         service_type: "original",
-        start_point: "광교중앙로 145",
+        start_point: "경기 수원시 영통구 덕영대로 1732",
         end_point: "소공원",
         departure_date: "2025-03-15",
         departure_time: "09:00",
@@ -114,7 +114,7 @@ export default {
       },
       {
         service_type: "original",
-        start_point: "광교중앙로 145",
+        start_point: "경기 수원시 영통구 광교중앙로 145",
         end_point: "소공원",
         departure_date: "2025-03-25",
         departure_time: "09:00",
@@ -208,10 +208,9 @@ export default {
       confirmDelete,
       deleteRequest,
       showDeleteDialog,
-      currentFilter,
       getPendingCount,
-  getAcceptedCount,
-  getRejectedCount,
+      getAcceptedCount,
+      getRejectedCount,
     };
   },
   methods: {
@@ -231,12 +230,16 @@ export default {
       }
     },
     formatDateTime(date, time) {
+      const dateObj = new Date(date);
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayOfWeek = days[dateObj.getDay()];
+      
       const [year, month, day] = date.split('-');
       const [hours, minutes] = time.split(':');
       const hour = parseInt(hours);
       const ampm = hour >= 12 ? '오후' : '오전';
       const formattedHour = hour % 12 || 12;
-      return `${year.slice(2)}.${month}.${day}, ${ampm} ${formattedHour}시${minutes !== '00' ? ` ${parseInt(minutes)}분` : ''}`;
+      return `${year.slice(2)}.${month}.${day}(${dayOfWeek}), ${ampm} ${formattedHour}시${minutes !== '00' ? ` ${parseInt(minutes)}분` : ''}`;
     },
     async respondToRequest(status) {
       try {
@@ -372,7 +375,6 @@ export default {
 .distance {
   color: #666;
   font-size: 0.9em;
-  margin-left: 5px;
 }
 
 .sky-bg .service-type {
@@ -457,6 +459,10 @@ export default {
 
 :deep(.p-button-rounded.p-button-text) {
   color: #000000 !important;
+}
+
+.point-info {
+  word-break: keep-all;
 }
 
 /* Dialog 스타일 */

@@ -124,7 +124,7 @@
       </div>
 
       <div class="carpool-container">
-        <h5>{{ formatTime(selectedCompanion.departure_time) }}, {{ selectedCompanion.departure_date }}</h5>
+        <h5>{{ formatTime(selectedCompanion.departure_time) }}, {{formatDate(selectedCarpool.departure_date) }}</h5>
           <div class="carpool-detail">
             <div class="point-slot">
               <span class="point-text">들머리</span>
@@ -284,6 +284,15 @@ export default {
       return `${ampm} ${formattedHour}시${minutes !== '00' ? ` ${parseInt(minutes)}분` : ''}`;
     };
 
+    const formatDate = (date) => {
+      const dateObj = new Date(date);
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayOfWeek = days[dateObj.getDay()];
+      
+      const [year, month, day] = date.split('-');
+      return `${year.slice(2)}.${month}.${day} (${dayOfWeek})`;
+    };
+
     // 지도 초기화
     onMounted(() => {
       if (!window.naver || !window.naver.maps) {
@@ -432,6 +441,7 @@ export default {
       handleCardClick,
       user,
       formatTime,
+      formatDate,
     };
   },
 };

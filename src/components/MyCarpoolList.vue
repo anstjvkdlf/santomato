@@ -57,13 +57,7 @@
           <div>
             <span>{{ formatDateTime(selectedRequest.departure_date, selectedRequest.departure_time) }}</span>
           </div>
-          <div>
-            {{ selectedRequest.start_point }} → {{ selectedRequest.end_point }}
-          </div>
-        </div>
-
-        <div class="additional-info">
-          <span>참가자: {{ getTotalParticipants(selectedRequest.participants) }}명</span>
+          <div class="point-info">{{ selectedRequest.start_point }} → {{ selectedRequest.end_point }}</div>
         </div>
 
         <div v-for="participant in selectedRequest.participants" :key="participant.nickname" class="participant-info">
@@ -146,7 +140,7 @@ export default {
       },
       {
         service_type: "original",
-        start_point: "덕영대로 1732",
+        start_point: "경기 수원시 영통구 덕영대로 1732",
         end_point: "소공원",
         departure_date: "2025-01-25",
         departure_time: "09:00",
@@ -201,11 +195,6 @@ export default {
       },
     ]);
 
-    const hasRequests = (date) => {
-      const dateStr = `${date.year}-${String(date.month + 1).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`;
-      return carpoolRequests.value.some(req => req.departure_date === dateStr);
-    };
-
     const getRequestsForDate = (date) => {
       const dateStr = `${date.year}-${String(date.month + 1).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`;
       return carpoolRequests.value.filter(req => req.departure_date === dateStr);
@@ -227,7 +216,6 @@ export default {
       showDialog,
       selectedRequest,
       locale,
-      hasRequests,
       getRequestsForDate,
       showPopup,
       closePopup
@@ -236,9 +224,6 @@ export default {
   methods: {
     goToProfile() {
       this.router.push('/profile');
-    },
-    getTotalParticipants(participants) {
-      return participants.reduce((sum, participant) => sum + participant.participants, 0);
     },
     async fetchCarpoolAlarm() {
       try {
@@ -253,12 +238,16 @@ export default {
       }
     },
     formatDateTime(date, time) {
+      const dateObj = new Date(date);
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayOfWeek = days[dateObj.getDay()];
+      
       const [year, month, day] = date.split('-');
       const [hours, minutes] = time.split(':');
       const hour = parseInt(hours);
       const ampm = hour >= 12 ? '오후' : '오전';
       const formattedHour = hour % 12 || 12;
-      return `${year.slice(2)}.${month}.${day}, ${ampm} ${formattedHour}시${minutes !== '00' ? ` ${parseInt(minutes)}분` : ''}`;
+      return `${year.slice(2)}.${month}.${day}(${dayOfWeek}), ${ampm} ${formattedHour}시${minutes !== '00' ? ` ${parseInt(minutes)}분` : ''}`;
     },
   },
  
@@ -361,14 +350,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 5px;
-}
-
-.additional-info {
-  display: flex;
-  justify-content: flex-start;
-  font-size: 0.75em;
-  color: #999;
-  margin-bottom: 10px;
 }
 
 .participant-info {
@@ -504,6 +485,10 @@ export default {
 
 .carpool-pending {
   color: #ffc107;
+}
+
+.point-info {
+  word-break: keep-all;
 }
 
 /* PrimeVue Calendar 커스텀 스타일 */
