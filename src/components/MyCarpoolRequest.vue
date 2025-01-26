@@ -6,9 +6,9 @@
     </div>
     
     <div class="filter-container">
-      <span @click="currentFilter = 'pending'" :class="['filter-text', { active: currentFilter === 'pending' }]">대기중</span>
-      <span @click="currentFilter = 'accepted'" :class="['filter-text', { active: currentFilter === 'accepted' }]">수락</span>
-      <span @click="currentFilter = 'rejected'" :class="['filter-text', { active: currentFilter === 'rejected' }]">거절</span>
+      <span @click="currentFilter = 'pending'" :class="['filter-text', { active: currentFilter === 'pending' }]">대기중 ({{ getPendingCount }}) </span>
+      <span @click="currentFilter = 'accepted'" :class="['filter-text', { active: currentFilter === 'accepted' }]">수락됨 ({{ getAcceptedCount }})</span>
+      <span @click="currentFilter = 'rejected'" :class="['filter-text', { active: currentFilter === 'rejected' }]">거절됨 ({{ getRejectedCount }})</span>
     </div>
 
     <ul class="carpool-list">
@@ -179,6 +179,23 @@ export default {
       showDeleteDialog.value = false;
     };
 
+    const getPendingCount = computed(() => {
+      return carpoolRequests.value.filter(request => 
+        request.status === 'pending' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()
+      ).length;
+    });
+
+    const getAcceptedCount = computed(() => {
+      return carpoolRequests.value.filter(request => 
+        request.status === 'accepted' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()
+      ).length;
+    });
+
+    const getRejectedCount = computed(() => {
+      return carpoolRequests.value.filter(request => 
+        request.status === 'rejected' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()
+      ).length;
+    });
     return {
       router,
       carpoolRequests,
@@ -192,6 +209,9 @@ export default {
       deleteRequest,
       showDeleteDialog,
       currentFilter,
+      getPendingCount,
+  getAcceptedCount,
+  getRejectedCount,
     };
   },
   methods: {
@@ -385,6 +405,25 @@ export default {
 .filter-text.active {
   font-weight: bold;
   color: #2AAA8A;
+}
+
+.filter-text {
+  flex: 1;
+  margin: 0 5px;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  padding: 5px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter-text span {
+  margin-left: 5px;
+  font-size: 12px;
+  color: #999;
 }
 
 .status-container {
