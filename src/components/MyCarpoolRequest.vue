@@ -15,14 +15,7 @@
       <li v-for="(request, index) in filteredRequests" :key="index" 
           :class="['carpool-item', request.service_type === 'companion' ? 'sky-bg' : 'yellow-bg']"
           @click="showPopup(request)">
-        <div class="user-info">
-          <strong>{{ request.user.nickname }}</strong>
-          <span class="rating">{{ request.user.rating }}★</span>
-        </div>
-        <div class="additional-info">
-          <span>{{ request.user.gender }}</span>
-          <span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span>
-        </div>
+        
         <div class="trip-info">
           <div>
             <span class="service-type">{{ request.service_type === 'companion' ? '들날동행' : '등산카풀' }}</span>
@@ -32,8 +25,17 @@
             <span v-if="request.service_type === 'original'" class="distance">({{ request.distance }}m)</span>
             → {{ request.end_point }}
           </span>
-          <div>참가자: {{ request.participants }}명 </div>
         </div>
+        <div>
+          <strong>{{ request.user.nickname }}</strong>
+          <span class="rating">{{ request.user.rating }}★</span>
+        </div>
+        <div class="additional-info">
+          <span>{{ request.user.gender }}</span>
+          <span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span>
+        </div>
+        <div  class="participants">요청인원 {{ request.participants }}명 </div>
+
         <div class="status-container">
           <span class="status-text" :class="getStatusClass(request)">{{ getStatusText(request) }}</span>
           <span v-if="request.status === 'pending' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()" 
@@ -351,6 +353,7 @@ export default {
 }
 
 .trip-info {
+  margin-top: 10px;
   margin-bottom: 10px;
 }
 
@@ -359,8 +362,7 @@ export default {
   justify-content: space-between;
   font-size: 0.9em;
   color: #666;
-  margin-bottom: 10px;
-
+  margin-bottom: 5px;
 }
 
 .service-type {
@@ -463,6 +465,10 @@ export default {
 
 .point-info {
   word-break: keep-all;
+}
+
+.participants {
+    margin-top: 10px;
 }
 
 /* Dialog 스타일 */
