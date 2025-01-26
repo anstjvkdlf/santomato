@@ -7,8 +7,8 @@
     
     <div class="filter-container">
       <span @click="currentFilter = 'pending'" :class="['filter-text', { active: currentFilter === 'pending' }]">대기중</span>
-      <span @click="currentFilter = 'responded'" :class="['filter-text', { active: currentFilter === 'responded' }]">응답 완료</span>
-      <span @click="currentFilter = 'past'" :class="['filter-text', { active: currentFilter === 'past' }]">지난 요청</span>
+      <span @click="currentFilter = 'accepted'" :class="['filter-text', { active: currentFilter === 'accepted' }]">수락</span>
+      <span @click="currentFilter = 'rejected'" :class="['filter-text', { active: currentFilter === 'rejected' }]">거절</span>
     </div>
 
     <ul class="carpool-list">
@@ -38,7 +38,7 @@
           <span class="status-text" :class="getStatusClass(request)">{{ getStatusText(request) }}</span>
           <span v-if="request.status === 'pending' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()" 
             class="delete-text" 
-            @click.stop="confirmDelete(request)">삭제 X</span>
+            @click.stop="confirmDelete(request)">취소 X</span>
         </div>
       </li>
     </ul>
@@ -49,10 +49,10 @@
           <Button icon="pi pi-times" @click="showDeleteDialog = false" class="close-button" text></Button>
         </div>
         <div class="dialog-body">
-          <p>이 요청을 삭제하시겠습니까?</p>
+          <p>이 요청을 취소하시겠습니까?</p>
           <div class="button-container">
-            <Button label="삭제" @click="deleteRequest" class="p-button-danger delete-button"></Button>
-            <Button label="취소" @click="showDeleteDialog = false" class="p-button-secondary cancel-button"></Button>
+            <Button label="요청 취소" @click="deleteRequest" class="p-button-danger delete-button"></Button>
+            <Button label="아니요" @click="showDeleteDialog = false" class="p-button-secondary cancel-button"></Button>
           </div>
         </div>
       </div>
@@ -84,7 +84,7 @@ export default {
         service_type: "companion",
         start_point: "한계령",
         end_point: "오색",
-        departure_date: "2025-01-26",
+        departure_date: "2025-03-30",
         departure_time: "10:00",
         participants: 1,
         distance: null,
@@ -100,7 +100,7 @@ export default {
         service_type: "original",
         start_point: "광교중앙로 145",
         end_point: "소공원",
-        departure_date: "2025-01-26",
+        departure_date: "2025-03-15",
         departure_time: "09:00",
         participants: 2,
         distance: 500,
@@ -116,7 +116,7 @@ export default {
         service_type: "original",
         start_point: "광교중앙로 145",
         end_point: "소공원",
-        departure_date: "2025-01-25",
+        departure_date: "2025-03-25",
         departure_time: "09:00",
         participants: 2,
         distance: 500,
@@ -132,7 +132,7 @@ export default {
         service_type: "original",
         start_point: "광교중앙로 145",
         end_point: "소공원",
-        departure_date: "2025-01-30",
+        departure_date: "2025-03-19",
         departure_time: "09:00",
         participants: 2,
         distance: 500,
@@ -153,10 +153,10 @@ export default {
         switch (currentFilter.value) {
           case 'pending':
             return request.status === 'pending' && requestDate > now;
-          case 'responded':
-            return ['accepted', 'rejected'].includes(request.status) && requestDate > now;
-          case 'past':
-            return requestDate <= now;
+          case 'accepted':
+            return request.status === 'accepted' && requestDate > now;
+          case 'rejected':
+            return request.status === 'rejected' && requestDate > now;
           default:
             return true;
         }
@@ -174,7 +174,7 @@ export default {
     };
 
     const deleteRequest = () => {
-      //axios.delete(`http://127.0.0.1:8000/requestmanager/carpoolRequests/delete/${requestId}`);
+      //axios.delete(`http://localhost:8000/requestmanager/carpoolRequests/delete/${requestId}`);
       //carpoolRequests.value = carpoolRequests.value.filter(req => req !== selectedRequest.value);
       showDeleteDialog.value = false;
     };
@@ -220,7 +220,7 @@ export default {
     },
     async respondToRequest(status) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/requestmanager/myCarpoolRequest/status/', {
+        const response = await axios.post('http://localhost:8000/requestmanager/myCarpoolRequest/status/', {
           status: status
         });
         console.log(response.data);
@@ -232,9 +232,6 @@ export default {
     },
 
     getStatusText(request) {
-      const now = new Date();
-      const requestDate = new Date(request.departure_date + ' ' + request.departure_time);
-      if (requestDate <= now) return '만료됨';
       switch (request.status) {
         case 'accepted': return '수락됨';
         case 'rejected': return '거절됨';
@@ -242,11 +239,7 @@ export default {
       }
     },
     getStatusClass(request) {
-      const now = new Date();
-      const requestDate = new Date(request.departure_date + ' ' + request.departure_time);
-      if (requestDate <= now) return 'past-status';
       switch (request.status) {
-        case 'pending': return 'pending-status';
         case 'accepted': return 'accepted-status';
         case 'rejected': return 'rejected-status';
         default: return '';
