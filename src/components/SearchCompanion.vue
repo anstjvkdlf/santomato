@@ -124,7 +124,7 @@
       </div>
 
       <div class="carpool-container">
-        <h5>{{ formatTime(selectedCompanion.departure_time) }}, {{formatDate(selectedCarpool.departure_date) }}</h5>
+        <h5>{{ formatTime(selectedCompanion.departure_time) }}, {{formatDate(selectedCompanion.departure_date) }}</h5>
           <div class="carpool-detail">
             <div class="point-slot">
               <span class="point-text">들머리</span>
