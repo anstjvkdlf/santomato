@@ -171,7 +171,7 @@ export default {
     },
     async respondToRequest(status) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/requestmanager/carpoolRequest/status/', {
+        const response = await axios.post('http://localhost:8000/requestmanager/carpoolRequest/status/', {
           status: status
         });
         console.log(response.data);

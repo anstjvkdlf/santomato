@@ -48,7 +48,7 @@
             selectedRequest?.service_type === 'companion' ? 'companion-tag' : 'carpool-tag',
             selectedRequest?.status === 'pending' ? 'pending-tag' : '']">
             {{ selectedRequest?.service_type === 'companion' ? '들날동행' : '등산카풀' }}
-            {{ selectedRequest?.status === 'pending' ? '(수락 대기중)' : '' }}
+            {{ selectedRequest?.status === 'pending' ? '(대기중)' : '' }}
           </span>
         </div>
       </template>
