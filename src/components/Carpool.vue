@@ -270,6 +270,20 @@ export default {
     };
 
     const selectService = (type) => {
+      departureDate.value = null;
+      startPoint.value = null;
+      endPoint.value = null;
+      availableSeats.value = null;
+
+      Object.values(markers.value).forEach(marker => {
+        if (marker) marker.setMap(null);
+      });
+      markers.value = {
+        departure: null,
+        entrance: null,
+        exit: null
+      };
+      
       selectedMode.value = type; // Set default radio button value
       activeStep.value = 1; // Move to Step 1
     };
