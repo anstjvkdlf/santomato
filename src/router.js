@@ -13,6 +13,7 @@ import Profile from './components/Profile.vue';
 import MyCarpoolRequest from './components/MyCarpoolRequest.vue';
 import MyCarpoolAlarm from './components/MyCarpoolAlarm.vue';
 import MyCarpoolList from './components/MyCarpoolList.vue';
+import MyCarpoolRoom from './components/MyCarpoolRoom.vue';
 import ChangePassword from './components/ChangePassword.vue';
 
 const routes = [
@@ -45,6 +46,11 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: Profile,
+  },
+  {
+    path: '/myCarpool',
+    name: 'MyCarpoolRoom',
+    component: MyCarpoolRoom,
   },
   {
     path: '/profile/changePassword',
