@@ -10,8 +10,10 @@ import LiveChat from './views/HomeView.vue';
 import Login from './components/Login.vue';
 import SignUp from './components/SignUp.vue';
 import Profile from './components/Profile.vue';
+import MyCarpoolRequest from './components/MyCarpoolRequest.vue';
 import MyCarpoolAlarm from './components/MyCarpoolAlarm.vue';
 import MyCarpoolList from './components/MyCarpoolList.vue';
+import ChangePassword from './components/ChangePassword.vue';
 
 const routes = [
   {
@@ -43,6 +45,16 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: Profile,
+  },
+  {
+    path: '/profile/changePassword',
+    name: 'ChangePassword',
+    component: ChangePassword,
+  },
+  {
+    path: '/profile/carpoolRequest',
+    name: 'MyCarpoolRequest',
+    component: MyCarpoolRequest,
   },
   {
     path: '/profile/carpoolAlarm',

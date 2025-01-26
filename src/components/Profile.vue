@@ -14,6 +14,10 @@
             </div>
             <div class="stat-item" @click="navigateToRequests">
               <div class="stat-value">{{ stats.requests }}</div>
+              <div class="stat-label">보낸 요청</div>
+            </div>
+            <div class="stat-item" @click="navigateToAlarms">
+              <div class="stat-value">{{ stats.alarms }}</div>
               <div class="stat-label">받은 요청</div>
             </div>
             <div class="stat-item" @click="navigateToReviews">
@@ -64,7 +68,7 @@
         <div class="info-value">{{ email }}</div>
       </div>
       <div class="info-item">
-        <div class="info-label">비밀번호 재설정</div>
+        <div class="info-label" @click="navigateToChangePassword"  data-clickable="true">비밀번호 변경</div>
         <div class="info-value"></div>
       </div>
       <template v-if="isLoggedIn">
@@ -95,6 +99,7 @@ export default {
       stats: {
         plans: 0,
         requests: 0,
+        alarms: 0,
         reviews: 0,
       },
       //username: 'test1234', //id
@@ -131,10 +136,16 @@ export default {
       this.$router.push('/profile/carpoolList');
     },
     navigateToRequests() {
+      this.$router.push('/profile/carpoolRequest');
+    },
+    navigateToAlarms() {
       this.$router.push('/profile/carpoolAlarm');
     },
     navigateToReviews() {
       this.$router.push('/profile/reviews');
+    },
+    navigateToChangePassword(){
+      this.$router.push('/profile/changePassword');
     },
     async fetchUserInfo() {
       try {
@@ -283,6 +294,10 @@ export default {
   justify-content: space-between;
   padding: 10px 0;
   border-bottom: 1px solid #eee;
+}
+
+.info-item .info-label[data-clickable="true"] {
+  cursor: pointer;
 }
 
 .info-label {

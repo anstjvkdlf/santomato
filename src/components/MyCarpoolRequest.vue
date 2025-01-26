@@ -2,10 +2,17 @@
   <div class="carpool-container">
     <div class="title-container">
       <Button icon="pi pi-chevron-left" class="back-button" @click="goToProfile" text></Button>
-      <h6 class="service-title">받은 요청</h6>
+      <h6 class="service-title">보낸 요청</h6>
     </div>
+    
+    <div class="filter-container">
+      <span @click="currentFilter = 'pending'" :class="['filter-text', { active: currentFilter === 'pending' }]">대기중</span>
+      <span @click="currentFilter = 'responded'" :class="['filter-text', { active: currentFilter === 'responded' }]">응답 완료</span>
+      <span @click="currentFilter = 'past'" :class="['filter-text', { active: currentFilter === 'past' }]">지난 요청</span>
+    </div>
+
     <ul class="carpool-list">
-      <li v-for="(request, index) in filteredRequests" :key="index"
+      <li v-for="(request, index) in filteredRequests" :key="index" 
           :class="['carpool-item', request.service_type === 'companion' ? 'sky-bg' : 'yellow-bg']"
           @click="showPopup(request)">
         <div class="user-info">
@@ -25,44 +32,31 @@
             <span v-if="request.service_type === 'original'" class="distance">({{ request.distance }}m)</span>
             → {{ request.end_point }}
           </div>
-      </div>
+          <div>참가자: {{ request.participants }}명 </div>
+        </div>
+        <div class="status-container">
+          <span class="status-text" :class="getStatusClass(request)">{{ getStatusText(request) }}</span>
+          <span v-if="request.status === 'pending' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()" 
+            class="delete-text" 
+            @click.stop="confirmDelete(request)">삭제 X</span>
+        </div>
       </li>
     </ul>
 
-    <Dialog 
-    v-model:visible="showDialog" 
-    modal 
-    :style="{ width: '90%', maxWidth: '320px' }" 
-    class="request-dialog"
-    :showHeader="false"
-  >
-    <div class="dialog-content">
-      <div class="dialog-header">
-        <Button 
-          icon="pi pi-times" 
-          @click="showDialog = false" 
-          class="close-button" 
-          text
-        ></Button>
-      </div>
-      <div class="dialog-body">
-        <p>이 요청을 수락하시겠습니까?</p>
-        <div class="button-container">
-          <Button 
-            label="수락" 
-            @click="respondToRequest('accepted')" 
-            class="p-button-success accept-button"
-          ></Button>
-          <Button 
-            label="거절" 
-            @click="respondToRequest('rejected')" 
-            class="p-button-danger reject-button"
-          ></Button>
+    <Dialog v-model:visible="showDeleteDialog" modal :style="{ width: '90%', maxWidth: '320px' }" class="delete-dialog" :showHeader="false">
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <Button icon="pi pi-times" @click="showDeleteDialog = false" class="close-button" text></Button>
+        </div>
+        <div class="dialog-body">
+          <p>이 요청을 삭제하시겠습니까?</p>
+          <div class="button-container">
+            <Button label="삭제" @click="deleteRequest" class="p-button-danger delete-button"></Button>
+            <Button label="취소" @click="showDeleteDialog = false" class="p-button-secondary cancel-button"></Button>
+          </div>
         </div>
       </div>
-    </div>
-  </Dialog>
-
+    </Dialog>
   </div>  
 </template>
 
@@ -82,7 +76,8 @@ export default {
     const router = useRouter();
     const showDialog = ref(false);
     const selectedRequest = ref(null);
-    const currentFilter = ref('all');
+    const showDeleteDialog = ref(false);
+    const currentFilter = ref('pending');
 
     const carpoolRequests = ref([
       {
@@ -93,7 +88,7 @@ export default {
         departure_time: "10:00",
         participants: 1,
         distance: null,
-        status: "pending",
+        status: "accepted",
         user: {
           nickname: '멋쟁이토마토',
           rating: 4.5,
@@ -116,33 +111,87 @@ export default {
           carInfo: '12가1234',
           gender: '여자',
         }
+      },
+      {
+        service_type: "original",
+        start_point: "광교중앙로 145",
+        end_point: "소공원",
+        departure_date: "2025-01-25",
+        departure_time: "09:00",
+        participants: 2,
+        distance: 500,
+        status: "pending",
+        user: {
+          nickname: '산토마토',
+          rating: 5.0,
+          carInfo: '12가1234',
+          gender: '여자',
+        }
+      },
+      {
+        service_type: "original",
+        start_point: "광교중앙로 145",
+        end_point: "소공원",
+        departure_date: "2025-01-30",
+        departure_time: "09:00",
+        participants: 2,
+        distance: 500,
+        status: "rejected",
+        user: {
+          nickname: '산토마토',
+          rating: 5.0,
+          carInfo: '12가1234',
+          gender: '여자',
+        }
       }
     ]);
 
     const filteredRequests = computed(() => {
-      switch (currentFilter.value) {
-        case 'companion':
-          return carpoolRequests.value.filter(request => request.service_type === 'companion');
-        case 'original':
-          return carpoolRequests.value.filter(request => request.service_type === 'original');
-        default:
-          return carpoolRequests.value;
-      }
+      const now = new Date();
+      return carpoolRequests.value.filter(request => {
+        const requestDate = new Date(request.departure_date + ' ' + request.departure_time);
+        switch (currentFilter.value) {
+          case 'pending':
+            return request.status === 'pending' && requestDate > now;
+          case 'responded':
+            return ['accepted', 'rejected'].includes(request.status) && requestDate > now;
+          case 'past':
+            return requestDate <= now;
+          default:
+            return true;
+        }
+      });
     });
-    
+
     const showPopup = (request) => {
       selectedRequest.value = request;
       showDialog.value = true;
+    };
+
+    const confirmDelete = (request) => {
+      selectedRequest.value = request;
+      showDeleteDialog.value = true;
+    };
+
+    const deleteRequest = () => {
+      //axios.delete(`http://127.0.0.1:8000/requestmanager/carpoolRequests/delete/${requestId}`);
+      //carpoolRequests.value = carpoolRequests.value.filter(req => req !== selectedRequest.value);
+      showDeleteDialog.value = false;
     };
 
     return {
       router,
       carpoolRequests,
       showDialog,
+      showDeleteDialog,
       selectedRequest,
-      showPopup,
       currentFilter,
       filteredRequests,
+      showPopup,
+      confirmDelete,
+      deleteRequest,
+      showDeleteDialog,
+      currentFilter,
     };
   },
   methods: {
@@ -178,6 +227,29 @@ export default {
         console.error('요청 처리 중 오류 발생:', error);
       }
     },
+
+    getStatusText(request) {
+      const now = new Date();
+      const requestDate = new Date(request.departure_date + ' ' + request.departure_time);
+      if (requestDate <= now) return '만료됨';
+      switch (request.status) {
+        case 'accepted': return '수락됨';
+        case 'rejected': return '거절됨';
+        default: return '';
+      }
+    },
+    getStatusClass(request) {
+      const now = new Date();
+      const requestDate = new Date(request.departure_date + ' ' + request.departure_time);
+      if (requestDate <= now) return 'past-status';
+      switch (request.status) {
+        case 'pending': return 'pending-status';
+        case 'accepted': return 'accepted-status';
+        case 'rejected': return 'rejected-status';
+        default: return '';
+      }
+    },
+
   },
  
   mounted() {
@@ -240,11 +312,6 @@ export default {
   margin-bottom: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  cursor: pointer;
-}
-
-.carpool-item:hover {
-  opacity: 0.8;
 }
 
 .sky-bg {
@@ -273,7 +340,8 @@ export default {
   justify-content: space-between;
   font-size: 0.9em;
   color: #666;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+
 }
 
 .service-type {
@@ -301,6 +369,60 @@ export default {
   color: black;
 }
 
+.filter-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.filter-text {
+  flex: 1;
+  margin: 0 5px;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  padding: 5px 0;
+}
+
+.filter-text.active {
+  font-weight: bold;
+  color: #2AAA8A;
+}
+
+.status-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.status-text {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.accepted-status { color: #28a745; }
+.rejected-status { color: #dc3545; }
+.past-status { color: #666 !important; }
+
+.delete-text {
+  font-size: 0.9em;
+  color: #666;
+  cursor: pointer;
+  padding: 0 1px;
+  line-height: 1;
+}
+
+.delete-text:hover {
+  opacity: 0.7;
+}
+
+:deep(.p-button-rounded.p-button-text) {
+  color: #000000 !important;
+}
 
 /* Dialog 스타일 */
 .request-dialog {

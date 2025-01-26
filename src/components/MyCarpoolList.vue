@@ -44,17 +44,13 @@
       >
       <template #header>
         <div class="dialog-header">
-        <span :class="['service-type', 
-          selectedRequest?.service_type === 'companion' ? 'companion-tag' : 'carpool-tag',
-          selectedRequest?.status === 'pending' ? 'pending-tag' : '']">
-          {{ selectedRequest?.service_type === 'companion' ? '들날동행' : '등산카풀' }}
-        </span>
-        <span v-if="selectedRequest?.status === 'pending'" 
-              :class="['pending-text', 
-                      selectedRequest?.service_type === 'companion' ? 'companion-pending' : 'carpool-pending']">
-              응답 대기중
-        </span>
-      </div>
+          <span :class="['service-type', 
+            selectedRequest?.service_type === 'companion' ? 'companion-tag' : 'carpool-tag',
+            selectedRequest?.status === 'pending' ? 'pending-tag' : '']">
+            {{ selectedRequest?.service_type === 'companion' ? '들날동행' : '등산카풀' }}
+            {{ selectedRequest?.status === 'pending' ? '(수락 대기중)' : '' }}
+          </span>
+        </div>
       </template>
       <div class="dialog-content">
         <div class="trip-info">
@@ -497,12 +493,6 @@ export default {
   justify-content: space-between;
   padding-right: 2rem;
   width: 100%;
-}
-
-.pending-text {
-  font-size: 0.9em;
-  font-weight: bold;
-  margin-right: 10px;
 }
 
 .companion-pending {
