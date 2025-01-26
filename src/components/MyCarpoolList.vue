@@ -241,13 +241,16 @@ export default {
       return participants.reduce((sum, participant) => sum + participant.participants, 0);
     },
     async fetchCarpoolAlarm() {
-      //try {
-       // const response = await axios.get(`http://127.0.0.1:8000/api/carpool-requests/`);
-       // console.log(response.data);
-       // this.carpoolRequests = response.data;
-      //} catch (error) {
-      //  console.error('카풀 알람을 가져오는데 실패했습니다:', error);
-      //}
+      try {
+       const response = await axios.get(`http://localhost:8000/api/mycalendar/`,
+       {
+          withCredentials: true,
+        });
+       console.log(response.data);
+       this.carpoolRequests = response.data;
+      } catch (error) {
+       console.error('카풀 알람을 가져오는데 실패했습니다:', error);
+      }
     },
     formatDateTime(date, time) {
       const [year, month, day] = date.split('-');

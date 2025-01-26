@@ -25,9 +25,6 @@ const isLoggedIn = ref(localStorage.getItem('isLoggedIn') === 'true');
 async function checkAuthStatus() {
   const user = userStore();
   try {
-    axios.get('http://localhost:8000/user/auth/', {
-          withCredentials: true,
-        });
     const response = await axios.get('http://localhost:8000/user/auth/', {
           withCredentials: true,
         }); // 서버에서 인증 상태 확인

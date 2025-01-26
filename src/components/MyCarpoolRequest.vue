@@ -200,7 +200,10 @@ export default {
     },
     async fetchCarpoolAlarm() {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/requestmanager/carpoolRequests/view/`);
+        const response = await axios.get(`http://localhost:8000/requestmanager/myCarpoolRequest/`
+        ,{
+          withCredentials: true,
+        });
         console.log(response.data);
         this.carpoolRequests = response.data;
       } catch (error) {
@@ -217,7 +220,7 @@ export default {
     },
     async respondToRequest(status) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/requestmanager/carpoolRequest/status/', {
+        const response = await axios.post('http://127.0.0.1:8000/requestmanager/myCarpoolRequest/status/', {
           status: status
         });
         console.log(response.data);
