@@ -26,13 +26,15 @@
             → {{ request.end_point }}
           </span>
         </div>
-        <div>
-          <strong>{{ request.user.nickname }}</strong>
-          <span class="rating">{{ request.user.rating }}★</span>
-        </div>
-        <div class="additional-info">
-          <span>{{ request.user.gender }}</span>
-          <span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span>
+        <div class="user-container">
+          <div class="user-info">
+            <strong>{{ request.user.nickname }}</strong>
+            <span class="rating">{{ request.user.rating }}★</span>
+          </div>
+          <div class="additional-info">
+            <span>{{ request.user.gender }}</span>
+            <span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span>
+          </div>
         </div>
         <div  class="participants">요청인원 {{ request.participants }}명 </div>
 
@@ -343,9 +345,21 @@ export default {
   background-color: #fff9e6;
 }
 
+.user-container {
+  border-bottom: 1px solid #e0e0e0;
+}
+
 .user-info {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.additional-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
+  color: #666;
 }
 
 .rating {
@@ -355,14 +369,6 @@ export default {
 .trip-info {
   margin-top: 10px;
   margin-bottom: 10px;
-}
-
-.additional-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9em;
-  color: #666;
-  margin-bottom: 5px;
 }
 
 .service-type {
