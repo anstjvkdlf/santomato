@@ -2,9 +2,15 @@
   <div class="carpool-container">
 
     <div class="filter-container">
-      <span @click="currentFilter = 'all'" :class="['filter-text', { active: currentFilter === 'all' }]">전체</span>
-      <span @click="currentFilter = 'companion'" :class="['filter-text', { active: currentFilter === 'companion' }]">들날동행</span>
-      <span @click="currentFilter = 'original'" :class="['filter-text', { active: currentFilter === 'original' }]">등산카풀</span>
+      <span @click="currentFilter = 'all'" :class="['filter-text', { active: currentFilter === 'all' }]">
+        전체 ({{ allRoomsCount }})
+      </span>
+      <span @click="currentFilter = 'companion'" :class="['filter-text', { active: currentFilter === 'companion' }]">
+        들날동행 ({{ companionRoomsCount }})
+      </span>
+      <span @click="currentFilter = 'original'" :class="['filter-text', { active: currentFilter === 'original' }]">
+        등산카풀 ({{ originalRoomsCount }})
+      </span>
     </div>
 
     <ul class="carpool-list">
@@ -27,8 +33,12 @@
                   </div>
               </div>
               <div class="participants">
-                  <span>참가자 {{ room.approved_participants.length }}명 / 최대 {{ room.max_participants }}명</span>
+                  <span>참가자 {{ room.totalParticipants }}명 / 최대 {{ room.max_participants }}명</span>
+                  <span v-if="room.approved_participants.length > 0" class="view-participants" @click.stop="showParticipants(room)">
+                      <strong><u>참가자 보기</u></strong>
+                  </span>
               </div>
+              
           </div>
           <div class="status-container">
           <span class="delete-text" @click.stop="confirmDelete(room)">삭제 X</span>
@@ -64,6 +74,32 @@
         </div>
       </div>
     </Dialog>
+
+    <Dialog v-model:visible="showParticipantsDialog" modal :style="{ width: '90%', maxWidth: '320px' }" class="participants-dialog" :showHeader="false">
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <Button icon="pi pi-times" @click="showParticipantsDialog = false" class="close-button" text></Button>
+        </div>
+        <div class="dialog-body">
+          <div class="total-participants">총 참가자: {{ selectedRoom.totalParticipants }}명</div>
+          <div  v-for="(participant, index) in selectedRoomParticipants" :key="index" class="participant-info">
+            <div class="participant-details">
+              <strong>{{ participant.nickname }} 
+                {{ participant.isowner ? `(방장)` : `(${participant.participants}명)` }}
+              </strong>
+              <span class="rating">{{ participant.rating }}★</span>
+            </div>
+            <div class="participant-extra-info">
+              <span>{{ participant.gender }} </span>
+              <span v-if="selectedRoom.service_type === 'companion' || 
+                (selectedRoom.service_type === 'original' && participant.isowner)">{{ participant.carInfo }}</span>
+              <div v-if="selectedRoom.service_type === 'original' && participant.isowner === false" class="distance">{{ participant.start_point }} ({{ participant.distance }}m)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Dialog>
+
   </div>  
 </template>
 
@@ -85,27 +121,41 @@ export default {
     const selectedRoom = ref(null);
     const showDeleteDialog = ref(false);
     const showErrorDialog = ref(false);
+    const showParticipantsDialog = ref(false);
+    const selectedRoomParticipants = ref([]);
     const currentFilter = ref('all');
-    const carpoolRooms = ref([{
-      approved_participants:[{nickname: '멋쟁이토마토',
-          rating: 4.5,
-          carInfo: '12가1234',
-          gender: '여자',}],
+    const carpoolRooms = ref([
+      {
+        approved_participants:[
+        {
+          nickname: '산토마토',
+          rating: 5.0,
+          carInfo: null,
+          gender: '여자',
+          participants: 1,
+          start_point: "경기 수원시 영통구 덕영대로 123",
+          distance: 500,
+          isowner: false,
+        }],
         service_type: "original",
         start_point: "경기 수원시 영통구 덕영대로 1732",
         end_point: "소공원",
         departure_date: "2025-01-26",
         departure_time: "09:00",
         max_participants: 2,
-        distance: 500,
-        status: "pending",
-        user: {
-          nickname: '산토마토',
-          rating: 5.0,
-          carInfo: '12가1234',
-          gender: '여자',
-        }
-      }]);
+        room_id: 1,
+      },
+      {
+        approved_participants:[],
+        service_type: "companion",
+        start_point: "오색",
+        end_point: "소공원",
+        departure_date: "2025-01-26",
+        departure_time: "09:00",
+        max_participants: 2,
+        room_id: 2,
+      },
+    ]);
 
     const filteredRooms = computed(() => {
       switch (currentFilter.value) {
@@ -122,6 +172,20 @@ export default {
       selectedRoom.value = room;
       showDialog.value = true;
     };
+
+    const showParticipants = (room) => {
+      if (room && room.approved_participants) {
+        selectedRoom.value = room;
+        selectedRoomParticipants.value = room.approved_participants;
+        showParticipantsDialog.value = true;
+      } else {
+        console.error('Room or approved participants not found');
+      }
+    };
+
+    const allRoomsCount = computed(() => carpoolRooms.value.length);
+    const companionRoomsCount = computed(() => carpoolRooms.value.filter(room => room.service_type === 'companion').length);
+    const originalRoomsCount = computed(() => carpoolRooms.value.filter(room => room.service_type === 'original').length);
 
     const confirmDelete = (room) => {
       try {
@@ -140,18 +204,35 @@ export default {
     };
 
     const deleteRoom = () => {
-      //axios.delete(`http://localhost:8000/requestmanager/carpoolRequests/delete/${requestId}`);
-      //carpoolRequests.value = carpoolRequests.value.filter(req => req !== selectedRequest.value);
-      showDeleteDialog.value = false;
+      if (selectedRoom && selectedRoom.value.room_id) {
+        axios.delete(`http://localhost:8000/api/carpool/delete/${selectedRoom.value.room_id}/`, 
+        {
+          withCredentials: true
+        })
+      .then(() => {
+        carpoolRooms.value = carpoolRooms.value.filter(room => room.room_id !== selectedRoom.value.room_id);
+        showDeleteDialog.value = false;
+        })
+        .catch(error => {
+          console.error('방 삭제 중 오류 발생:', error);
+          // 오류 처리 로직 추가
+        });
+      }
     };
 
     const fetchCarpoolRooms = async () => {
       try {
-        //const response = await axios.get(`http://localhost:8000/api/carpool/all/`, {
+       // const response = await axios.get(`http://localhost:8000/api/carpool/all/`, {
         //  withCredentials: true,
         //});
         //console.log(response.data);
         //carpoolRooms.value = response.data;  
+
+        carpoolRooms.value = carpoolRooms.value.map(room => ({
+          ...room,
+          totalParticipants: room.approved_participants.reduce((sum, participant) => sum + (participant.participants || 1), 0)
+        }));
+
       } catch (error) {
         console.error('카풀 정보를 가져오는데 실패했습니다:', error);
         if (error.response && error.response.status === 401) {
@@ -172,6 +253,12 @@ export default {
       confirmDelete,
       deleteRoom,
       fetchCarpoolRooms,
+      allRoomsCount,
+      companionRoomsCount,
+      originalRoomsCount,
+      showParticipantsDialog,
+      selectedRoomParticipants,
+      showParticipants,
     };
   },
   methods: {
@@ -294,7 +381,7 @@ export default {
 .distance {
   color: #666;
   font-size: 0.9em;
-  margin-left: 5px;
+  word-break: keep-all;
 }
 
 
@@ -360,6 +447,66 @@ export default {
 
 :deep(.p-button-rounded.p-button-text) {
   color: #000000 !important;
+}
+
+.view-participants {
+  margin-left: 10px;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.participants-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.participant-item {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.participant-item div {
+  margin-bottom: 5px;
+}
+
+.total-participants{
+  text-align: left;
+}
+
+.participant-info {
+  margin: 12px 0;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.participant-info:last-child {
+  margin-bottom: 0;
+  border-bottom: 1px solid #eee;
+}
+
+.participant-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.participant-extra-info {
+  font-size: 0.9em;
+  color: #666;
+  text-align: left;
+}
+
+.participant-extra-info span {
+  margin-right: 10px;
+}
+
+.rating {
+  color: #FFD700;
 }
 
 /* Dialog 스타일 */
