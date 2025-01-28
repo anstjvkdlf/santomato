@@ -94,7 +94,7 @@ export default {
   data() {
     return {
       activeTab: 'info',
-      nickname: '멋쟁이토마토',
+      nickname: '',
       rating: 4.5,
       stats: {
         plans: 0,
@@ -102,31 +102,13 @@ export default {
         alarms: 0,
         reviews: 0,
       },
-      //username: 'test1234', //id
-      //email: 'ghkdud458213@naver.com',
-      birthDate: '1996.12.03',
-      phoneNumber: '010-9999-9999',
-      carInfo: '12가1234',
-      gender: '여자',
-    }
-    /*
-    return {
-      activeTab: 'info',
-      nickname: '',
-      rating: 4.5,
-      stats: {
-        reviews: 0,
-        companions: 0,
-        reports: 0
-      },
-      username: '', //id
+      username: '',
       email: '',
       birthDate: '',
       phoneNumber: '',
       carInfo: '',
       gender: '',
-      userInfo: null
-    }*/
+    }
   },
   methods: {
     switchTab(tab) {
@@ -156,23 +138,25 @@ export default {
         console.log("Response:", response);
         const userInfo = response.data.user;
         console.log(userInfo);
-        // this.nickname = this.userInfo.user.nickname;
-        this.username = response.data?.user?.username; //id
+        this.nickname = userInfo.nickname;
+        this.username = userInfo.username;
         this.requested_carpool_rooms = userInfo.requested_carpool_rooms;
         this.email = userInfo.email;
-        // this.birthDate = this.userInfo.birthDate;
-        // this.phoneNumber = this.userInfo.phone;
-        // this.carInfo = this.userInfo.car_number;
-        // this.gender = this.userInfo.gender;
+        this.birthDate = userInfo.birth;
+        this.phoneNumber = userInfo.phone_number;
+        this.carInfo = userInfo.car_number;
+        this.gender = userInfo.gender === 'male' ? '남성' : (userInfo.gender === 'female' ? '여성' : null);
         
       } catch (error) {
         console.error('사용자 정보를 가져오는데 실패했습니다:', error);
       }
     }
   },
- 
+  created() {
+    this.fetchUserInfo();
+  },
   mounted() {
-    console.log("Cooook");
+    console.log("Component mounted");
     this.fetchUserInfo();
   }
 }
