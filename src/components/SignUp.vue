@@ -157,10 +157,10 @@
 
     methods: {
       checkUsername() {
-        axios.get(`http://localhost:8000/user/username/${this.username}`)
+        axios.get(`https://backend.santomato.com/user/username/${this.username}`)
           .then(response => {
             alert(response.data.message);
-            console.log(response.data.message);
+            // console.log(response.data.message);
             this.isUserNameValid = true;
             this.usernameError = '';
           })
@@ -176,16 +176,16 @@
       },
         sendAuthNumber() {
             // Axios를 사용하여 Django로부터 CSRF 토큰을 요청
-            axios.get('http://localhost:8000/user/get_csrf_token/')
+            axios.get('https://backend.santomato.com/user/get_csrf_token/')
                 .then(response => {
                     // 추출한 CSRF 토큰을 모든 Axios 요청의 기본 헤더에 추가
                     this.csrftoken = response.data.csrf_token;
                     axios.defaults.headers.common['X-CSRFTOKEN'] = this.csrftoken 
                     this.toast.add({ severity: 'success', summary: '인증번호 전송', detail: '인증번호 전송 시 대기가 발생할 수 있습니다.', life: 3000 });
                     // 이제 CSRF 토큰이 설정되었으므로 비밀번호 재설정 요청을 보낼 수 있음
-                    axios.post('http://localhost:8000/user/register/auth/', { email: this.email })
+                    axios.post('https://backend.santomato.com/user/register/auth/', { email: this.email })
                         .then(response => {
-                            console.log(response.data.message);
+                            // console.log(response.data.message);
                             this.showAuthForm = true;
                         })
                         .catch(error => {
@@ -217,8 +217,8 @@
   
         if (!this.passwordError && !this.passwordCheckError && !this.nicknameCheckError) {
           try {
-            console.log(this.username)
-            const response = await axios.post('http://localhost:8000/user/register/', {
+            // console.log(this.username)
+            const response = await axios.post('https://backend.santomato.com/user/register/', {
               username: this.username,
               email: this.email,
               password: this.password,
@@ -228,7 +228,7 @@
               phone_number: this.phone_number,
               car_number: this.car_numbe,
             });
-            console.log('Signup successful:', response.data, this.isStoreOwner);
+            // console.log('Signup successful:', response.data, this.isStoreOwner);
             alert('회원가입이 완료되었습니다.');
             this.$router.push({ path: '/', replace: true });
             // Handle successful signup, e.g., redirect to login page
@@ -266,9 +266,9 @@
         // this.nicknameCheckError = '이미 사용중인 별명입니다.';
 
         try {
-          console.log(this.username, this.email, this.password, this.nickname, this.birthDate, this.gender, this.phoneNumber,this.carInfo);
+          // console.log(this.username, this.email, this.password, this.nickname, this.birthDate, this.gender, this.phoneNumber,this.carInfo);
          
-          const response = await axios.post('http://localhost:8000/user/register/', {
+          const response = await axios.post('https://backend.santomato.com/user/register/', {
               username: this.username,
               email: this.email,
               password: this.password,
@@ -279,7 +279,7 @@
               car_number: this.carInfo,
             });
           if (response.status === 200) {
-            console.log('Signup successful:', response.data, this.isStoreOwner);
+            // console.log('Signup successful:', response.data, this.isStoreOwner);
             alert('회원가입이 완료되었습니다.');
             router.push('/');
           }
@@ -296,9 +296,9 @@
       },
   
       confirmVerificationCode() {
-        axios.get(`http://localhost:8000/user/register/auth/${this.email}/${this.auth_number}`)
+        axios.get(`https://backend.santomato.com/user/register/auth/${this.email}/${this.auth_number}`)
           .then(response => {
-            console.log(this.email, this.auth_number);
+            // console.log(this.email, this.auth_number);
             if (response.status === 200) {
               alert('인증번호가 일치합니다.');
               this.isVerificationCode = true;

@@ -41,7 +41,7 @@ export default {
 
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/user/auth/', {
+        const response = await axios.get('https://backend.santomato.com/user/auth/', {
           withCredentials: true,
         });
         userInfo.value = response.data.user;
@@ -53,7 +53,7 @@ export default {
     const verifyCurrentPassword = async () => {
      /*
       try {
-        const response = await axios.post('http://localhost:8000/user/auth/verify-password/', {
+        const response = await axios.post('https://backend.santomato.com/user/auth/verify-password/', {
           password: currentPassword.value
         }, {
           withCredentials: true,
@@ -77,7 +77,7 @@ export default {
       }
 
       try {
-        const response = await axios.put('http://localhost:8000/user/auth/password_reset/', {
+        const response = await axios.put('https://backend.santomato.com/user/auth/password_reset/', {
           new_password: newPassword.value
         }, {
           withCredentials: true,

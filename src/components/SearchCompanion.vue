@@ -374,11 +374,11 @@ export default {
         const formattedTime = departureDate.value ? departureDate.value.toTimeString().split(' ')[0].slice(0, 5) : '';
 
         // API 구현 후 companionListd에 실제 데이터를 가져오는 로직으로 변경 필요
-        const response = await axios.get(`http://127.0.0.1:8000/api/companion/${formattedDate}/${formattedTime}/`, {
+        const response = await axios.get(`https://backend.santomato.com/api/companion/${formattedDate}/${formattedTime}/`, {
          // start_point: startPoint.value.name,
          // end_point: endPoint.value.name,
         });
-        console.log(response);
+        // console.log(response);
         // 선택된 start_point와 end_point와 일치하고 max_participants가 max_participants 이하인 항목만 필터링
         companionList.value = response.data.filter(companion => 
           companion.start_point === startPoint.value.name && 
@@ -407,7 +407,7 @@ export default {
         const user = userStore(); 
         const token = user.getCookie("access"); // 저장된 토큰 가져오기
         await axios.post(
-          `http://127.0.0.1:8000/api/join/${selectedCompanion.value.room_id}/`, // 올바른 URL로 수정
+          `https://backend.santomato.com/api/join/${selectedCompanion.value.room_id}/`, // 올바른 URL로 수정
           {}, // 본문 내용이 없으므로 빈 객체를 보냄
           {
             headers: {

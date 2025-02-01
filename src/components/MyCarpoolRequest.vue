@@ -178,7 +178,7 @@ export default {
     };
 
     const deleteRequest = () => {
-      //axios.delete(`http://localhost:8000/requestmanager/carpoolRequests/delete/${requestId}`);
+      //axios.delete(`https://backend.santomato.com/requestmanager/carpoolRequests/delete/${requestId}`);
       //carpoolRequests.value = carpoolRequests.value.filter(req => req !== selectedRequest.value);
       showDeleteDialog.value = false;
     };
@@ -223,11 +223,11 @@ export default {
     },
     async fetchCarpoolAlarm() {
       try {
-        const response = await axios.get(`http://localhost:8000/requestmanager/myCarpoolRequest/`
+        const response = await axios.get(`https://backend.santomato.com/requestmanager/myCarpoolRequest/`
         ,{
           withCredentials: true,
         });
-        console.log(response.data);
+        // console.log(response.data);
         this.carpoolRequests = response.data;
       } catch (error) {
         console.error('카풀 알람을 가져오는데 실패했습니다:', error);
@@ -247,10 +247,10 @@ export default {
     },
     async respondToRequest(status) {
       try {
-        const response = await axios.post('http://localhost:8000/requestmanager/myCarpoolRequest/status/', {
+        const response = await axios.post('https://backend.santomato.com/requestmanager/myCarpoolRequest/status/', {
           status: status
         });
-        console.log(response.data);
+        // console.log(response.data);
         this.showDialog = false;
         this.fetchCarpoolAlarm();
       } catch (error) {

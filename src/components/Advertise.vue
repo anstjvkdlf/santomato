@@ -14,16 +14,16 @@
 </template>
 
 <script>
+import 광고1 from '@/assets/광고1.png';
+import 광고2 from '@/assets/광고2.png';
+import 광고3 from '@/assets/광고3.png';
+
 export default {
   name: 'Carousel',
   data() {
     return {
       currentSlide: 0,
-      slides: [
-        "../src/assets/광고1.png",
-        "../src/assets/광고2.png",
-        "../src/assets/광고3.png",
-      ],
+      slides: [광고1, 광고2, 광고3],
       interval: null, // 슬라이드 전환을 위한 interval
     };
   },

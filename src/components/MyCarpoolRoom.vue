@@ -205,7 +205,7 @@ export default {
 
     const deleteRoom = () => {
       if (selectedRoom && selectedRoom.value.room_id) {
-        axios.delete(`http://localhost:8000/api/carpool/delete/${selectedRoom.value.room_id}/`, 
+        axios.delete(`https://backend.santomato.com/api/carpool/delete/${selectedRoom.value.room_id}/`, 
         {
           withCredentials: true
         })
@@ -222,7 +222,7 @@ export default {
 
     const fetchCarpoolRooms = async () => {
       try {
-       // const response = await axios.get(`http://localhost:8000/api/carpool/all/`, {
+       // const response = await axios.get(`https://backend.santomato.com/api/carpool/all/`, {
         //  withCredentials: true,
         //});
         //console.log(response.data);

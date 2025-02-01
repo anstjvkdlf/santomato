@@ -25,7 +25,7 @@ const isLoggedIn = ref(localStorage.getItem('isLoggedIn') === 'true');
 async function checkAuthStatus() {
   const user = userStore();
   try {
-    const response = await axios.get('http://localhost:8000/user/auth/', {
+    const response = await axios.get('https://backend.santomato.com/user/auth/', {
           withCredentials: true,
         }); // 서버에서 인증 상태 확인
     if (response.status === 200) {

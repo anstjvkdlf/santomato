@@ -89,21 +89,21 @@ export default {
     },
     openSearchModal() {
       this.showModal = true; // 모달 열기
-      console.log(this.showModal);
+      // console.log(this.showModal);
     },
     closeSearchModal() {
       this.showModal = false; // 모달 닫기
-      console.log(this.showModal);
+      // console.log(this.showModal);
     },
     checkMobileView() {
       this.isMobileView = window.innerWidth <= 767;
-      console.log(this.isMobileView);
+      // console.log(this.isMobileView);
     },
     kakaoLogout() {
-      axios.delete('http://localhost:8000/user/kakao/callback/', 
+      axios.delete('https://backend.santomato.com/user/kakao/callback/', 
         { access_token: this.$route.query.code })
         .then(response => {
-          console.log('Django 서버로부터의 응답:', response.data);
+          // console.log('Django 서버로부터의 응답:', response.data);
           // 이후의 로직 수행
         })
         .catch(error => {
@@ -111,15 +111,15 @@ export default {
         });
     },
     logout() {
-      axios.delete('http://localhost:8000/user/auth/',
+      axios.delete('https://backend.santomato.com/user/auth/',
       {
         withCredentials: true
       })
       .then(response => {
-        console.log('Logout successful:', response.data);
+        // console.log('Logout successful:', response.data);
         const user = userStore();
         user.isLoggedIn = false;
-        console.log('Django 로 부터 응답:', response.data);
+        // console.log('Django 로 부터 응답:', response.data);
         localStorage.removeItem('isLoggedIn')
       })
       .catch(error => {
@@ -149,7 +149,7 @@ export default {
       const user = userStore();
       if (localStorage.getItem('isLoggedIn') === 'true') {
       user.isLoggedIn = true;
-      console.log("computed : ", user.isLoggedIn);
+      // console.log("computed : ", user.isLoggedIn);
       }
       // user.updateLoginState();
       return user.isLoggedIn; // 쿠키가 없더라도 userStore에서 상태를 확인

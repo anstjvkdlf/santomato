@@ -69,7 +69,7 @@ export default {
       .then(response => {
         this.mountains = response.data;
         this.filteredMountains = response.data;
-        console.log(response.data)
+        // console.log(response.data)
       })
       .catch(error => {
         console.error('Error al obtener la lista de personajes:', error);

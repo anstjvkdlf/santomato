@@ -248,7 +248,7 @@ const response_forecast = await fetch(`${BASE_URL_FORECAST}?lat=${latitude}&lon=
   overallMaxTemp.value = Math.max(...allTemperatures);
 
 } catch (error) {
-  console.log(error)
+  // console.log(error)
   isError.value = true;
   isErrorForecast.value = true;
 }

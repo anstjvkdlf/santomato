@@ -131,13 +131,13 @@ export default {
     },
     async fetchUserInfo() {
       try {
-        const response = await axios.get('http://localhost:8000/user/auth/', {
+        const response = await axios.get('https://backend.santomato.com/user/auth/', {
           withCredentials: true,
         });
 
-        console.log("Response:", response);
+        // console.log("Response:", response);
         const userInfo = response.data.user;
-        console.log(userInfo);
+        // console.log(userInfo);
         this.nickname = userInfo.nickname;
         this.username = userInfo.username;
         this.requested_carpool_rooms = userInfo.requested_carpool_rooms;
@@ -156,7 +156,7 @@ export default {
     this.fetchUserInfo();
   },
   mounted() {
-    console.log("Component mounted");
+    // console.log("Component mounted");
     this.fetchUserInfo();
   }
 }

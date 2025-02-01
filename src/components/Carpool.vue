@@ -417,7 +417,7 @@ export default {
       }
       try {
           const response = await axios.post(
-          `http://localhost:8000/api/carpool/create/`, 
+          `https://backend.santomato.com/api/carpool/create/`, 
           {
             departure_date: departureDate.value.toLocaleDateString('en-CA'), // YYYY-MM-DD 형식
             departure_time: departureDate.value.toLocaleTimeString('en-GB', { hour12: false }).split(' ')[0], // HH:MM:SS 형식
@@ -432,7 +432,7 @@ export default {
           });
 
         activeStep.value = 2;
-        console.log('API Response:', response.data);
+        // console.log('API Response:', response.data);
 
       } catch (error) {
         console.error('Failed to submit:', error);

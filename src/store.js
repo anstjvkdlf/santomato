@@ -21,7 +21,7 @@ export const userStore = defineStore('user', {
     getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
-      console.log()
+      // console.log()
       if (parts.length === 2) return parts.pop().split(';').shift();
       return null;
     },

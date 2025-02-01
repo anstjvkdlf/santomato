@@ -323,7 +323,7 @@ export default {
       const formattedTime = departureDate.value ? departureDate.value.toTimeString().split(' ')[0].slice(0, 5) : '';
   
       try {
-        const apiUrl = `http://127.0.0.1:8000/api/carpool/${formattedDate}/${formattedTime}`;
+        const apiUrl = `https://backend.santomato.com/api/carpool/${formattedDate}/${formattedTime}`;
         const params = new URLSearchParams({ start_point: startPoint.value });
 
         axios.defaults.withCredentials = true;
@@ -345,7 +345,7 @@ export default {
         // 현재 sortOption에 따라 carpoolList 업데이트
         updateCarpoolList();
         
-        console.log(carpoolList)
+        // console.log(carpoolList);
         activeStep.value = 1;
 
       } catch (error) {
@@ -370,7 +370,7 @@ export default {
         const user = userStore(); 
         const token = user.getCookie("access"); // 저장된 토큰 가져오기
         await axios.post(
-          `http://127.0.0.1:8000/api/join/${selectedCompanion.value.room_id}/`, // 올바른 URL로 수정
+          `https://backend.santomato.com/api/join/${selectedCompanion.value.room_id}/`, // 올바른 URL로 수정
           {}, // 본문 내용이 없으므로 빈 객체를 보냄
           {
             headers: {
