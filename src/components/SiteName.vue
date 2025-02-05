@@ -35,9 +35,8 @@
           <font-awesome-icon icon="magnifying-glass" />
         </div>
         <div class="auth-container">
-          <Button v-if="!isLoggedIn" class="auth-button login-button">
-            <router-link to="/login">로그인</router-link>
-          </Button>
+          <router-link v-if="!isLoggedIn" to="/login" class="text-button">로그인</router-link>
+          <router-link v-if="!isLoggedIn && !isMobileView" to="/signup" class="text-button">회원가입</router-link>
           <template v-if="isLoggedIn">
             <div class="user-dropdown">
               <font-awesome-icon 
@@ -62,7 +61,6 @@
 import Rank from '@/components/Rank.vue';
 import { userStore } from '@/store';
 import axios from 'axios';
-import Button from 'primevue/button';
 import router from '@/router';
 
 export default {
@@ -71,7 +69,6 @@ export default {
   },
   components: {
     Rank,
-    Button,
   },
   data() {
     return {
@@ -245,7 +242,7 @@ export default {
 .header-container {
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 1200px;
   padding: 0 20px;
   position: relative;
 }
@@ -258,6 +255,7 @@ export default {
 }
 
 .right-container {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -334,36 +332,14 @@ input:focus::placeholder {
 .auth-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100px; 
-  flex-shrink: 0; 
-}
-
-.auth-button {
-  transition: background-color 0.3s;
-  font-size: 12px;
-  width: 100%; 
-}
-
-.login-button {
-  background-color: #4CAF50 !important; 
-  border-color: #4CAF50 !important;
-  color: white !important;
-}
-
-.login-button:hover {
-  background-color: #45a049 !important; /* 약간 더 어두운 초록색 */
-  border-color: #45a049 !important;
-}
-
-.login-button :deep(a) {
-  color: white !important;
-  text-decoration: none;
+  margin-top: 20px;
+  gap: 5px;
 }
 
 .user-dropdown {
   position: relative;
   cursor: pointer;
+  margin-left: 100px;
 }
 
 .user-icon {
@@ -383,7 +359,6 @@ input:focus::placeholder {
   border-radius: 4px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   min-width: 120px;
-  z-index: 1000;
   display: block;
   transform: translateX(-40%);
 }
@@ -401,10 +376,17 @@ input:focus::placeholder {
   color: #007BFF;
 }
 
+.text-button {
+  color: #000;
+  text-decoration: none;
+  font-size: 14px;
+  margin-left: 15px;
+}
+
 /* Adjustments for mobile screens */
 @media only screen and (max-width: 767px) {
   .header-container {
-    padding: 0 10px; 
+    width: auto;
   }
   .title-container {
     width: 80px !important; 
@@ -435,25 +417,34 @@ input:focus::placeholder {
     transform: scale(0.5); /* Scale down rank further */
     margin: -5px -15px;
   }
-  .auth-container{
-    width: 50px;
+  .auth-container {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    min-width: fit-content;
+    width: auto;
   }
-  .auth-button {
-    font-size: 10px;
-    padding: 0.2rem 0.4rem;
+  .text-button {
+    font-size: 12px;
+    width: auto;
+    margin-left: 2px;
+    margin-bottom: 5px;
   }
   .search-icon{
-    margin-left: 40px;
+    margin-left: 3px;
   }
   .user-icon {
     font-size: 16px;
-    margin-right: 30px;
+    margin-bottom: 5px;
   }
-  
+  .user-dropdown {
+    position: relative;
+    cursor: pointer;
+    margin-left: 0px;
+  }
   .dropdown-menu {
     min-width: 100px;
   }
-  
   .dropdown-item {
     padding: 8px 12px;
     font-size: 14px;
