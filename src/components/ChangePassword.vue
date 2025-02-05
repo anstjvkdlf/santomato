@@ -51,23 +51,21 @@ export default {
     };
 
     const verifyCurrentPassword = async () => {
-     /*
       try {
-        const response = await axios.post('https://backend.santomato.com/user/auth/verify-password/', {
+        const response = await axios.post('http://localhost:8000/user/verify-password/', {
           password: currentPassword.value
         }, {
           withCredentials: true,
         });
-        if (response.data.status === 'success') {
+        if (response.status === 200) {
           isCurrentPasswordVerified.value = true;
         } else {
-          alert('현재 비밀번호가 일치하지 않습니다.');
+          alert('비밀번호가 일치하지 않습니다.');
         }
       } catch (error) {
-        console.error('비밀번호 확인 중 오류 발생:', error);
-        alert('비밀번호 확인 중 오류가 발생했습니다.');
-      }*/
-      isCurrentPasswordVerified.value = true;
+        console.error('비밀번호 확인 중 오류 발생: ', error);
+        alert('비밀번호가 일치하지 않습니다.');
+      }
     };
 
     const changePassword = async () => {
@@ -77,12 +75,12 @@ export default {
       }
 
       try {
-        const response = await axios.put('https://backend.santomato.com/user/auth/password_reset/', {
+        const response = await axios.put('http://localhost:8000/user/password_reset/', {
           new_password: newPassword.value
         }, {
           withCredentials: true,
         });
-        if (response.data.status === 'success') {
+        if (response.status === 200) {
           alert('비밀번호가 성공적으로 변경되었습니다.');
           router.push('/profile');
         } else {
