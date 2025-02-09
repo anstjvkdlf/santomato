@@ -15,6 +15,7 @@ import MyCarpoolAlarm from './components/MyCarpoolAlarm.vue';
 import MyCarpoolList from './components/MyCarpoolList.vue';
 import MyCarpoolRoom from './components/MyCarpoolRoom.vue';
 import ChangePassword from './components/ChangePassword.vue';
+import ResetPassword from './components/ResetPassword.vue';
 
 const routes = [
   {
@@ -97,6 +98,11 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: Profile
+  },
+  {
+    path: "/passwordReset",
+    name: "ResetPassword",
+    component: ResetPassword
   }
 ];
 
