@@ -71,14 +71,8 @@
         <div class="info-label" @click="navigateToChangePassword"  data-clickable="true">비밀번호 변경</div>
         <div class="info-value"></div>
       </div>
-      <template v-if="isLoggedIn">
-        <div class="info-item">
-          <div class="info-label">로그아웃</div>
-          <div class="info-value"></div>
-        </div>
-      </template>
       <div class="info-item">
-        <div class="info-label">회원탈퇴</div>
+        <div class="info-label"  @click="navigateToDeleteID"  data-clickable="true">회원탈퇴</div>
         <div class="info-value"></div>
       </div>
     </div>
@@ -129,9 +123,12 @@ export default {
     navigateToChangePassword(){
       this.$router.push('/profile/changePassword');
     },
+    navigateToDeleteID(){
+      this.$router.push('/profile/deleteID');
+    },
     async fetchUserInfo() {
       try {
-        const response = await axios.get('https://backend.santomato.com/user/auth/', {
+        const response = await axios.get('http://localhost:8000/user/auth/', {
           withCredentials: true,
         });
 
