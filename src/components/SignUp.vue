@@ -157,7 +157,7 @@
 
     methods: {
       checkUsername() {
-        axios.get(`https://backend.santomato.com/user/username/${this.username}`)
+        axios.get(`http://localhost:8000/user/username/${this.username}`)
           .then(response => {
             alert(response.data.message);
             // console.log(response.data.message);
@@ -169,21 +169,21 @@
               alert(error.response.data.error);
               this.usernameError = error.response.data.error;
             } else {
-              this.usernameError = '중복 확인 중 오류가 발생했습니다.';
+              alert(error.response.data.error);
             }
             console.error('중복확인 오류:', error);
           });
       },
         sendAuthNumber() {
             // Axios를 사용하여 Django로부터 CSRF 토큰을 요청
-            axios.get('https://backend.santomato.com/user/get_csrf_token/')
+            axios.get('http://localhost:8000/user/get_csrf_token/')
                 .then(response => {
                     // 추출한 CSRF 토큰을 모든 Axios 요청의 기본 헤더에 추가
                     this.csrftoken = response.data.csrf_token;
                     axios.defaults.headers.common['X-CSRFTOKEN'] = this.csrftoken 
                     this.toast.add({ severity: 'success', summary: '인증번호 전송', detail: '인증번호 전송 시 대기가 발생할 수 있습니다.', life: 3000 });
                     // 이제 CSRF 토큰이 설정되었으므로 비밀번호 재설정 요청을 보낼 수 있음
-                    axios.post('https://backend.santomato.com/user/register/auth/', { email: this.email })
+                    axios.post('http://localhost:8000/user/register/auth/', { email: this.email })
                         .then(response => {
                             // console.log(response.data.message);
                             this.showAuthForm = true;
@@ -218,7 +218,7 @@
         if (!this.passwordError && !this.passwordCheckError && !this.nicknameCheckError) {
           try {
             // console.log(this.username)
-            const response = await axios.post('https://backend.santomato.com/user/register/', {
+            const response = await axios.post('http://localhost:8000/user/register/', {
               username: this.username,
               email: this.email,
               password: this.password,
@@ -268,7 +268,7 @@
         try {
           // console.log(this.username, this.email, this.password, this.nickname, this.birthDate, this.gender, this.phoneNumber,this.carInfo);
          
-          const response = await axios.post('https://backend.santomato.com/user/register/', {
+          const response = await axios.post('http://localhost:8000/user/register/', {
               username: this.username,
               email: this.email,
               password: this.password,
@@ -281,7 +281,7 @@
           if (response.status === 200) {
             // console.log('Signup successful:', response.data, this.isStoreOwner);
             alert('회원가입이 완료되었습니다.');
-            router.push('/');
+            this.$router.push({ path: '/', replace: true });
           }
         } catch (error) {
           alert('회원가입 오류: ', error);
@@ -296,7 +296,7 @@
       },
   
       confirmVerificationCode() {
-        axios.get(`https://backend.santomato.com/user/register/auth/${this.email}/${this.auth_number}`)
+        axios.get(`http://localhost:8000/user/register/auth/${this.email}/${this.auth_number}`)
           .then(response => {
             // console.log(this.email, this.auth_number);
             if (response.status === 200) {
@@ -304,12 +304,19 @@
               this.isVerificationCode = true;
               this.activeStep = 1;
             } else {
-              alert('인증 번호가 일치하지 않습니다.');
-              console.error('인증 번호가 일치하지 않습니다.');
+              if (response.data && response.data.error) {
+                alert(response.data.error); 
+              } else {
+                alert('인증 번호 확인 실패'); 
+              }
             }
           })
           .catch(error => {
-            alert('인증 처리 중 오류가 발생했습니다.');
+            if (error.response && error.response.data && error.response.data.error) {
+              alert(error.response.data.error); 
+            } else {
+              alert('인증 번호 확인 중 오류가 발생했습니다.'); 
+            }
             console.error('API 호출 실패:', error);
           });
       },
@@ -383,7 +390,6 @@
 
   .form-group {
     width: 100%;
-    margin-bottom: 20px;
   }
 
   .form-group input {
