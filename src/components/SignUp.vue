@@ -5,7 +5,7 @@
     <StepPanels>
     <StepPanel value="0" >
       <!-- Step 0 -->
-      <h6 class = "service-title"> 이메일 인증하기 </h6>
+      <h6 class = "service-title"> 이메일 인증 </h6>
         <div class="form-group-email">
           <input type="email" id="email" name="email" v-model="email" class="form-control input-email" placeholder="이메일 주소" required>
           <button type="submit" class="btn btn-primary" @click="sendAuthNumber" :disabled="!isEmailFilled">인증번호 전송</button>  
@@ -31,7 +31,7 @@
             <div class="form-group">
               <label for="username">아이디</label>
               <input type="username" id="username" name="username" v-model="username" class="form-control" placeholder="영문+숫자 6자 이상" >
-              <button type="submit" class="btn btn-primary" @click="checkUsername">중복확인</button>
+              <button  type="button" class="btn btn-primary" @click="checkUsername">중복확인</button>
               <p v-if="usernameError" class="text-danger">{{ usernameError }}</p>
             </div>
             <div class="form-group">
@@ -49,21 +49,34 @@
               <Dropdown v-model="gender" :options="genderOptions" optionLabel="label" optionValue="value" placeholder="성별 선택" />
             </div>
             <div class="p-field">
-            <label for="birthDate">생년월일</label>
-              <Calendar v-model="birthDate" dateFormat="yy.mm.dd" :showIcon="true" />
-            </div>
+                <label for="birthDate">생년월일</label>
+                <div style="display: flex; align-items: center;">
+                  <Dropdown v-model="birthYear" :options="yearOptions" optionLabel="label" optionValue="value" placeholder="년"
+                    style="width: 90px;"/>
+                  <Dropdown v-model="birthMonth" :options="monthOptions" optionLabel="label" optionValue="value" placeholder="월"
+                    style="width: 90px; margin-left: 5px;" />
+                  <Dropdown v-model="birthDay" :options="dayOptions" optionLabel="label" optionValue="value" placeholder="일"
+                    style="width: 90px; margin-left: 5px;" />
+                </div>
+              </div>
             <div class="p-field">
             <label for="phoneNumber">휴대폰 번호</label>
               <InputMask v-model="phoneNumber" mask="999-9999-9999" placeholder="010-0000-0000" />
             </div>
             <div class="p-field">
               <label for="carInfo">차량 번호</label>
-              <InputText v-model="carInfo" placeholder="12가1234" />
-            </div>  
+              <div class="car-info-container">
+                <InputText v-model="carInfo" :disabled="noCar" placeholder="12가1234" style="width: 150px;" />
+                <div class="p-field-checkbox">
+                  <input type="checkbox" id="noCar" v-model="noCar" style="margin-left: 10px;" />
+                  <label for="noCar" style="margin-left: 5px; font-weight: normal;">차량 없음</label>
+                </div>
+              </div>
+            </div>
             <div class="form-group">
               <label for="nickname">닉네임</label>
-              <input type="nickname" id="nickname" name="nickname" v-model="nickname" class="form-control" placeholder="별명 (2~15자)">
-              <p v-if="nicknameCheckError" class="text-danger">{{ nicknameCheckError }}</p>
+              <input type="nickname" id="nickname" name="nickname" v-model="nickname" class="form-control" placeholder="별명 (2~10자)">
+              <p v-if="nicknameError" class="text-danger">{{ nicknameError }}</p>
             </div>
             <button type="submit" class="btn btn-primary btn-block" :disabled="!isFormValid">가입하기</button>
           </form>
@@ -82,7 +95,6 @@
   import { useToast } from 'primevue/usetoast';
   import Toast from 'primevue/toast';
   import Dropdown from 'primevue/dropdown';
-  import Calendar from 'primevue/calendar';
   import InputMask from 'primevue/inputmask';
   import InputText from 'primevue/inputtext';
   import Button from 'primevue/button';
@@ -93,7 +105,6 @@
   export default {
       components: {
       Dropdown,
-      Calendar,
       InputMask,
       InputText,
       Button,
@@ -118,49 +129,83 @@
     },
     name: 'SignUp',
     data() {
+      const currentYear = new Date().getFullYear();
+      const startYear = currentYear - 100; 
+      const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
+      const yearOptions = years.map(year => ({ label: String(year), value: year }));
+      
+      const monthOptions = Array.from({ length: 12 }, (_, i) => ({ label: String(i + 1), value: i + 1 }));
+      const dayOptions = Array.from({ length: 31 }, (_, i) => ({ label: String(i + 1), value: i + 1 }));
+
       return {
         username: '',
         email: '',
         gender: null,
-        birthDate: null,
         phoneNumber: '',
         carInfo: '',
+        noCar: false,
         nickname:'',
         password: '',
         password_check: '',
+        usernameError: '',
         passwordError: '',
         passwordCheckError: '',
-        nicknameCheckError: '',
+        nicknameError: '',
         showAuthForm: false,
         csrftoken: '',
         auth_number:'',
         isVerificationCode: false,
         isUserNameValid: false,
+        isNickNameValid: false,
         genderOptions: [
-        { label: '남자', value: 'male' },
-        { label: '여자', value: 'female' },
-        ]
+        { label: '남성', value: 'male' },
+        { label: '여성', value: 'female' },
+        ],
+        birthYear: null,
+        birthMonth: null,
+        birthDay: null,
+        yearOptions: yearOptions,
+        monthOptions: monthOptions,
+        dayOptions: dayOptions,
       }
     },
     computed: {
       isEmailFilled() {
         return this.email.trim() !== '';
       },
-      isUserNameValid() {
-        return this.isUserNameValid = true;
-      },
       isFormValid() {
-        return true
-        // return this.isUserNameValid == true && this.email.trim() !== '' && this.password.trim() !== '' && this.password_check.trim() !== '';
+        return this.username.trim() !== '' &&
+            this.password.trim() !== '' &&
+            this.password_check.trim() !== '' &&
+            this.gender !== null &&
+            this.birthYear !== null &&
+            this.birthMonth !== null &&
+            this.birthDay !== null &&
+            this.phoneNumber.trim() !== '' &&
+            (this.noCar || this.carInfo.trim() !== '') &&
+            this.nickname.trim() !== '' ;
+      },
+      birthDate() {
+        if (this.birthYear && this.birthMonth && this.birthDay) {
+          const month = String(this.birthMonth).padStart(2, '0');
+          const day = String(this.birthDay).padStart(2, '0');
+          return `${this.birthYear}-${month}-${day}`;
+        }
+        return null;
       },
     },
 
     methods: {
       checkUsername() {
+        if (this.username.length < 6 || !/[0-9]/.test(this.username) || !/[A-Za-z]/.test(this.username)) {
+          this.usernameError = '영문, 숫자를 포함한 6자 이상의 아이디를 입력하세요.';
+          return;
+        } else {
+          this.usernameError = '';
+        }
         axios.get(`http://localhost:8000/user/username/${this.username}`)
           .then(response => {
             alert(response.data.message);
-            // console.log(response.data.message);
             this.isUserNameValid = true;
             this.usernameError = '';
           })
@@ -168,79 +213,73 @@
             if (error.response) {
               alert(error.response.data.error);
               this.usernameError = error.response.data.error;
+              this.isUserNameValid = false;
             } else {
-              alert(error.response.data.error);
+              alert("중복확인 중 오류 발생");
+              this.isUserNameValid = false;
             }
             console.error('중복확인 오류:', error);
           });
-      },
-        sendAuthNumber() {
-            // Axios를 사용하여 Django로부터 CSRF 토큰을 요청
-            axios.get('http://localhost:8000/user/get_csrf_token/')
+        },
+
+      checkNickname() {
+        axios.get(`http://localhost:8000/user/nickname/${this.nickname}`)
+          .then(response => {
+            this.isNickNameValid = true;
+            this.nicknameError = '';
+          })
+          .catch(error => {
+            if (error.response) {
+              this.nicknameError = error.response.data.error;
+              this.isNickNameValid = false;
+            } else {
+              alert("중복확인 중 오류 발생");
+              this.isNickNameValid = false;
+            }
+            console.error('중복확인 오류:', error);
+          });
+        },
+
+      sendAuthNumber() {
+        if (!this.isValidEmail(this.email)) {
+          alert("유효한 이메일 주소를 입력해주세요.");
+          return;
+        }
+
+        // Axios를 사용하여 Django로부터 CSRF 토큰을 요청
+        axios.get('http://localhost:8000/user/get_csrf_token/')
+        .then(response => {
+            // 추출한 CSRF 토큰을 모든 Axios 요청의 기본 헤더에 추가
+            this.csrftoken = response.data.csrf_token;
+            axios.defaults.headers.common['X-CSRFTOKEN'] = this.csrftoken 
+            this.toast.add({ severity: 'success', summary: '인증번호 전송', detail: '인증번호 전송 시 대기가 발생할 수 있습니다.', life: 3000 });
+            // 이제 CSRF 토큰이 설정되었으므로 비밀번호 재설정 요청을 보낼 수 있음
+            axios.post('http://localhost:8000/user/register/auth/', { email: this.email })
                 .then(response => {
-                    // 추출한 CSRF 토큰을 모든 Axios 요청의 기본 헤더에 추가
-                    this.csrftoken = response.data.csrf_token;
-                    axios.defaults.headers.common['X-CSRFTOKEN'] = this.csrftoken 
-                    this.toast.add({ severity: 'success', summary: '인증번호 전송', detail: '인증번호 전송 시 대기가 발생할 수 있습니다.', life: 3000 });
-                    // 이제 CSRF 토큰이 설정되었으므로 비밀번호 재설정 요청을 보낼 수 있음
-                    axios.post('http://localhost:8000/user/register/auth/', { email: this.email })
-                        .then(response => {
-                            // console.log(response.data.message);
-                            this.showAuthForm = true;
-                        })
-                        .catch(error => {
-                            alert(error.response.data.error);
-                            console.error('인증 번호 요청 실패:', error);
-                        });
+                    // console.log(response.data.message);
+                    this.showAuthForm = true;
                 })
                 .catch(error => {
-                    console.error('CSRF 토큰을 가져오는 데 실패했습니다.', error);
+                    alert(error.response.data.error);
+                    console.error('인증 번호 요청 실패:', error);
                 });
-    },
-      async signup() {
-        // Password validation
-        if (this.password.length < 8 || !/[0-9]/.test(this.password) || !/[A-Za-z]/.test(this.password)) {
-          this.passwordError = '영문, 숫자를 포함한 8자 이상의 비밀번호를 입력하세요.';
-        } else {
-          this.passwordError = '';
-        }
-  
-        // Password confirmation validation
-        if (this.password !== this.password_check) {
-          this.passwordCheckError = '비밀번호가 일치하지 않습니다.';
-        } else {
-          this.passwordCheckError = '';
-        }
-        
-        // Implement your check Nickname logic here
-        // this.nicknameCheckError = '이미 사용중인 별명입니다.';
-  
-        if (!this.passwordError && !this.passwordCheckError && !this.nicknameCheckError) {
-          try {
-            // console.log(this.username)
-            const response = await axios.post('http://localhost:8000/user/register/', {
-              username: this.username,
-              email: this.email,
-              password: this.password,
-              nickname: this.nickname,
-              birth: new Date(this.birthDate).toISOString().split('T')[0],
-              gender: this.gender,
-              phone_number: this.phone_number,
-              car_number: this.car_numbe,
-            });
-            // console.log('Signup successful:', response.data, this.isStoreOwner);
-            alert('회원가입이 완료되었습니다.');
-            this.$router.push({ path: '/', replace: true });
-            // Handle successful signup, e.g., redirect to login page
-          } catch (error) {
-            console.error('Signup error:', error);
-            // Handle signup error, e.g., display error message
-          }
-        }
-  
+        })
+        .catch(error => {
+            console.error('CSRF 토큰을 가져오는 데 실패했습니다.', error);
+        });
+      },
+
+      isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
       },
 
       async handleSignup() {
+        if (this.isUserNameValid == false){
+          this.usernameError = "아이디 중복확인을 해주세요."
+          return;
+        }
+
         if (this.password.length < 8 || !/[0-9]/.test(this.password) || !/[A-Za-z]/.test(this.password)) {
           this.passwordError = '영문, 숫자를 포함한 8자 이상의 비밀번호를 입력하세요.';
           return;
@@ -256,36 +295,46 @@
           this.passwordCheckError = '';
         }
 
-        if (this.nickname.length < 2 || this.nickname.length > 15) {
-          this.nicknameCheckError = '닉네임은 2~15자 사이여야 합니다.';
+        if (this.nickname.length < 2 || this.nickname.length > 10) {
+          this.nicknameCheckError = '닉네임은 2~10자 사이여야 합니다.';
           return;
         } else {
           this.nicknameCheckError = '';
         }
         // Implement your check Nickname logic here
-        // this.nicknameCheckError = '이미 사용중인 별명입니다.';
-
         try {
-          // console.log(this.username, this.email, this.password, this.nickname, this.birthDate, this.gender, this.phoneNumber,this.carInfo);
-         
-          const response = await axios.post('http://localhost:8000/user/register/', {
-              username: this.username,
-              email: this.email,
-              password: this.password,
-              nickname: this.nickname,
-              birth: new Date(this.birthDate).toISOString().split('T')[0],
-              gender: this.gender,
-              phone_number: this.phoneNumber.replace(/\s/g, ''),
-              car_number: this.carInfo,
-            });
-          if (response.status === 200) {
-            // console.log('Signup successful:', response.data, this.isStoreOwner);
-            alert('회원가입이 완료되었습니다.');
-            this.$router.push({ path: '/', replace: true });
+          await this.checkNickname();
+          if (!this.isNickNameValid) {
+            return; 
           }
         } catch (error) {
-          alert('회원가입 오류: ', error);
-          console.error('회원가입 오류:', error);
+          console.error("닉네임 중복 확인 에러:", error);
+          alert("닉네임 중복 확인 중 오류가 발생했습니다.");
+          return;
+        }
+
+
+        if (this.isFormValid) {
+          axios.post('http://localhost:8000/user/register/', {
+            username: this.username,
+            email: this.email,
+            password: this.password,
+            nickname: this.nickname,
+            birth: this.birthDate,
+            gender: this.gender,
+            phone_number: this.phoneNumber.replace(/\s/g, ''),
+            car_number: this.noCar ? null : this.carInfo,
+          })
+          .then(response => {
+            if (response.status === 200) {
+              alert('회원가입이 완료되었습니다.');
+              this.$router.push({ path: '/', replace: true });
+            }
+          })
+          .catch(error => {
+            alert('회원가입 오류: ' + error);
+            console.error('회원가입 오류:', error);
+          });
         }
       },
   
@@ -392,6 +441,11 @@
     width: 100%;
   }
 
+  .form-group button {
+    width: 100%;
+    margin-bottom: 10px; 
+  }
+
   .form-group input {
     width: 100%;
     margin-bottom: 10px; 
@@ -410,6 +464,7 @@
     background-color: whitesmoke;
     border-radius: 8px;
     padding: 15px;
+    margin-top: 10px;
   }
 
   .verificationCode-input {
@@ -440,9 +495,6 @@
     padding: 0;    
   }
   
-  label {
-    font-weight: bold;
-  }
   
   input[type="text"],
   input[type="email"],
@@ -464,13 +516,30 @@
     border-radius: 10px;
   }
 
-.p-field {
-  margin-bottom: 1rem;
-}
+  .p-field {
+    margin-bottom: 1rem;
+  }
 
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
+  .car-info-container {
+    display: flex;
+    align-items: center; /* 수직 정렬 */
+  }
+
+  .p-field-checkbox {
+    display: flex;
+    align-items: center;
+  }
+
+  .p-field-checkbox label {
+    margin-left: 0.5rem;
+    font-weight: normal; /* "차량 없음" 텍스트를 볼드체가 아닌 일반 글꼴로 설정 */
+    white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
   </style>
   
