@@ -13,34 +13,34 @@
 
     <ul class="carpool-list">
       <li v-for="(request, index) in filteredRequests" :key="index" 
-          :class="['carpool-item', request.service_type === 'companion' ? 'sky-bg' : 'yellow-bg']"
+          :class="['carpool-item', request.room_info.service_type === 'companion' ? 'sky-bg' : 'yellow-bg']"
           @click="showPopup(request)">
         
         <div class="trip-info">
           <div>
-            <span class="service-type">{{ request.service_type === 'companion' ? '들날동행' : '등산카풀' }}</span>
-            <span>{{ formatDateTime(request.departure_date, request.departure_time) }}</span>
+            <span class="service-type">{{ request.room_info.service_type === 'companion' ? '들날동행' : '등산카풀' }}</span>
+            <span>{{ formatDateTime(request.room_info.departure_date, request.room_info.departure_time) }}</span>
           </div>
-          <span class="point-info">{{ request.start_point }}
-            <span v-if="request.service_type === 'original'" class="distance">({{ request.distance }}m)</span>
-            → {{ request.end_point }}
+          <span class="point-info">{{ request.room_info.start_point }}
+            <span v-if="request.room_info.ervice_type === 'original'" class="distance">({{ request.distance }}m)</span>
+            → {{ request.room_info.end_point }}
           </span>
         </div>
         <div class="user-container">
           <div class="user-info">
-            <strong>{{ request.user.nickname }}</strong>
-            <span class="rating">{{ request.user.rating }}★</span>
+            <!-- <strong>{{ request.room_info.user.nickname }}</strong>
+            <span class="rating">{{ request.room_info.user.rating }}★</span> -->
           </div>
           <div class="additional-info">
-            <span>{{ request.user.gender }}</span>
-            <span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span>
+            <!-- <span>{{ request.room_info.user.gender }}</span> -->
+            <!-- <span v-if="request.room_info.service_type === 'companion'">{{ request.room_info.user.carInfo }}</span> -->
           </div>
         </div>
-        <div  class="participants">요청인원 {{ request.participants }}명 </div>
+        <div  class="participants">요청인원 {{ request.room_info.requested_paricipants }}명 </div>
 
         <div class="status-container">
           <span class="status-text" :class="getStatusClass(request)">{{ getStatusText(request) }}</span>
-          <span v-if="request.status === 'pending' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()" 
+          <span v-if="request.status === 'pending' && new Date(request.room_info.departure_date + ' ' + request.room_info.departure_time) > new Date()" 
             class="delete-text" 
             @click.stop="confirmDelete(request)">취소 X</span>
         </div>
@@ -66,7 +66,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -82,82 +82,31 @@ export default {
     const selectedRequest = ref(null);
     const showDeleteDialog = ref(false);
     const currentFilter = ref('pending');
-
-    const carpoolRequests = ref([
-      {
-        service_type: "companion",
-        start_point: "한계령",
-        end_point: "오색",
-        departure_date: "2025-03-30",
-        departure_time: "10:00",
-        participants: 1,
-        distance: null,
-        status: "accepted",
-        user: {
-          nickname: '멋쟁이토마토',
-          rating: 4.5,
-          carInfo: '12가1234',
-          gender: '여자',
-        }
-      },
-      {
-        service_type: "original",
-        start_point: "경기 수원시 영통구 덕영대로 1732",
-        end_point: "소공원",
-        departure_date: "2025-03-15",
-        departure_time: "09:00",
-        participants: 2,
-        distance: 500,
-        status: "pending",
-        user: {
-          nickname: '산토마토',
-          rating: 5.0,
-          carInfo: '12가1234',
-          gender: '여자',
-        }
-      },
-      {
-        service_type: "original",
-        start_point: "경기 수원시 영통구 광교중앙로 145",
-        end_point: "소공원",
-        departure_date: "2025-03-25",
-        departure_time: "09:00",
-        participants: 2,
-        distance: 500,
-        status: "pending",
-        user: {
-          nickname: '산토마토',
-          rating: 5.0,
-          carInfo: '12가1234',
-          gender: '여자',
-        }
-      },
-      {
-        service_type: "original",
-        start_point: "광교중앙로 145",
-        end_point: "소공원",
-        departure_date: "2025-03-19",
-        departure_time: "09:00",
-        participants: 2,
-        distance: 500,
-        status: "rejected",
-        user: {
-          nickname: '산토마토',
-          rating: 5.0,
-          carInfo: '12가1234',
-          gender: '여자',
-        }
+    const carpoolRequests = ref([]); // []로 초기화
+    const fetchCarpoolAlarm = async () => {
+      try {
+        const response = await axios.get(`https://backend.santomato.com/api/carpool/req/sent/`, {
+          withCredentials: true,
+        });
+        // 응답 데이터가 객체라면 값을 배열로 변환하여 carpoolRequests에 저장
+        carpoolRequests.value = Array.isArray(response.data) ? response.data : []; 
+        console.log("Hoyeon");
+        console.log(carpoolRequests.value);
+      } catch (error) {
+        console.error('카풀 알람을 가져오는데 실패했습니다:', error);
       }
-    ]);
-
+    };
     const filteredRequests = computed(() => {
       const now = new Date();
+      console.log("Hello");
+      console.log(carpoolRequests);
       return carpoolRequests.value.filter(request => {
-        const requestDate = new Date(request.departure_date + ' ' + request.departure_time);
+        const requestDate = new Date(request.room_info.departure_date + ' ' + request.room_info.departure_time);
         switch (currentFilter.value) {
           case 'pending':
             return request.status === 'pending' && requestDate > now;
           case 'accepted':
+            console.log("accept!!!")
             return request.status === 'accepted' && requestDate > now;
           case 'rejected':
             return request.status === 'rejected' && requestDate > now;
@@ -178,27 +127,32 @@ export default {
     };
 
     const deleteRequest = () => {
-      //axios.delete(`https://backend.santomato.com/requestmanager/carpoolRequests/delete/${requestId}`);
-      //carpoolRequests.value = carpoolRequests.value.filter(req => req !== selectedRequest.value);
+      axios.delete(`https://backend.santomato.com/requestmanager/carpoolRequests/delete/${requestId}`);
+      carpoolRequests.value = carpoolRequests.value.filter(req => req !== selectedRequest.value);
       showDeleteDialog.value = false;
     };
 
     const getPendingCount = computed(() => {
       return carpoolRequests.value.filter(request => 
-        request.status === 'pending' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()
+        request.status === 'pending' && new Date(request.room_info.departure_date + ' ' + request.room_info.departure_time) > new Date()
       ).length;
     });
 
     const getAcceptedCount = computed(() => {
       return carpoolRequests.value.filter(request => 
-        request.status === 'accepted' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()
+        request.status === 'accepted' && new Date(request.room_info.departure_date + ' ' + request.room_info.departure_time) > new Date()
       ).length;
     });
 
     const getRejectedCount = computed(() => {
       return carpoolRequests.value.filter(request => 
-        request.status === 'rejected' && new Date(request.departure_date + ' ' + request.departure_time) > new Date()
+        request.status === 'rejected' && new Date(request.room_info.departure_date + ' ' + request.room_info.departure_time) > new Date()
       ).length;
+    });
+
+    onMounted(() => {
+      console.log("on mounted");
+      fetchCarpoolAlarm();
     });
     return {
       router,
@@ -215,23 +169,12 @@ export default {
       getPendingCount,
       getAcceptedCount,
       getRejectedCount,
+      fetchCarpoolAlarm
     };
   },
   methods: {
     goToProfile() {
       this.router.push('/profile');
-    },
-    async fetchCarpoolAlarm() {
-      try {
-        const response = await axios.get(`https://backend.santomato.com/requestmanager/myCarpoolRequest/`
-        ,{
-          withCredentials: true,
-        });
-        // console.log(response.data);
-        this.carpoolRequests = response.data;
-      } catch (error) {
-        console.error('카풀 알람을 가져오는데 실패했습니다:', error);
-      }
     },
     formatDateTime(date, time) {
       const dateObj = new Date(date);
@@ -275,9 +218,6 @@ export default {
 
   },
  
-  mounted() {
-    this.fetchCarpoolAlarm();
-  }
 }
 </script>
 

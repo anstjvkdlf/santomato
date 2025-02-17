@@ -81,7 +81,7 @@
 
 <script>
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
@@ -98,7 +98,7 @@ export default {
     const date = ref(new Date());
     const showDialog = ref(false);
     const selectedRequest = ref(null);
-    
+    const carpoolRequests = ref([]); 
     const locale = {
       firstDayOfWeek: 0,
       dayNames: ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"],
@@ -111,89 +111,6 @@ export default {
       dateFormat: 'yy.mm.dd',
       weekHeader: '주'
     };
-  
-    const carpoolRequests = ref([
-      {
-        service_type: "companion",
-        start_point: "한계령",
-        end_point: "오색",
-        departure_date: "2025-01-26",
-        departure_time: "10:00",
-        status: "accepted",
-        participants: [{
-          nickname: '멋쟁이토마토',
-          rating: 4.5,
-          carInfo: '12가1234',
-          gender: '여자',
-          participants: 2,
-          isowner: false,
-        },
-        {
-          nickname: '멋쟁이곰',
-          rating: 4.5,
-          carInfo: '10가3334',
-          gender: '남자',
-          participants: 1,
-          isowner: true,
-        },
-        ]
-      },
-      {
-        service_type: "original",
-        start_point: "경기 수원시 영통구 덕영대로 1732",
-        end_point: "소공원",
-        departure_date: "2025-01-25",
-        departure_time: "09:00",
-        status: "accepted",
-        participants:[{
-          nickname: '산토마토',
-          rating: 5.0,
-          carInfo: null,
-          gender: '여자',
-          participants: 2,
-          start_point: "덕영대로 123",
-          distance: 500,
-          isowner: false,
-        },
-        {
-          nickname: '산다람쥐',
-          rating: 5.0,
-          carInfo: null,
-          gender: '여자',
-          participants: 1,
-          start_point: "덕영대로 1456",
-          distance: 1200,
-          isowner: false,
-        },
-        {
-          nickname: '산방울',
-          rating: 4.0,
-          carInfo: '12가1234',
-          gender: '남자',
-          participants: 1,
-          start_point: "덕영대로 1732",
-          distance: 0,
-          isowner: true,
-        }]
-      },
-      {
-        service_type: "companion",
-        start_point: "소공원",
-        end_point: "오색",
-        departure_date: "2025-01-30",
-        departure_time: "10:00",
-        status: "pending",
-        participants: [{
-          nickname: '멋쟁이곰',
-          rating: 4.5,
-          carInfo: '10가3334',
-          gender: '남자',
-          participants: 1,
-          isowner: true,
-        },
-        ]
-      },
-    ]);
 
     const getRequestsForDate = (date) => {
       const dateStr = `${date.year}-${String(date.month + 1).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`;
@@ -209,6 +126,30 @@ export default {
       showDialog.value = false;
     };
 
+    const fetchCarpoolAlarm = async () => {
+      try {
+       const response = await axios.get(`https://backend.santomato.com/api/carpool/mycalendar/`,
+       {
+          withCredentials: true,
+        });
+        console.log("API Response:", response.data.data);
+       carpoolRequests.value = response.data.data.created_rooms.map(room => ({
+          room_id: room.room_id,
+          departure_date: room.departure_date,
+          departure_time: room.departure_time,
+          start_point: room.start_point,
+          end_point: room.end_point,
+          service_type: room.service_type,
+        }));
+      } catch (error) {
+       console.error('카풀 알람을 가져오는데 실패했습니다:', error);
+      }
+    };
+    
+    onMounted(() => {
+      fetchCarpoolAlarm();
+    });
+
     return {
       router,
       carpoolRequests,
@@ -218,24 +159,13 @@ export default {
       locale,
       getRequestsForDate,
       showPopup,
-      closePopup
+      closePopup,
+      fetchCarpoolAlarm,
     };
   },
   methods: {
     goToProfile() {
       this.router.push('/profile');
-    },
-    async fetchCarpoolAlarm() {
-      try {
-       const response = await axios.get(`https://backend.santomato.com/api/mycalendar/`,
-       {
-          withCredentials: true,
-        });
-      //  console.log(response.data);
-       this.carpoolRequests = response.data;
-      } catch (error) {
-       console.error('카풀 알람을 가져오는데 실패했습니다:', error);
-      }
     },
     formatDateTime(date, time) {
       const dateObj = new Date(date);
@@ -250,10 +180,6 @@ export default {
       return `${year.slice(2)}.${month}.${day}(${dayOfWeek}), ${ampm} ${formattedHour}시${minutes !== '00' ? ` ${parseInt(minutes)}분` : ''}`;
     },
   },
- 
-  mounted() {
-    this.fetchCarpoolAlarm();
-  }
 }
 </script>
 

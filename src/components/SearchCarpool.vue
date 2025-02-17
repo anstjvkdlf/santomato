@@ -367,15 +367,16 @@ export default {
 
     const submitCarpool = async () => {
       try {
-        const user = userStore(); 
-        const token = user.getCookie("access"); // 저장된 토큰 가져오기
         await axios.post(
-          `https://backend.santomato.com/api/join/${selectedCompanion.value.room_id}/`, // 올바른 URL로 수정
-          {}, // 본문 내용이 없으므로 빈 객체를 보냄
+          `https://backend.santomato.com/api/carpool/join/`, // 올바른 URL로 수정
           {
-            headers: {
-              Authorization: `Bearer ${token}`, // Authorization 헤더 추가
-            },
+            room_id: selectedCarpool.value.room_id,
+            start_point: selectedCompanion.value.startPoint,
+            service_type: "original",
+            participant_cnt: max_participants.value,
+          }, // 본문 내용이 없으므로 빈 객체를 보냄
+          {
+           withCredentials: true
           }
         );
         activeStep.value = 3;

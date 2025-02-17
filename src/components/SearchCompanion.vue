@@ -404,15 +404,16 @@ export default {
         // API 구현 후 실제 데이터를 가져오는 로직으로 변경 필요
         //await axios.post(`https://backend.santomato.com/api/carpool/`, {
         //});
-        const user = userStore(); 
-        const token = user.getCookie("access"); // 저장된 토큰 가져오기
         await axios.post(
-          `https://backend.santomato.com/api/join/${selectedCompanion.value.room_id}/`, // 올바른 URL로 수정
-          {}, // 본문 내용이 없으므로 빈 객체를 보냄
+          `https://backend.santomato.com/api/carpool/join/`, // 올바른 URL로 수정
           {
-            headers: {
-              Authorization: `Bearer ${token}`, // Authorization 헤더 추가
-            },
+            room_id: selectedCompanion.value.room_id,
+            service_type: "companion",
+            participant_cnt: max_participants.value,
+            start_point: "서울 강남구 가로수길 5", //임시값
+          }, // 본문 내용이 없으므로 빈 객체를 보냄
+          {
+            withCredentials: true,
           }
         );
         activeStep.value = 3;

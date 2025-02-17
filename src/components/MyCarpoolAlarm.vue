@@ -7,7 +7,7 @@
     <ul class="carpool-list">
       <li v-for="(request, index) in filteredRequests" :key="index"
           :class="['carpool-item', request.service_type === 'companion' ? 'sky-bg' : 'yellow-bg']"
-          @click="showPopup(request)">
+          @click="showPopup(request, index)">
         <div class="trip-info">
           <div>
             <span class="service-type">{{ request.service_type === 'companion' ? '들날동행' : '등산카풀' }}</span>
@@ -19,13 +19,13 @@
           </span>
         </div>
         <div class="user-info">
-          <strong>{{ request.user.nickname }}</strong>
-          <span class="rating">{{ request.user.rating }}★</span>
+          <strong>{{ request.requester }}</strong>
+          <!-- <span class="rating">{{ request.user.rating }}★</span> -->
         </div>
         <div class="additional-info">
-          <span>{{ request.user.gender }}</span>
+          <!-- <span>{{ request.user.gender }}</span> -->
           <span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span>
-          <div>참가자 {{ request.participants }}명 </div>
+          <div>참가자 {{ request.max_participants }}명 </div>
         </div>
       </li>
     </ul>
@@ -69,7 +69,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -84,57 +84,52 @@ export default {
     const showDialog = ref(false);
     const selectedRequest = ref(null);
     const currentFilter = ref('all');
-
-    const carpoolRequests = ref([
-      {
-        service_type: "companion",
-        start_point: "한계령",
-        end_point: "오색",
-        departure_date: "2025-01-26",
-        departure_time: "10:00",
-        participants: 1,
-        distance: null,
-        status: "pending",
-        user: {
-          nickname: '멋쟁이토마토',
-          rating: 4.5,
-          carInfo: '12가1234',
-          gender: '여자',
-        }
-      },
-      {
-        service_type: "original",
-        start_point: "경기 수원시 영통구 덕영대로 1732",
-        end_point: "소공원",
-        departure_date: "2025-01-26",
-        departure_time: "09:00",
-        participants: 2,
-        distance: 500,
-        status: "pending",
-        user: {
-          nickname: '산토마토',
-          rating: 5.0,
-          carInfo: '12가1234',
-          gender: '여자',
-        }
+    const carpoolRequests = ref({}); // 초기 데이터 구조를 객체로 설정
+    const fetchCarpoolAlarm = async () => {
+      try {
+        const response = await axios.get(`https://backend.santomato.com/api/carpool/req/received/`, {
+          withCredentials: true
+        });
+        console.log("API 응답 데이터:", response.data);
+        carpoolRequests.value = response.data;  // ✅ API에서 받은 데이터를 반응형 변수에 저장
+      } catch (error) {
+        console.error('카풀 알람을 가져오는데 실패했습니다:', error);
       }
-    ]);
+    };
+
+    onMounted(() => {
+      fetchCarpoolAlarm();
+    });
 
     const filteredRequests = computed(() => {
+      const allRequests = [];
+      // 각 room_id를 순회하면서 요청들을 평탄화시켜
+      for (const roomId in carpoolRequests.value) {
+        if (carpoolRequests.value[roomId].length > 0) {
+          const requestsWithRoomId = carpoolRequests.value[roomId].map(request => ({
+            ...request,
+            room_id: parseInt(roomId.replace('room_id: ', ''))  // 각 요청에 room_id를 추가
+          }));
+          allRequests.push(...requestsWithRoomId);  // 수정된 요청들을 allRequests에 추가
+        }
+      }
       switch (currentFilter.value) {
         case 'companion':
-          return carpoolRequests.value.filter(request => request.service_type === 'companion');
+          return allRequests.filter(request => request.service_type === 'companion');
         case 'original':
-          return carpoolRequests.value.filter(request => request.service_type === 'original');
+          return allRequests.filter(request => request.service_type === 'original');
         default:
-          return carpoolRequests.value;
+          return allRequests;
       }
     });
+
+
     
     const showPopup = (request) => {
       selectedRequest.value = request;
       showDialog.value = true;
     };
+
 
     return {
       router,
@@ -144,29 +139,25 @@ export default {
       showPopup,
       currentFilter,
       filteredRequests,
+      fetchCarpoolAlarm,
     };
   },
   methods: {
     goToProfile() {
       this.router.push('/profile');
     },
-    async fetchCarpoolAlarm() {
-      try {
-        const response = await axios.get(`https://backend.santomato.com/api/waitngReauest/`,
-        {
-            withCredentials: true
-        });
-        // console.log(response.data);
-        this.carpoolRequests = response.data;
-      } catch (error) {
-        console.error('카풀 알람을 가져오는데 실패했습니다:', error);
-      }
-    },
     formatDateTime(date, time) {
+      if (!date || !time) {
+        console.error("Date or time is missing");
+        return '정보 없음';  // 또는 원하는 기본값을 리턴
+      }
+
+      console.log(date); // 확인을 위해 출력
+      console.log(time); // 확인을 위해 출력
       const dateObj = new Date(date);
       const days = ['일', '월', '화', '수', '목', '금', '토'];
       const dayOfWeek = days[dateObj.getDay()];
-      
+
       const [year, month, day] = date.split('-');
       const [hours, minutes] = time.split(':');
       const hour = parseInt(hours);
@@ -175,9 +166,20 @@ export default {
       return `${year.slice(2)}.${month}.${day}(${dayOfWeek}), ${ampm} ${formattedHour}시${minutes !== '00' ? ` ${parseInt(minutes)}분` : ''}`;
     },
     async respondToRequest(status) {
-      try {
-        const response = await axios.post('https://backend.santomato.com/requestmanager/carpoolRequest/status/', {
-          status: status
+      console.log("hhh");
+      console.log(this.selectedRequest);
+      console.log(this.selectedRequest.room_id);
+      console.log(this.selectedRequest.requester);
+      if (status == "accepted") {
+        try {
+        const response = await axios.post(
+          `https://backend.santomato.com/api/carpool/accept/`, 
+        {
+          room_id : this.selectedRequest.room_id,
+          requester_id : this.selectedRequest.requester
+        },
+        {
+          withCredentials: true,
         });
         // console.log(response.data);
         this.showDialog = false;
@@ -185,12 +187,26 @@ export default {
       } catch (error) {
         console.error('요청 처리 중 오류 발생:', error);
       }
+      }
+      else if (status == "rejected") {
+        try {
+        const response = await axios.post(`https://backend.santomato.com/api/carpool/reject/`, 
+        {
+          room_id : this.selectedRequest.room_id,
+          requester_id : this.selectedRequest.requester
+        },
+        {
+          withCredentials: true,
+        });
+        // console.log(response.data);
+        this.showDialog = false;
+        this.fetchCarpoolAlarm();
+      } catch (error) {
+        console.error('요청 처리 중 오류 발생:', error);
+      }
+      }
     },
   },
- 
-  mounted() {
-    this.fetchCarpoolAlarm();
-  }
 }
 </script>
 
