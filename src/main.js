@@ -11,7 +11,7 @@ import Chart from 'primevue/chart';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faMagnifyingGlass, faCar, faComments, faUser} from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faCar, faComments, faUser, faPen} from '@fortawesome/free-solid-svg-icons';
 import 'primeicons/primeicons.css'; // PrimeIcons
 import 'primeflex/primeflex.css'; // PrimeFlex
 import ToastService from 'primevue/toastservice';
@@ -19,7 +19,7 @@ import ToastService from 'primevue/toastservice';
 import App from './App.vue';
 import router from './router';
 
-library.add(faMagnifyingGlass, faCar, faComments, faUser);
+library.add(faMagnifyingGlass, faCar, faComments, faUser, faPen);
 
 const app = createApp(App);
 app.component('font-awesome-icon', FontAwesomeIcon)

@@ -49,14 +49,11 @@
               <Dropdown v-model="gender" :options="genderOptions" optionLabel="label" optionValue="value" placeholder="성별 선택" />
             </div>
             <div class="p-field">
-                <label for="birthDate">생년월일</label>
-                <div style="display: flex; align-items: center;">
-                  <Dropdown v-model="birthYear" :options="yearOptions" optionLabel="label" optionValue="value" placeholder="년"
-                    style="width: 90px;"/>
-                  <Dropdown v-model="birthMonth" :options="monthOptions" optionLabel="label" optionValue="value" placeholder="월"
-                    style="width: 90px; margin-left: 5px;" />
-                  <Dropdown v-model="birthDay" :options="dayOptions" optionLabel="label" optionValue="value" placeholder="일"
-                    style="width: 90px; margin-left: 5px;" />
+              <label for="birthDate">생년월일</label>
+                <div class="birthdate-container">
+                  <Dropdown v-model="new_birthYear" :options="yearOptions" optionLabel="label" optionValue="value" placeholder="년" />
+                  <Dropdown v-model="new_birthMonth" :options="monthOptions" optionLabel="label" optionValue="value" placeholder="월" />
+                  <Dropdown v-model="new_birthDay" :options="dayOptions" optionLabel="label" optionValue="value" placeholder="일" />
                 </div>
               </div>
             <div class="p-field">
@@ -182,7 +179,7 @@
             this.birthMonth !== null &&
             this.birthDay !== null &&
             this.phoneNumber.trim() !== '' &&
-            (this.noCar || this.carInfo.trim() !== '') &&
+            (this.noCar || (this.new_carInfo && this.new_carInfo.trim() !== '')) &&
             this.nickname.trim() !== '' ;
       },
       birthDate() {
@@ -328,7 +325,12 @@
           .then(response => {
             if (response.status === 200) {
               alert('회원가입이 완료되었습니다.');
-              this.$router.push({ path: '/', replace: true });
+              this.$router.push({ 
+                path: '/', 
+                replace: true 
+              }).then(() => {
+                window.scrollTo(0, 0);
+              });
             }
           })
           .catch(error => {
@@ -540,6 +542,16 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
+  }
+
+  .birthdate-container {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .birthdate-container .p-dropdown {
+    width: calc(33.33% - 5px); /* Adjust width for equal distribution */
   }
   </style>
   

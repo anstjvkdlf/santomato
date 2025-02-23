@@ -17,6 +17,8 @@ import MyCarpoolRoom from './components/MyCarpoolRoom.vue';
 import ChangePassword from './components/ChangePassword.vue';
 import ResetPassword from './components/ResetPassword.vue';
 import DeleteID from './components/DeleteID.vue';
+import ProfileEdit from './components/ProfileEdit.vue';
+
 
 const routes = [
   {
@@ -78,6 +80,11 @@ const routes = [
     path: '/profile/carpoolList',
     name: 'MyCarpoolList',
     component: MyCarpoolList,
+  },
+  {
+    path: '/profile/edit',
+    name: 'ProfileEdit',
+    component: ProfileEdit,
   },
   {
     path: "/chat",

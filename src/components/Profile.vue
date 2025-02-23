@@ -6,7 +6,11 @@
           <font-awesome-icon icon="fa-solid fa-user" size="2x" />
         </div>
         <div class="user-info">
-          <div class="user-name">{{ nickname }} <span class="rating">{{ rating }}★</span></div>
+          <div class="user-name">
+            <span v-if="!isEditingNickname">{{ nickname }}</span>
+            <input v-else v-model="editedNickname" @blur="saveNickname" @keyup.enter="saveNickname" ref="nicknameInput">
+            <font-awesome-icon icon="fa-solid fa-pen" class="edit-icon" @click="startEditNickname" />
+            <span class="rating">{{ rating }}★</span></div>
           <div class="stats">
             <div class="stat-item" @click="navigateToPlans">
               <div class="stat-value">{{ stats.plans }}</div>
@@ -54,8 +58,11 @@
         <div class="info-item">
           <div class="info-label">성별</div>
           <div class="info-value">{{ gender }}</div>
+        </div>
+        <div class="info-header">
+          <font-awesome-icon icon="fa-solid fa-pen" class="edit-icon" @click="navigateToEdit" />
+        </div>
       </div>
-    </div>
       
       <!-- 내 계정 섹션 -->
     <div class="info-section" v-if="activeTab === 'id'">
@@ -102,6 +109,8 @@ export default {
       phoneNumber: '',
       carInfo: '',
       gender: '',
+      isEditingNickname: false,
+      editedNickname: '',
     }
   },
   methods: {
@@ -126,6 +135,9 @@ export default {
     navigateToDeleteID(){
       this.$router.push('/profile/deleteID');
     },
+    navigateToEdit() {
+      this.$router.push('/profile/edit');
+    },
     async fetchUserInfo() {
       try {
         const response = await axios.get('http://localhost:8000/user/auth/', {
@@ -147,7 +159,39 @@ export default {
       } catch (error) {
         console.error('사용자 정보를 가져오는데 실패했습니다:', error);
       }
-    }
+    },
+    startEditNickname() {
+      this.isEditingNickname = true;
+      this.editedNickname = this.nickname;
+      this.$nextTick(() => {
+        this.$refs.nicknameInput.focus();
+      });
+    },
+    async saveNickname() {
+      if (this.editedNickname && this.editedNickname !== this.nickname) {
+        if (this.editedNickname.length < 2 || this.editedNickname.length > 10) {
+          alert('닉네임은 2~10자 사이여야 합니다.');
+          return;
+        }
+        await this.updateNickname(this.editedNickname);
+      }
+      this.isEditingNickname = false;
+    },
+    async updateNickname(newNickname) {
+      try {
+        // API 호출 로직
+        const response = await axios.put('http://localhost:8000/user/nickname/', { 
+          nickname: newNickname,
+          email: this.email,
+         }, { withCredentials: true });
+
+        console.log(response)
+        this.nickname = response.data.nickname;
+      } catch (error) {
+        alert(error.response.data.error);
+        console.error('닉네임 업데이트 실패:', error);
+      }
+    },
   },
   created() {
     this.fetchUserInfo();
@@ -287,5 +331,26 @@ export default {
 
 .info-value {
   font-weight: 500;
+}
+
+.info-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.edit-icon {
+  cursor: pointer;
+  color: #c0c0c0;
+}
+
+.user-name input {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-bottom: 1px solid #007bff;
+  outline: none;
+  background: transparent;
 }
 </style>
