@@ -110,7 +110,7 @@ export default {
   methods: {
     async fetchUserInfo() {
       try {
-        const response = await axios.get('http://localhost:8000/user/auth/', {
+        const response = await axios.get('https://backend.santomato.com/user/auth/', {
           withCredentials: true,
         });
         const userInfo = response.data.user;
@@ -141,7 +141,7 @@ export default {
     },
     async handleEdit() {
       try {
-        const response = await axios.put('http://localhost:8000/user/auth/', {
+        const response = await axios.put('https://backend.santomato.com/user/auth/', {
           email: this.email,
           new_birth: this.new_birthDate,
           new_gender: this.new_gender,

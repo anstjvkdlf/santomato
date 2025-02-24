@@ -371,7 +371,7 @@ export default {
           `https://backend.santomato.com/api/carpool/join/`, // 올바른 URL로 수정
           {
             room_id: selectedCarpool.value.room_id,
-            start_point: selectedCompanion.value.startPoint,
+            start_point: selectedCarpool.value.startPoint,
             service_type: "original",
             participant_cnt: max_participants.value,
           }, // 본문 내용이 없으므로 빈 객체를 보냄

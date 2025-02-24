@@ -63,7 +63,7 @@ export default {
 
     const verifyCurrentPassword = async () => {
       try {
-        await axios.post('http://localhost:8000/user/verify-password/', {
+        await axios.post('https://backend.santomato.com/user/verify-password/', {
           password: currentPassword.value
         }, {
           withCredentials: true,
@@ -91,7 +91,7 @@ export default {
 
     const deleteAccount = async () => {
       try {
-        await axios.delete('http://localhost:8000/user/register/', {
+        await axios.delete('https://backend.santomato.com/user/register/', {
           withCredentials: true,
         }).then(response => {
           if (response.status === 200) {

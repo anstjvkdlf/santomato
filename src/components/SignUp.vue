@@ -200,7 +200,7 @@
         } else {
           this.usernameError = '';
         }
-        axios.get(`http://localhost:8000/user/username/${this.username}`)
+        axios.get(`https://backend.santomato.com/user/username/${this.username}`)
           .then(response => {
             alert(response.data.message);
             this.isUserNameValid = true;
@@ -220,7 +220,7 @@
         },
 
       checkNickname() {
-        axios.get(`http://localhost:8000/user/nickname/${this.nickname}`)
+        axios.get(`https://backend.santomato.com/user/nickname/${this.nickname}`)
           .then(response => {
             this.isNickNameValid = true;
             this.nicknameError = '';
@@ -244,14 +244,14 @@
         }
 
         // Axios를 사용하여 Django로부터 CSRF 토큰을 요청
-        axios.get('http://localhost:8000/user/get_csrf_token/')
+        axios.get('https://backend.santomato.com/user/get_csrf_token/')
         .then(response => {
             // 추출한 CSRF 토큰을 모든 Axios 요청의 기본 헤더에 추가
             this.csrftoken = response.data.csrf_token;
             axios.defaults.headers.common['X-CSRFTOKEN'] = this.csrftoken 
             this.toast.add({ severity: 'success', summary: '인증번호 전송', detail: '인증번호 전송 시 대기가 발생할 수 있습니다.', life: 3000 });
             // 이제 CSRF 토큰이 설정되었으므로 비밀번호 재설정 요청을 보낼 수 있음
-            axios.post('http://localhost:8000/user/register/auth/', { email: this.email })
+            axios.post('https://backend.santomato.com/user/register/auth/', { email: this.email })
                 .then(response => {
                     // console.log(response.data.message);
                     this.showAuthForm = true;
@@ -312,7 +312,7 @@
 
 
         if (this.isFormValid) {
-          axios.post('http://localhost:8000/user/register/', {
+          axios.post('https://backend.santomato.com/user/register/', {
             username: this.username,
             email: this.email,
             password: this.password,
@@ -347,7 +347,7 @@
       },
   
       confirmVerificationCode() {
-        axios.get(`http://localhost:8000/user/register/auth/${this.email}/${this.auth_number}`)
+        axios.get(`https://backend.santomato.com/user/register/auth/${this.email}/${this.auth_number}`)
           .then(response => {
             // console.log(this.email, this.auth_number);
             if (response.status === 200) {

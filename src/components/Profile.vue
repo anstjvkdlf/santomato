@@ -140,7 +140,7 @@ export default {
     },
     async fetchUserInfo() {
       try {
-        const response = await axios.get('http://localhost:8000/user/auth/', {
+        const response = await axios.get('https://backend.santomato.com/user/auth/', {
           withCredentials: true,
         });
 
@@ -180,7 +180,7 @@ export default {
     async updateNickname(newNickname) {
       try {
         // API 호출 로직
-        const response = await axios.put('http://localhost:8000/user/nickname/', { 
+        const response = await axios.put('https://backend.santomato.com/user/nickname/', { 
           nickname: newNickname,
           email: this.email,
          }, { withCredentials: true });

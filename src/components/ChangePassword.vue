@@ -52,7 +52,7 @@ export default {
 
     const verifyCurrentPassword = async () => {
       try {
-        const response = await axios.post('http://localhost:8000/user/verify-password/', {
+        const response = await axios.post('https://backend.santomato.com/user/verify-password/', {
           password: currentPassword.value
         }, {
           withCredentials: true,
@@ -75,7 +75,7 @@ export default {
       }
 
       try {
-        const response = await axios.put('http://localhost:8000/user/password_reset/', {
+        const response = await axios.put('https://backend.santomato.com/user/password_reset/', {
           new_password: newPassword.value
         }, {
           withCredentials: true,

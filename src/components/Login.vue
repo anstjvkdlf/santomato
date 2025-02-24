@@ -68,7 +68,7 @@ export default {
     async login() {
       try {
         console.log(this.rememberMe)
-        const response = await axios.post('http://localhost:8000/user/auth/', {
+        const response = await axios.post('https://backend.santomato.com/user/auth/', {
             username: this.username,
             password: this.password,
             rememberMe: this.rememberMe, 

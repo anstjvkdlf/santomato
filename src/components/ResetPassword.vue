@@ -108,7 +108,7 @@
 
     methods: {
       checkEmail() {                    
-        axios.post(`http://localhost:8000/user/password_reset/confirm/`, { email: this.email })
+        axios.post(`https://backend.santomato.com/user/password_reset/confirm/`, { email: this.email })
           .then(response => {
             if (response.status === 200) {
               this.toast.add({ severity: 'success', summary: '인증번호 전송', detail: '인증번호 전송 시 대기가 발생할 수 있습니다.', life: 3000 });
@@ -134,7 +134,7 @@
       },
 
       confirmVerificationCode() {
-        axios.get(`http://localhost:8000/user/register/auth/${this.email}/${this.auth_number}`)
+        axios.get(`https://backend.santomato.com/user/register/auth/${this.email}/${this.auth_number}`)
           .then(response => {
             // console.log(this.email, this.auth_number);
             if (response.status === 200) {
@@ -173,7 +173,7 @@
           this.passwordCheckError = '';
         }
 
-        const response = await axios.put(`http://localhost:8000/user/password_reset/confirm/`, {
+        const response = await axios.put(`https://backend.santomato.com/user/password_reset/confirm/`, {
               email: this.email,
               new_password: this.new_password,
             });
