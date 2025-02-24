@@ -34,7 +34,7 @@
               </div>
               <div class="participants">
                   <span>참가자 {{ room.totalParticipants }}명 / 최대 {{ room.max_participants }}명</span>
-                  <span v-if="room.approved_participants.length > 0" class="view-participants" @click.stop="showParticipants(room)">
+                  <span v-if="room.max_participants.length > 0" class="view-participants" @click.stop="showParticipants(room)">
                       <strong><u>참가자 보기</u></strong>
                   </span>
               </div>
@@ -124,38 +124,7 @@ export default {
     const showParticipantsDialog = ref(false);
     const selectedRoomParticipants = ref([]);
     const currentFilter = ref('all');
-    const carpoolRooms = ref([
-      {
-        approved_participants:[
-        {
-          nickname: '산토마토',
-          rating: 5.0,
-          carInfo: null,
-          gender: '여자',
-          participants: 1,
-          start_point: "경기 수원시 영통구 덕영대로 123",
-          distance: 500,
-          isowner: false,
-        }],
-        service_type: "original",
-        start_point: "경기 수원시 영통구 덕영대로 1732",
-        end_point: "소공원",
-        departure_date: "2025-01-26",
-        departure_time: "09:00",
-        max_participants: 2,
-        room_id: 1,
-      },
-      {
-        approved_participants:[],
-        service_type: "companion",
-        start_point: "오색",
-        end_point: "소공원",
-        departure_date: "2025-01-26",
-        departure_time: "09:00",
-        max_participants: 2,
-        room_id: 2,
-      },
-    ]);
+    const carpoolRooms = ref([]);
 
     const filteredRooms = computed(() => {
       switch (currentFilter.value) {
@@ -174,9 +143,9 @@ export default {
     };
 
     const showParticipants = (room) => {
-      if (room && room.approved_participants) {
+      if (room && room.max_participants) {
         selectedRoom.value = room;
-        selectedRoomParticipants.value = room.approved_participants;
+        selectedRoomParticipants.value = room.max_participants;
         showParticipantsDialog.value = true;
       } else {
         console.error('Room or approved participants not found');
@@ -189,7 +158,7 @@ export default {
 
     const confirmDelete = (room) => {
       try {
-        if (room.approved_participants.length > 0) {
+        if (room.max_participants.length > 0) {
           showErrorDialog.value = true;
         } else {
           selectedRoom.value = room;
@@ -222,16 +191,16 @@ export default {
 
     const fetchCarpoolRooms = async () => {
       try {
-       // const response = await axios.get(`https://backend.santomato.com/api/carpool/all/`, {
-        //  withCredentials: true,
-        //});
-        //console.log(response.data);
-        //carpoolRooms.value = response.data;  
-
+       const response = await axios.get(`https://backend.santomato.com/api/carpool/all/`, {
+         withCredentials: true,
+        });
+        console.log(response.data);
+        carpoolRooms.value = response.data;  
         carpoolRooms.value = carpoolRooms.value.map(room => ({
           ...room,
-          totalParticipants: room.approved_participants.reduce((sum, participant) => sum + (participant.participants || 1), 0)
+          totalParticipants: room.max_participants.reduce((sum, participant) => sum + (participant.participants || 1), 0)
         }));
+        console.log("HYHY", carpoolRooms.value);
 
       } catch (error) {
         console.error('카풀 정보를 가져오는데 실패했습니다:', error);
