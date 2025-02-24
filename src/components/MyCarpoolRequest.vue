@@ -36,7 +36,7 @@
             <!-- <span v-if="request.room_info.service_type === 'companion'">{{ request.room_info.user.carInfo }}</span> -->
           </div>
         </div>
-        <div  class="participants">요청인원 {{ request.room_info.requested_paricipants }}명 </div>
+        <div  class="participants">요청인원 {{ request.room_info.max_participants }}명 </div>
 
         <div class="status-container">
           <span class="status-text" :class="getStatusClass(request)">{{ getStatusText(request) }}</span>
@@ -127,7 +127,9 @@ export default {
     };
 
     const deleteRequest = () => {
-      axios.delete(`https://backend.santomato.com/requestmanager/carpoolRequests/delete/${requestId}`);
+      axios.delete(`https://backend.santomato.com/api/carpool/req/cancel/${selectedRequest.value.room_info.room_id}/`, {
+        withCredentials: true
+      });
       carpoolRequests.value = carpoolRequests.value.filter(req => req !== selectedRequest.value);
       showDeleteDialog.value = false;
     };
