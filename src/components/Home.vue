@@ -23,7 +23,7 @@
                 <span v-if="mountain.status === '정상'"> {{ mountain.status }}</span>
                 <span v-if="mountain.status === '통제'"> {{ mountain.status }}</span>
               </div>
-              <img :src="`https://backend.santomato.com` + mountain.image" :alt="mountain">
+              <img :src="`https://backend.santomato.com` + mountain.mountain_image" :alt="mountain">
             </div>
           </div>
         </li>
