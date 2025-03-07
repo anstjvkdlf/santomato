@@ -8,9 +8,19 @@
         <div class="user-info">
           <div class="user-name">
             <span v-if="!isEditingNickname">{{ nickname }}</span>
-            <input v-else v-model="editedNickname" @blur="saveNickname" @keyup.enter="saveNickname" ref="nicknameInput">
-            <font-awesome-icon icon="fa-solid fa-pen" class="edit-icon" @click="startEditNickname" />
-            <span class="rating">{{ rating }}★</span></div>
+            <input 
+              v-else 
+              v-model="editedNickname" 
+              @keyup.enter="saveNickname" 
+              ref="nicknameInput"
+            >
+            <font-awesome-icon 
+              icon="fa-solid fa-pen" 
+              class="edit-icon" 
+              @click="handleEditIconClick" 
+            />
+            <span class="rating">{{ rating }}★</span>
+          </div>
           <div class="stats">
             <div class="stat-item" @click="navigateToPlans">
               <div class="stat-value">{{ stats.plans }}</div>
@@ -53,7 +63,7 @@
         </div>
         <div class="info-item">
           <div class="info-label">내 차량</div>
-          <div class="info-value">{{ carInfo }}</div>
+          <div class="info-value">{{ carInfo ? carInfo : '차량없음' }}</div>
         </div>
         <div class="info-item">
           <div class="info-label">성별</div>
@@ -75,11 +85,11 @@
         <div class="info-value">{{ email }}</div>
       </div>
       <div class="info-item">
-        <div class="info-label" @click="navigateToChangePassword"  data-clickable="true">비밀번호 변경</div>
+        <div class="info-label button-label" @click="navigateToChangePassword" data-clickable="true">비밀번호 변경</div>
         <div class="info-value"></div>
       </div>
       <div class="info-item">
-        <div class="info-label"  @click="navigateToDeleteID"  data-clickable="true">회원탈퇴</div>
+        <div class="info-label button-label" @click="navigateToDeleteID" data-clickable="true">회원탈퇴</div>
         <div class="info-value"></div>
       </div>
     </div>
@@ -140,7 +150,7 @@ export default {
     },
     async fetchUserInfo() {
       try {
-        const response = await axios.get('https://backend.santomato.com/user/auth/', {
+        const response = await axios.get('http://localhost:8000/user/auth/', {
           withCredentials: true,
         });
 
@@ -160,27 +170,56 @@ export default {
         console.error('사용자 정보를 가져오는데 실패했습니다:', error);
       }
     },
-    startEditNickname() {
-      this.isEditingNickname = true;
-      this.editedNickname = this.nickname;
-      this.$nextTick(() => {
-        this.$refs.nicknameInput.focus();
-      });
-    },
-    async saveNickname() {
-      if (this.editedNickname && this.editedNickname !== this.nickname) {
-        if (this.editedNickname.length < 2 || this.editedNickname.length > 10) {
-          alert('닉네임은 2~10자 사이여야 합니다.');
-          return;
-        }
-        await this.updateNickname(this.editedNickname);
+    
+  startEditNickname() {
+    // 편집 모드 활성화 및 기존 닉네임 설정
+    this.isEditingNickname = true;
+    this.editedNickname = this.nickname;
+
+    this.$nextTick(() => {
+      this.$refs.nicknameInput.focus();
+    });
+  },
+  async saveNickname() {
+    if (this.editedNickname && this.editedNickname !== this.nickname) {
+      if (this.editedNickname.length < 2 || this.editedNickname.length > 10) {
+        alert('닉네임은 2~10자 사이여야 합니다.');
+        return;
       }
-      this.isEditingNickname = false;
-    },
-    async updateNickname(newNickname) {
+
+      try {
+        const response = await axios.put(
+          'http://localhost:8000/user/nickname/', 
+          { nickname: this.editedNickname, email: this.email }, 
+          { withCredentials: true }
+        );
+
+        this.nickname = response.data.nickname;
+        alert('닉네임이 성공적으로 변경되었습니다.');
+      } catch (error) {
+        if (error.response && error.response.data.error) {
+          alert(error.response.data.error);
+        } else {
+          console.error('닉네임 업데이트 실패:', error);
+          alert('닉네임 저장 중 문제가 발생했습니다.');
+        }
+      }
+    }
+
+    this.isEditingNickname = false;
+  },
+
+  handleEditIconClick() {
+    if (this.isEditingNickname) {
+      this.saveNickname();
+    } else {
+      this.startEditNickname();
+    }
+  },
+  async updateNickname(newNickname) {
       try {
         // API 호출 로직
-        const response = await axios.put('https://backend.santomato.com/user/nickname/', { 
+        const response = await axios.put('http://localhost:8000/user/nickname/', { 
           nickname: newNickname,
           email: this.email,
          }, { withCredentials: true });
@@ -338,6 +377,12 @@ export default {
   justify-content: flex-end;
   align-items: center;
   margin-top: 15px;
+}
+
+.info-label.button-label {
+  display: block;
+  text-align: center;
+  width: 100%; 
 }
 
 .edit-icon {
