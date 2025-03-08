@@ -34,7 +34,7 @@
               </div>
               <div class="participants">
                   <span>참가자 {{ room.totalParticipants }}명 / 최대 {{ room.max_participants }}명</span>
-                  <span v-if="room.max_participants.length > 0" class="view-participants" @click.stop="showParticipants(room)">
+                  <span v-if="room.totalParticipants > 0" class="view-participants" @click.stop="showParticipants(room)">
                       <strong><u>참가자 보기</u></strong>
                   </span>
               </div>
@@ -145,7 +145,7 @@ export default {
     const showParticipants = (room) => {
       if (room && room.max_participants) {
         selectedRoom.value = room;
-        selectedRoomParticipants.value = room.max_participants;
+        selectedRoomParticipants.value = room.totalParticipants;
         showParticipantsDialog.value = true;
       } else {
         console.error('Room or approved participants not found');
@@ -174,7 +174,7 @@ export default {
 
     const deleteRoom = () => {
       if (selectedRoom && selectedRoom.value.room_id) {
-        axios.delete(`https://backend.santomato.com/api/carpool/delete/${selectedRoom.value.room_id}/`, 
+        axios.delete(`http://localhost:8000/api/carpool/delete/${selectedRoom.value.room_id}/`, 
         {
           withCredentials: true
         })
@@ -191,14 +191,14 @@ export default {
 
     const fetchCarpoolRooms = async () => {
       try {
-       const response = await axios.get(`https://backend.santomato.com/api/carpool/all/`, {
+       const response = await axios.get(`http://localhost:8000/api/carpool/all/`, {
          withCredentials: true,
         });
         console.log(response.data);
         carpoolRooms.value = response.data;  
         carpoolRooms.value = carpoolRooms.value.map(room => ({
           ...room,
-          totalParticipants: room.max_participants.reduce((sum, participant) => sum + (participant.participants || 1), 0)
+          totalParticipants: room.current_participants - 1
         }));
         console.log("HYHY", carpoolRooms.value);
 

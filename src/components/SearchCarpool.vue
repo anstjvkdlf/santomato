@@ -323,7 +323,7 @@ export default {
       const formattedTime = departureDate.value ? departureDate.value.toTimeString().split(' ')[0].slice(0, 5) : '';
   
       try {
-        const apiUrl = `https://backend.santomato.com/api/carpool/${formattedDate}/${formattedTime}`;
+        const apiUrl = `http://localhost:8000/api/carpool/${formattedDate}/${formattedTime}`;
         const params = new URLSearchParams({ start_point: startPoint.value });
 
         axios.defaults.withCredentials = true;
@@ -368,10 +368,10 @@ export default {
     const submitCarpool = async () => {
       try {
         await axios.post(
-          `https://backend.santomato.com/api/carpool/join/`, // 올바른 URL로 수정
+          `http://localhost:8000/api/carpool/join/`, // 올바른 URL로 수정
           {
             room_id: selectedCarpool.value.room_id,
-            start_point: selectedCarpool.value.startPoint,
+            start_point: startPoint.value,
             service_type: "original",
             participant_cnt: max_participants.value,
           }, // 본문 내용이 없으므로 빈 객체를 보냄
@@ -381,6 +381,7 @@ export default {
         );
         activeStep.value = 3;
       } catch (error) {
+        alert(error.response.data.error); 
         console.error('Failed to submit:', error);
       }
     };

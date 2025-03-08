@@ -22,7 +22,7 @@
             <span>{{ formatDateTime(request.room_info.departure_date, request.room_info.departure_time) }}</span>
           </div>
           <span class="point-info">{{ request.room_info.start_point }}
-            <span v-if="request.room_info.ervice_type === 'original'" class="distance">({{ request.distance }}m)</span>
+            <span v-if="request.room_info.service_type === 'original'" class="distance">({{ request.distance }}m)</span>
             → {{ request.room_info.end_point }}
           </span>
         </div>
@@ -36,7 +36,7 @@
             <!-- <span v-if="request.room_info.service_type === 'companion'">{{ request.room_info.user.carInfo }}</span> -->
           </div>
         </div>
-        <div  class="participants">요청인원 {{ request.room_info.max_participants }}명 </div>
+        <div  class="participants">요청인원 {{ request.room_info.max_participants }}/{{ request.room_info.max_participants }}명 </div>
 
         <div class="status-container">
           <span class="status-text" :class="getStatusClass(request)">{{ getStatusText(request) }}</span>
@@ -85,7 +85,7 @@ export default {
     const carpoolRequests = ref([]); // []로 초기화
     const fetchCarpoolAlarm = async () => {
       try {
-        const response = await axios.get(`https://backend.santomato.com/api/carpool/req/sent/`, {
+        const response = await axios.get(`http://localhost:8000/api/carpool/req/sent/`, {
           withCredentials: true,
         });
         // 응답 데이터가 객체라면 값을 배열로 변환하여 carpoolRequests에 저장
@@ -127,7 +127,7 @@ export default {
     };
 
     const deleteRequest = () => {
-      axios.delete(`https://backend.santomato.com/api/carpool/req/cancel/${selectedRequest.value.room_info.room_id}/`, {
+      axios.delete(`http://localhost:8000/api/carpool/req/cancel/${selectedRequest.value.room_info.room_id}/`, {
         withCredentials: true
       });
       carpoolRequests.value = carpoolRequests.value.filter(req => req !== selectedRequest.value);
@@ -192,7 +192,7 @@ export default {
     },
     async respondToRequest(status) {
       try {
-        const response = await axios.post('https://backend.santomato.com/requestmanager/myCarpoolRequest/status/', {
+        const response = await axios.post('http://localhost:8000/requestmanager/myCarpoolRequest/status/', {
           status: status
         });
         // console.log(response.data);

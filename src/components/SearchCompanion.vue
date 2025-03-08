@@ -374,7 +374,7 @@ export default {
         const formattedTime = departureDate.value ? departureDate.value.toTimeString().split(' ')[0].slice(0, 5) : '';
 
         // API 구현 후 companionListd에 실제 데이터를 가져오는 로직으로 변경 필요
-        const response = await axios.get(`https://backend.santomato.com/api/companion/${formattedDate}/${formattedTime}/`, {
+        const response = await axios.get(`http://localhost:8000/api/companion/${formattedDate}/${formattedTime}/`, {
          // start_point: startPoint.value.name,
          // end_point: endPoint.value.name,
         });
@@ -402,10 +402,10 @@ export default {
     const submitCompanion = async () => {
       try {
         // API 구현 후 실제 데이터를 가져오는 로직으로 변경 필요
-        //await axios.post(`https://backend.santomato.com/api/carpool/`, {
+        //await axios.post(`http://localhost:8000/api/carpool/`, {
         //});
         await axios.post(
-          `https://backend.santomato.com/api/carpool/join/`, // 올바른 URL로 수정
+          `http://localhost:8000/api/carpool/join/`, // 올바른 URL로 수정
           {
             room_id: selectedCompanion.value.room_id,
             service_type: "companion",
@@ -419,6 +419,7 @@ export default {
         activeStep.value = 3;
 
       } catch (error) {
+        alert(error.response.data.error); 
         console.error('Failed to submit:', error);
       }
     };

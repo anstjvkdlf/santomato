@@ -24,7 +24,7 @@
         </div>
         <div class="additional-info">
           <!-- <span>{{ request.user.gender }}</span> -->
-          <span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span>
+          <!--<span v-if="request.service_type === 'companion'">{{ request.user.carInfo }}</span> -->
           <div>참가자 {{ request.max_participants }}명 </div>
         </div>
       </li>
@@ -87,7 +87,7 @@ export default {
     const carpoolRequests = ref({}); // 초기 데이터 구조를 객체로 설정
     const fetchCarpoolAlarm = async () => {
       try {
-        const response = await axios.get(`https://backend.santomato.com/api/carpool/req/received/`, {
+        const response = await axios.get(`http://localhost:8000/api/carpool/req/received/`, {
           withCredentials: true
         });
         console.log("API 응답 데이터:", response.data);
@@ -173,7 +173,7 @@ export default {
       if (status == "accepted") {
         try {
         const response = await axios.post(
-          `https://backend.santomato.com/api/carpool/accept/`, 
+          `http://localhost:8000/api/carpool/accept/`, 
         {
           room_id : this.selectedRequest.room_id,
           requester_id : this.selectedRequest.requester
@@ -190,7 +190,7 @@ export default {
       }
       else if (status == "rejected") {
         try {
-        const response = await axios.post(`https://backend.santomato.com/api/carpool/reject/`, 
+        const response = await axios.post(`http://localhost:8000/api/carpool/reject/`, 
         {
           room_id : this.selectedRequest.room_id,
           requester_id : this.selectedRequest.requester
